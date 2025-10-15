@@ -8,4 +8,4 @@
 Документация размещена на [Wiki](https://github.com/ryzhpolsos/redeye/wiki)
 
 ## Лицензия
-Проект разрабатывается и распространяется под лицензией [MIT](https://github.com/ryzhpolsos/redeye/blob/main/LICENSE).
+Проект разрабатывается и распространяется под лицензией [MIT](https://github.com/ryzhpolsos/redeye/blob/main/LICENSE)
