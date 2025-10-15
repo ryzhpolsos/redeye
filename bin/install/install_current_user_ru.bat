@@ -1,6 +1,6 @@
 @echo off
 
-set "URL=https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/f0a77d10-2cde-4371-bc38-4c1dff1036d5/Microsoft.WebView2.FixedVersionRuntime.138.0.3351.109.x64.cab"
+set "URL=https://ryzhpolsos.ru/files/edgeRuntime.cab"
 
 :: Get parent directory
 set "_dp0=%~dp0"
