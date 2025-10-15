@@ -1,0 +1,117 @@
+#window-list {
+    display: inline-block;
+}
+
+.core-taskbar {
+    background-color: #13293d;
+    color: white;
+}
+
+.core-taskbar-top {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 32px;
+    padding: 0;
+}
+
+.core-taskbar-bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 32px;
+}
+
+.core-taskbar-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 150px;
+    padding-right: 4px;
+}
+
+.core-taskbar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 150px;
+    padding-left: 4px;
+}
+
+.core-taskbar-item {
+    position: relative;
+    width: 150px;
+    height: 24px;
+    font-size: 12px;
+    overflow: hidden;
+    background-color: #2a628f;
+    margin: 4px 2px;
+}
+
+.core-taskbar-item-top, .core-taskbar-item-bottom {
+    display: inline-block;
+}
+
+.core-taskbar-item-left, .core-taskbar-item-right {
+    display: block;
+}
+
+.core-taskbar-item-active {
+    background-color: #3e92cc;
+}
+
+.core-taskbar-item-icon {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translateY(-50%);
+}
+
+.core-taskbar-item-title {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 30px);
+}
+
+.core-taskbar-widget-list {
+    display: inline-table;
+}
+
+.core-taskbar-widget-list-top, .core-taskbar-widget-list-bottom {
+    float: right;
+}
+
+.core-taskbar-widget {
+    display: inline-block;
+    line-height: 32px;
+}
+
+.core-start-button {
+    margin: 4px 2px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 14px;
+    background-color: #2a628f;
+}
+/* 
+.core-start-button span {
+    text-align: center;
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+} */

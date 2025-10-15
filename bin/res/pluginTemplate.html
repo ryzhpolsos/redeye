@@ -1,0 +1,33 @@
+<script>
+(function(){
+    var plugin = {
+        config: $(PLUGIN_CONFIG),
+        shellConfig: window.globalConfig,
+        storage: $(PLUGIN_STORAGE),
+        dir: $(PLUGIN_DIR),
+        getPath: function(file){
+            return this.dir + "\\" + file;
+        },
+        exitApp: function(){
+            (new NetClass("RedEye.Program")).Exit();
+        },
+        registerTaskbar: function(handler){
+            window.registerTaskbar(this.config.name, handler);
+        },
+        registerTaskbarWidget: function(name, handler){
+            window.registerTaskbarWidget(this.config.name, name, handler);
+        },
+        registerDesktopWidget: function(name, handler){
+            window.registerDesktopWidget(this.config.name, name, handler);
+        },
+        exportFunction: function(name, func){
+            window.exportedFunction.register(this.config.name + '.' + name, func);
+        },
+        readFile: function(name){
+            return redeye.file.read(this.getPath(name));
+        }
+    };
+
+    $(PLUGIN_FILES)
+})();
+</script>

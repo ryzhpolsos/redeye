@@ -1,0 +1,55 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace RedEye {
+    public class WebWrapper {
+        WebBrowser webBrowser;
+        WebForm form;
+        string htmlCode;
+        object scriptManager;
+
+        bool isEdge;
+
+        public Action OnLoad;
+
+        public void Init(WebForm _form, object _scriptManager, string _htmlCode, bool _isEdge){
+            form = _form;
+            scriptManager = _scriptManager;
+            htmlCode = _htmlCode;
+            isEdge = _isEdge;
+
+            webBrowser = new WebBrowser();
+
+            webBrowser.ScrollBarsEnabled = false;
+            webBrowser.AllowWebBrowserDrop = false;
+            webBrowser.WebBrowserShortcutsEnabled = false;
+
+            webBrowser.ObjectForScripting = scriptManager;
+            webBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(DocumentLoadHandler);
+            webBrowser.DocumentText = htmlCode;
+
+            webBrowser.Location = new Point(0, 0);
+            webBrowser.Size = new Size(form.Size.Width, form.Size.Height);
+            form.Controls.Add(webBrowser);
+        }
+
+        public void ExecuteFunction(string functionName, object[] args){
+            //Logger.Log(Logger.MessageType.Information, $"{functionName} called with {string.Join(", ", args)}");
+            webBrowser.Invoke(()=>{
+                webBrowser.Document.InvokeScript(functionName, args);
+            });
+        }
+
+        public void OpenDevTools(){
+        }
+
+        public Control GetControl(){
+            return (Control)webBrowser;
+        }
+
+        void DocumentLoadHandler(object s, EventArgs a){
+            OnLoad();
+        }
+    }
+}

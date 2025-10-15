@@ -1,0 +1,34 @@
+<style>
+    body {
+        border: none;
+        margin: 0.5em;
+    }
+
+    div > #command {
+        font-family: Consolas;
+        width: calc(100% - 1em);
+        margin-bottom: 0.5em;
+    }
+</style>
+<div><input id="command" type="text" autocomplete="off"></div>
+<button id="run">OK</button>
+<script>
+    var command = document.querySelector('#command');
+
+    function processCommand(){
+        var startInfo = new NetObject('System.Diagnostics.ProcessStartInfo');
+        startInfo.FileName = 'cmd.exe';
+        startInfo.Arguments = '/c start "" ' + command.value;
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = true;
+        new NetClass('System.Diagnostics.Process').Start(startInfo);
+
+        formObject.Close();
+    }
+
+    document.querySelector('#run').addEventListener('click', processCommand);
+
+    command.addEventListener('keyup', function(e){
+        if(e.key == 'Enter') processCommand();
+    });
+</script>

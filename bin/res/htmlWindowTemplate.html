@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="ie=$(IE_VERSION)">
+        <meta charset="utf-8">
+        <style>
+            body {
+                cursor: default;
+                user-select: none;
+                -ms-user-select: none;
+                overflow: hidden;
+                font-family: 'Segoe UI', sans-serif;
+            }
+        </style>
+        <script>
+            window.globalConfig = $(GLOBAL_CONFIG);
+        </script>
+        $(COMMON_SCRIPTS)
+        <script>
+            var eventMap = {};
+
+            function selector(q){
+                if(q == 'window') return window;
+                if(q == 'document') return document;
+                return document.querySelector(q);
+            }
+
+            window._handleEvent = function(evType, evDts){
+                var evData = JSON.parse(evDts);
+
+                if(evType == "invoke"){
+                    eval(evData.code);
+                }else if(evType == "setprop"){
+                    selector(evData.selector)[evData.name] = evData.value;
+                }else if(evType == "addevent"){
+                    if(!eventMap[evData.event]) eventMap[evData.event] = [];
+                    eventMap[evData.event].push({
+                        selector: evData.selector,
+                        element: selector(evData.selector)
+                    });
+
+                    (function(evName){
+                        document.body.addEventListener(evName, function(e){
+                            var index = findIndex(eventMap[evName], function(ee){return ee.element==e.target;});
+                            if(index != -1){
+                                var eo = {};
+                                for(var i in e) if(e[i] != window) eo[i] = e[i];
+                                rwExternal.HandleEvent(eventMap[evName][index].selector, evName, JSON.stringify(eo));
+                            }
+                        });
+                    })(evData.event);
+                }else if(evType == "delevent"){
+                    eventMap[evData.event].splice(findIndex(eventMap[evData.event], function(e){return e.selector==evData.selector;}), 1);
+                }
+            }
+        </script>
+    </head>
+    <body>
+        $(CONTENT)
+    </body>
+</html>

@@ -1,0 +1,53 @@
+{
+    "core": {
+        "debugMode": false,
+        "allowCache": false,
+        "useEdgeRuntime": true,
+        "ieVersion": "edge",
+        "edgeArguments": "--disable-web-security --autoplay-policy=no-user-gesture-required",
+        "useWmxShellHook": false,
+        "enableCustomWindows": false,
+        "loadScripts": ["debug.js", "util.js", "cmblock.js", "expfunc.js", "extobj.js", "inphook.js", "htmlwin.js", "shellbase.js", "shellwidgets.js", "api.js"],
+        "loadHTWScripts": ["debug.js", "util.js", "cmblock.js", "extobj.js", "htmlwin.js"],
+        "loadStyles": [],
+        "parseJsSyntax": []
+    },
+    "locale": {
+        "language": "ru_RU"
+    },
+    "shell": {
+        "taskbar": {
+            "handler": "core",
+            "position": "top",
+            "widgets": [
+                {
+                    "name": "core.windowList",
+                    "offset": 0,
+                    "width": "calc(100vw - 35px - 40px)"
+                },
+                {
+                    "name": "core.layout",
+                    "offset": 0,
+                    "width": "35px"
+                },
+                {
+                    "name": "core.time",
+                    "offset": 0,
+                    "width": "40px"
+                }
+            ]
+        },
+        "desktop": {
+            "background": {
+                "type": "color",
+                "value": "#071623"
+            },
+            "widgets": []
+        }
+    },
+    "keyBinds": [
+        { "keys": ["Win", "R"], "function": "core.runBox" },
+        { "keys": ["Win", "Alt", "R"], "function": "shell.reload" },
+        { "keys": ["Win", "Space"], "function": "shell.nextKeyboardLayout" }
+    ]
+}
