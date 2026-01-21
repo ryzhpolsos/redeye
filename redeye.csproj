@@ -7,18 +7,12 @@
         <Exec Command="taskkill /f /im wmx64.exe &amp; set &quot;_CONF=$(Configuration)&quot; &amp; make" WorkingDirectory="wmx" />
     </Target>
 
-    <Target Name="RunDebugger" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
-        <!-- <Exec Command="build/debug.bat &quot;$(TargetPath)&quot;" /> -->
-    </Target>
-
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <TargetFramework>netframework4.8</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
         <LangVersion>latest</LangVersion>
         <Win32Manifest>redeye.manifest</Win32Manifest>
-        <DebugType>pdbonly</DebugType>
-        <DebugSymbols>true</DebugSymbols>
         <TargetPlatform>x64</TargetPlatform>
     </PropertyGroup>
 
@@ -27,8 +21,4 @@
         <Reference Include="System.Web.Extensions.dll" />
         <Reference Include="Microsoft.JScript.dll" />
     </ItemGroup>
-
-    <!-- <ItemGroup> -->
-    <!--   <PackageReference Include="MDbg" Version="0.1.0" /> -->
-    <!-- </ItemGroup> -->
 </Project>
