@@ -1,1 +1,0 @@
-<eval action="wmx.setWorkArea(${workArea.x}, ${workArea.y}, ${workArea.width}, ${workArea.height})"/>
