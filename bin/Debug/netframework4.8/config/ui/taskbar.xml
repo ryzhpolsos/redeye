@@ -1,0 +1,32 @@
+<window
+     id="taskbar"
+     x="${taskbar.margin}"
+     y="${taskbar.margin}"
+     width="${taskbar.width}"
+     height="${taskbar.height}"
+     type="topMost"
+     border="none"
+     backgroundColor="${taskbar.background}">
+
+     <import from="config/ui/startButton.xml"/>
+
+     <windowList
+         x="${taskbar.item.size}"
+         y="0"
+         width="calc('${taskbar.width} - ${taskbar.tray.width} - ${taskbar.item.size}')"
+         height="${taskbar.height}">
+
+        <!-- Define template for window list element -->
+         <panel
+              width="${taskbar.item.size}"
+              height="${taskbar.item.size}"
+              margin="${taskbar.item.padding},${taskbar.item.padding},0,${taskbar.item.padding}"
+              padding="${taskbar.item.padding}"
+              backgroundColor="if(${window.isActive}, ${taskbar.item.backgroundActive}, ${taskbar.item.background})">
+              <image id="icon" src="${window.icon}" dock="fill" onClick="wapi.toggleWindow(${window.handle})"/>
+         </panel>
+     </windowList>
+
+     <import from="config/ui/tray.xml"/>
+</window>
+

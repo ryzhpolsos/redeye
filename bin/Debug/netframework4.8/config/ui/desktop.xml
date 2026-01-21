@@ -1,0 +1,11 @@
+<window
+     id="desktop"
+     x="0"
+     y="0"
+     width="${screen.width}"
+     height="${screen.height}"
+     type="background"
+     border="none">
+
+     <image src="res.loadImage('${desktop.wallpaper}')" dock="fill"/>
+</window>

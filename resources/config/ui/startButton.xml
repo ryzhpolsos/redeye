@@ -1,0 +1,12 @@
+<panel
+     x="0"
+     y="0"
+     width="${taskbar.item.size}"
+     height="${taskbar.height}">
+
+     <image
+         src="res.loadIcon(expand('%SYSTEMROOT%\System32\shell32.dll'), -171)"
+         sizeMode="centerImage"
+         dock="fill"
+         onClick="window.toggle(startMenu)"/>
+ </panel>

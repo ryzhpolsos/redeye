@@ -1,0 +1,10 @@
+D:\folder\cs\redeye\bin\Release\netframework4.8\redeye.exe.config
+D:\folder\cs\redeye\bin\Release\netframework4.8\redeye.exe
+D:\folder\cs\redeye\bin\Release\netframework4.8\redeye.pdb
+D:\folder\cs\redeye\obj\Release\netframework4.8\redeye.csproj.AssemblyReference.cache
+D:\folder\cs\redeye\obj\Release\netframework4.8\redeye.GeneratedMSBuildEditorConfig.editorconfig
+D:\folder\cs\redeye\obj\Release\netframework4.8\redeye.AssemblyInfoInputs.cache
+D:\folder\cs\redeye\obj\Release\netframework4.8\redeye.AssemblyInfo.cs
+D:\folder\cs\redeye\obj\Release\netframework4.8\redeye.csproj.CoreCompileInputs.cache
+D:\folder\cs\redeye\obj\Release\netframework4.8\redeye.exe
+D:\folder\cs\redeye\obj\Release\netframework4.8\redeye.pdb

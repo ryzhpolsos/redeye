@@ -1,0 +1,13 @@
+<flowPanel
+    x="calc('${taskbar.width} - ${taskbar.tray.width} - ${taskbar.item.size}')"
+    y="0"
+    width="${taskbar.tray.width}"
+    height="${taskbar.height}"
+    direction="rightToLeft"
+    updateInterval="100"
+    color="white">
+
+    <label width="50" height="${taskbar.height}" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
+    <label width="75" height="${taskbar.height}" align="middleCenter" text="dateTime('HH:mm:ss')"/>
+
+</flowPanel>
