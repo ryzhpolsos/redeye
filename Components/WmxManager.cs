@@ -28,7 +28,7 @@ namespace RedEye.Components {
         }
 
         public void SetWorkArea(int x, int y, int width, int height){
-            if(config.GetRootNode()["config"]["core"].TryGetNode("disableWmx", out _)){
+            if(config.GetRootNode()["config"]["core"].TryGetNode("disableWmx", out var dwmx) && ParseHelper.ParseBool(dwmx.Value)){
                 logger.LogDebug($"[FakeWMX] SetDesktopBounds({x}, {y}, {width}, {height})");
                 return;
             }
@@ -40,6 +40,7 @@ namespace RedEye.Components {
                     var wmx = new ProcessStartInfo();
                     wmx.FileName = Path.Combine(config.GetAppDirectory(), "wmx", "wmx64.exe");
                     wmx.Arguments = $"{x} {y} {width} {height} {((config.GetRootNode()["config"]["core"]["useWmxShellHook"].GetValue() == "true") ? 1 : 0)}";
+                    Console.WriteLine(wmx.Arguments);
                     wmx.WorkingDirectory = Path.Combine(config.GetAppDirectory(), "wmx");
 
                     try{

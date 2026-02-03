@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 using RedEye.Core;
 using RedEye.Components;
@@ -25,6 +26,8 @@ namespace RedEye {
             .AddComponent<IHotKeyManager>(new HotKeyManagerComponent())
             .AddComponent<IMediaManager>(new MediaManagerComponent())
             .AddComponent<IExpressionParser>(new ExpressionParserComponent())
+            .AddComponent<IWindowManager>(new WindowManagerComponent())
+            .AddComponent<ISpecialFolderWrapper>(new SpecialFolderWrapperComponent())
             .InitializeComponents();
 
             manager
@@ -49,6 +52,10 @@ namespace RedEye {
             // manager.GetComponent<IMediaManager>().SetBrightness(70);
             // Console.WriteLine(manager.GetComponent<IMediaManager>().GetBrightness());
             // return;
+            //
+            var list = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
+            list.First(e => e.GetName() == "Discord").GetIcon().ToBitmap().Save("meowmeow.bmp");
+            return;
 
             try{
                 manager.GetComponent<IPluginManager>().LoadPlugins();

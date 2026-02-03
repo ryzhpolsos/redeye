@@ -71,6 +71,10 @@ namespace RedEye.UI.BuiltInWidgets {
                             break;
                         }
 
+                        case ShellWindowEvent.LayoutChange: {
+                            break;
+                        }
+
                         default: {
                             var widget = widgets[windowState.Handle];
                             PrepareElementNode(widget.GetNode(), windowState);
@@ -81,7 +85,7 @@ namespace RedEye.UI.BuiltInWidgets {
                         }
                     }
                 }catch(Exception ex){
-                    logger.LogError($"WindowList Error: {ex.GetType().FullName}: {ex.Message}\n{ex.StackTrace}\n===");
+                    logger.LogError($"WindowList [{windowEvent}, {windowState.Title}] Error: {ex.GetType().FullName}: {ex.Message}\n{ex.StackTrace}\n===");
                 }
             });
         }

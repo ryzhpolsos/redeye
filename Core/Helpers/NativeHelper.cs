@@ -151,6 +151,15 @@ namespace RedEye.Core {
         [DllImport("Dxva2.dll")]
         public static extern bool SetMonitorBrightness(IntPtr hMonitor, int dwNewBrightness);
 
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hWnd, ref RECT rc);
+
+        [DllImport("user32.dll")]
+        public static extern bool IsTopLevelWindow(IntPtr hWnd);
+
+        [DllImport("shell32.dll", CharSet=CharSet.Auto)]
+        public static extern int SHGetFileInfo(string pszPath, int dwFileAttributes, ref SHFILEINFO psfi, int cbFileInfo, int uFlags);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;
@@ -182,6 +191,7 @@ namespace RedEye.Core {
         public const int WS_EX_OVERLAPPEDWINDOW = 0x300;
         public const int WS_EX_TOOLWINDOW = 0x80;
         public const int WS_MINIMIZE = 0x20000000;
+        public const int WS_CAPTION = 0x00C00000;
         public const int WM_QUIT = 0x0012;
         public const int WM_GETICON = 0x7F;
         public const int WM_INPUTLANGCHANGE = 81;
@@ -202,6 +212,7 @@ namespace RedEye.Core {
         public const int INPUTLANGCHANGE_FORWARD = 0x2;
         public const int HKL_NEXT = 1;
         public const int MONITOR_DEFAULTTOPRIMARY = 1;
+        public const int SHGFI_ICON = 0x100;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct WINDOWPOS {
@@ -216,10 +227,10 @@ namespace RedEye.Core {
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT {
-            public long left;
-            public long right;
-            public long top;
-            public long bottom;
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -305,6 +316,15 @@ namespace RedEye.Core {
             public ushort[] szPhysicalMonitorDescription;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SHFILEINFO {
+            public IntPtr hIcon;
+            public int iIcon;
+            public int dwAttributes;
+            public ushort[] szDisplayName;
+            public ushort[] szTypeName;
+        }
+
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
@@ -332,6 +352,15 @@ namespace RedEye.Core {
 
         public static void CloseWindow(IntPtr hWnd){
             SendMessage(hWnd, WM_CLOSE, 0, 0);
+        }
+
+        public static SHFILEINFO GetFileInfo(string path, int flags){
+            SHFILEINFO shfi = new();
+            shfi.szDisplayName = new ushort[260];
+            shfi.szTypeName = new ushort[80];
+
+            SHGetFileInfo(path, 0, ref shfi, Marshal.SizeOf(shfi), flags);
+            return shfi;
         }
     }
 }

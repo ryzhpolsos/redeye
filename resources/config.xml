@@ -1,113 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <core>
-        <useWmxShellHook>false</useWmxShellHook>
-    </core>
+    <!-- Import the core config -->
+    <import from="config/core.xml"/>
+
     <layout>
         <!-- Define variables used to configure the desktop -->
         <variables>
-            <set name="taskbar.margin" value="20"/>
+            <!-- Taskbar item settings -->
             <set name="taskbar.item.size" value="50" />
-            <set name="taskbar.background" value="#13293d"/>
             <set name="taskbar.item.padding" value="5"/>
             <set name="taskbar.item.background" value="#2a628f"/>
             <set name="taskbar.item.backgroundActive" value="#3e92cc"/>
+
+            <!-- Taskbar settings -->
+            <set name="taskbar.margin" value="20"/>
+            <set name="taskbar.background" value="#13293d"/>
             <set name="taskbar.width" value="calc('${screen.width} - ${taskbar.margin} * 2')"/>
             <set name="taskbar.height" value="calc('${taskbar.item.size} + ${taskbar.item.padding} * 2')"/>
+
+            <!-- Tray settings -->
             <set name="taskbar.tray.width" value="200"/>
- 
+
+            <!-- Work area settings -->
+            <set name="workArea.x" value="0"/>
+            <set name="workArea.y" value="calc('${taskbar.height} + ${taskbar.margin} * 2')"/>
+            <set name="workArea.width" value="${screen.width}"/>
+            <set name="workArea.height" value="calc('${screen.height} - ${taskbar.height} - ${taskbar.margin} * 2')"/>
+
+            <!-- Desktop settings -->
             <set name="desktop.wallpaper" value="expand('%SYSTEMROOT%\Web\Wallpaper\Windows\img0.jpg')"/>
 
+            <!-- Start menu settings -->
             <set name="startMenu.width" value="400"/>
             <set name="startMenu.height" value="600"/>
         </variables>
 
-        <!-- Set work area -->
-        <eval action="wmx.setWorkArea(0, calc('${taskbar.height} + ${taskbar.margin} * 2'), ${screen.width}, calc('${screen.height} - ${taskbar.height} - ${taskbar.margin} * 2'))"/>
+        <!-- Set the work area -->
+        <import from="config/workArea.xml"/>
 
-        <!-- Define the start menu window  -->
-        <window
-            id="startMenu"
-            x="${taskbar.margin}"
-            y="calc('${taskbar.margin} + ${taskbar.height}')"
-            width="${startMenu.width}"
-            height="${startMenu.height}"
-            type="topMost"
-            border="none"
-            backgroundColor="${taskbar.background}"
-            autoShow="false">
-
-            <label autoSize="true" x="0" y="0" text="Nya!"/>
-        </window>
-
-        <!-- Define the desktop window -->
-        <window
-            id="desktop"
-            x="0"
-            y="0"
-            width="${screen.width}"
-            height="${screen.height}"
-            type="background"
-            border="none">
-
-            <image src="res.loadImage('${desktop.wallpaper}')" dock="fill"/>
-        </window>
-
-        <!-- Define the taskbar window -->
-        <window
-            id="taskbar"
-            x="${taskbar.margin}"
-            y="${taskbar.margin}"
-            width="${taskbar.width}"
-            height="${taskbar.height}"
-            type="topMost"
-            border="none"
-            backgroundColor="${taskbar.background}">
-
-            <panel
-                x="0"
-                y="0"
-                width="${taskbar.item.size}"
-                height="${taskbar.height}">
-
-                <image
-                    src="res.loadIcon(expand('%SYSTEMROOT%\System32\shell32.dll'), -171)"
-                    sizeMode="centerImage"
-                    dock="fill"
-                    onClick="window.toggle(startMenu)"/>
-            </panel>
-
-            <windowList
-                x="${taskbar.item.size}"
-                y="0"
-                width="calc('${taskbar.width} - ${taskbar.tray.width} - ${taskbar.item.size}')"
-                height="${taskbar.height}">
-
-                <!-- Define template for window list element -->
-                <panel
-                     width="${taskbar.item.size}"
-                     height="${taskbar.item.size}"
-                     margin="${taskbar.item.padding},${taskbar.item.padding},0,${taskbar.item.padding}"
-                     padding="${taskbar.item.padding}"
-                     backgroundColor="if(${window.isActive}, ${taskbar.item.backgroundActive}, ${taskbar.item.background})">
-                     <image id="icon" src="${window.icon}" dock="fill" onClick="wapi.toggleWindow(${window.handle})"/>
-                </panel>
-            </windowList>
-
-            <flowPanel
-                x="calc('${taskbar.width} - ${taskbar.tray.width} - ${taskbar.item.size}')"
-                y="0"
-                width="${taskbar.tray.width}"
-                height="${taskbar.height}"
-                direction="rightToLeft"
-                updateInterval="100"
-                color="white"
-                font="Comic Sans MS,8">
-                
-                <label width="50" height="${taskbar.height}" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
-                <label width="75" height="${taskbar.height}" align="middleCenter" text="dateTime('HH:mm:ss')"/>
-            </flowPanel>
-        </window>
+        <!-- Create desktop components -->
+        <import from="config/ui/desktop.xml"/>
+        <import from="config/ui/startMenu.xml"/>
+        <import from="config/ui/taskbar.xml"/>
     </layout>
     <hotkeys>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>

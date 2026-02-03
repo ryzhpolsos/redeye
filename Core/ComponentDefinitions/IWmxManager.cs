@@ -14,6 +14,7 @@ namespace RedEye.Core {
     }
 
     public enum WmxResponse {
-        Lang
+        Lang,
+        WrapperRequest
     }
 }

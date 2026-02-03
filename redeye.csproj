@@ -3,12 +3,13 @@
         <Exec Command="xcopy /e /y &quot;$(ProjectDir)resources\*&quot; &quot;$(TargetDir)&quot;"/>
     </Target>
 
-    <Target Name="BuildExternal" AfterTargets="Build" Condition="'$(Wmx)' != ''">
+    <!-- Condition="'$(Wmx)' != ''" -->
+    <Target Name="BuildExternal" AfterTargets="Build"> 
         <Exec Command="taskkill /f /im wmx64.exe &amp; set &quot;_CONF=$(Configuration)&quot; &amp; make" WorkingDirectory="wmx" />
     </Target>
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetFramework>netframework4.8</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
         <LangVersion>latest</LangVersion>
@@ -17,6 +18,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Reference Include="Microsoft.CSharp.dll" />
         <Reference Include="System.Management.dll" />
         <Reference Include="System.Web.Extensions.dll" />
         <Reference Include="Microsoft.JScript.dll" />

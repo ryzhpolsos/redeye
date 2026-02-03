@@ -16,7 +16,9 @@ namespace RedEye.Components {
         IConfig config = null;
         ILogger logger = null;
         IWmxManager wmxManager = null;
+        IWindowManager windowManager = null;
 
+        Dictionary<IntPtr, IntPtr> windowWrappers = new();
         Dictionary<IntPtr, ShellWindowState> activeWindows = new();
         List<IntPtr> ignoreHandles = new();
         List<Action<ShellWindowEvent, ShellWindowState>> eventHandlers = new();
@@ -33,6 +35,7 @@ namespace RedEye.Components {
             config = manager.GetComponent<IConfig>();
             logger = manager.GetComponent<ILogger>();
             wmxManager = manager.GetComponent<IWmxManager>();
+            windowManager = manager.GetComponent<IWindowManager>();
 
             SetDefaultIcon("imageres.dll", 2);
         }
@@ -72,6 +75,10 @@ namespace RedEye.Components {
         }
 
         void ProcessEvent(ShellWindowEvent et, ShellWindowState wnd){
+            if(windowWrappers.ContainsKey(wnd.Handle)){
+                windowManager.ProcessWrapperEvent(et, wnd);
+            }
+
             foreach(var handler in eventHandlers){
                 handler.Invoke(et, wnd);
             }
@@ -235,6 +242,12 @@ namespace RedEye.Components {
                         SendLayoutChange((int)lParam);
                         break;
                     }
+
+                    case WmxResponse.WrapperRequest: {
+                        var hWrapper = windowManager.CreateWindowWrapper(lParam);
+                        windowWrappers.Add(lParam, hWrapper);
+                        return (int)hWrapper;
+                    }
                 }
             }else{
                 return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -304,12 +317,18 @@ namespace RedEye.Components {
         }
 
         bool IsWindowTopLevel(IntPtr hWnd){
-            if(hWnd == GetAncestor(hWnd, GA_ROOT)){
-                long style = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
-                return (style & WS_EX_OVERLAPPEDWINDOW) != 0;
-            }else{
-                return false;
+            if(!IsTopLevelWindow(hWnd)) return false;
+
+            var className = GetWindowClass(hWnd);
+
+            if(className[0] == '#'){
+                return className == "#32770";
             }
+
+            long style = GetWindowLongPtr(hWnd, GWL_STYLE);
+            long exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+
+            return (style & WS_CAPTION) != 0 && (exStyle & WS_EX_OVERLAPPEDWINDOW) != 0;
         }
 
         bool IsWindowNonShell(IntPtr hWnd){
