@@ -4,7 +4,7 @@
     </Target>
 
     <!-- Condition="'$(Wmx)' != ''" -->
-    <Target Name="BuildExternal" AfterTargets="Build"> 
+    <Target Name="BuildExternal" AfterTargets="Build" Condition="'$(Wmx)' != ''"> 
         <Exec Command="taskkill /f /im wmx64.exe &amp; set &quot;_CONF=$(Configuration)&quot; &amp; make" WorkingDirectory="wmx" />
     </Target>
 

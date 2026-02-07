@@ -53,9 +53,9 @@ namespace RedEye {
             // Console.WriteLine(manager.GetComponent<IMediaManager>().GetBrightness());
             // return;
             //
-            var list = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
-            list.First(e => e.GetName() == "Discord").GetIcon().ToBitmap().Save("meowmeow.bmp");
-            return;
+            // var list = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
+            // list.First(e => e.GetName() == "Discord").GetIcon().ToBitmap().Save("meowmeow.bmp");
+            // return;
 
             try{
                 manager.GetComponent<IPluginManager>().LoadPlugins();
