@@ -9,10 +9,9 @@
     font="${taskbar.tray.font}"
     >
     <variables>
-        <set name="taskbar.tray.item.count" value="3"/>
+        <set name="taskbar.tray.item.count" value="2"/>
     </variables>
 
     <label width="calc('${taskbar.tray.width} / ${taskbar.tray.item.count}')" height="${taskbar.height}" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
     <label width="calc('${taskbar.tray.width} / ${taskbar.tray.item.count}')" height="${taskbar.height}" align="middleCenter" text="dateTime('HH:mm:ss')"/>
-
 </flowPanel>

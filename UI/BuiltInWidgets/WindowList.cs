@@ -54,7 +54,7 @@ namespace RedEye.UI.BuiltInWidgets {
                             var node = elementTemplate.Clone();
                             node.SetParentNode(Node);
                             PrepareElementNode(node, windowState);
-                            var widget = layoutLoader.CreateWidgetFromNode(node, null, false);
+                            var widget = layoutLoader.CreateWidgetFromNode(node, Window, false);
                             widget.UpdateConfig();
 
                             if(widget.GetControl() is not null) flowLayoutPanel.Controls.Add(widget.GetControl());

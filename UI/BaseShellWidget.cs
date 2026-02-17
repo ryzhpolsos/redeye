@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.Threading;
-using System.Reflection;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -18,6 +17,7 @@ namespace RedEye.UI {
         protected IShellWindow Window = null;
         protected IContainerWidget Container = null;
         protected ComponentManager ComponentManager = null;
+        protected System.Windows.Forms.ToolTip toolTip = null;
 
         List<string> processedEvents = new();
 
@@ -130,6 +130,7 @@ namespace RedEye.UI {
             Config.Margin = Node.GetAttribute("margin");
             Config.UpdateInterval = ParseHelper.ParseInt(Node.GetAttribute("updateInterval"));
             Config.Font = Node.GetAttribute("font");
+            Config.ToolTip = Node.GetAttribute("toolTip");
         }
 
         public IContainerWidget GetContainer(){

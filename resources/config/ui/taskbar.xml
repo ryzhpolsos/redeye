@@ -24,7 +24,7 @@
               padding="${taskbar.item.padding}"
               backgroundColor="if(${window.isActive}, ${taskbar.item.backgroundActive}, ${taskbar.item.background})">
               <image id="icon" src="${window.icon}" dock="fill" onClick="wapi.toggleWindow(${window.handle})"/>
-         </panel>
+          </panel>
      </windowList>
 
      <import from="config/ui/tray.xml"/>

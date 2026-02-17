@@ -20,5 +20,6 @@ namespace RedEye.UI {
         public string Margin = string.Empty;
         public string Font = string.Empty;
         public int UpdateInterval = 0;
+        public string ToolTip = string.Empty;
     }
 }

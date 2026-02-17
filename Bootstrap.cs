@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 using RedEye.Core;
 using RedEye.Components;
@@ -44,6 +43,7 @@ namespace RedEye {
             .ExportWidget("windowList", typeof(WindowList))
             .ExportWidget("appList", typeof(AppList))
             .ExportWidget("contextMenu", typeof(ContextMenu));
+
 
             // var node = new ConfigNode(manager, "meow");
             // node.SetVariable("nya", "uwu");
