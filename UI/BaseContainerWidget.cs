@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
@@ -25,7 +26,12 @@ namespace RedEye.UI {
             widgetParams.Add(widget.GetConfig().Id, GetDefaultWidgetParams(widget));
             widget.SetContainer(this);
             if(widget.GetControl() is not null) Control.Controls.Add(widget.GetControl());
+
+            foreach(var attr in Node.GetAttributes().Where(a => a.StartsWith("on"))){
+                widget.GetNode().SetAttribute(attr, Node.GetRawAttribute(attr));
+            }
         }
+
 
         public void AddWidget(IShellWidget widget, bool _ = true){
             ThreadSafeInvoke(()=>{

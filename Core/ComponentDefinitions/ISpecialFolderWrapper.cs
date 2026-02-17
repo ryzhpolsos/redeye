@@ -7,8 +7,11 @@ namespace RedEye.Core {
     }
 
     public interface IApplicationListEntry {
+        public IEnumerable<IApplicationListEntry> GetChildEntries();
+        public bool GetIsFolder();
         public string GetName();
         public Icon GetIcon();
         public void Invoke();
+        public string GetCommand();
     }
 }

@@ -42,6 +42,13 @@ namespace RedEye.Components {
 
             var window = windowManager.CreateWindow(config);
 
+            foreach(var attr in node.GetAttributes()){
+                if(!attr.StartsWith("on")) continue;
+                window.RegisterEventHandler(attr.Substring(2), () => {
+                    node.GetAttribute(attr);     
+                });
+            }
+
             foreach(var widgetNode in node.GetNodes()){
                 CreateWidgetFromNode(widgetNode, window);
             }

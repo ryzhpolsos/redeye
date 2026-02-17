@@ -20,6 +20,8 @@
 
             <!-- Tray settings -->
             <set name="taskbar.tray.width" value="200"/>
+            <set name="taskbar.tray.font" value="Segoe UI,9"/>
+            <set name="taskbar.tray.fontColor" value="white"/>
 
             <!-- Work area settings -->
             <set name="workArea.x" value="0"/>
@@ -33,6 +35,9 @@
             <!-- Start menu settings -->
             <set name="startMenu.width" value="400"/>
             <set name="startMenu.height" value="600"/>
+            <set name="startMenu.item.size" value="50"/>
+            <set name="startMenu.item.font" value="Segoe UI,10"/>
+            <set name="startMenu.item.fontColor" value="white"/>
         </variables>
 
         <!-- Set the work area -->
@@ -44,6 +49,10 @@
         <import from="config/ui/taskbar.xml"/>
     </layout>
     <hotkeys>
+        <hotkey keys="Win+F1" action="media.decreaseVolume()"/>
+        <hotkey keys="Win+F2" action="media.increaseVolume()"/>
+        <hotkey keys="Win+F3" action="media.decreaseBrightness()"/>
+        <hotkey keys="Win+F4" action="media.increaseBrightness()"/>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>
     </hotkeys>
 </config>

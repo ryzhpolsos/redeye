@@ -1,13 +1,18 @@
 <flowPanel
-    x="calc('${taskbar.width} - ${taskbar.tray.width} - ${taskbar.item.size}')"
+    x="calc('${taskbar.width} - ${taskbar.tray.width}')"
     y="0"
     width="${taskbar.tray.width}"
     height="${taskbar.height}"
     direction="rightToLeft"
     updateInterval="100"
-    color="white">
+    color="${taskbar.tray.fontColor}"
+    font="${taskbar.tray.font}"
+    >
+    <variables>
+        <set name="taskbar.tray.item.count" value="3"/>
+    </variables>
 
-    <label width="50" height="${taskbar.height}" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
-    <label width="75" height="${taskbar.height}" align="middleCenter" text="dateTime('HH:mm:ss')"/>
+    <label width="calc('${taskbar.tray.width} / ${taskbar.tray.item.count}')" height="${taskbar.height}" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
+    <label width="calc('${taskbar.tray.width} / ${taskbar.tray.item.count}')" height="${taskbar.height}" align="middleCenter" text="dateTime('HH:mm:ss')"/>
 
 </flowPanel>

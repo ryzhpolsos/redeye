@@ -7,6 +7,15 @@
      type="topMost"
      border="none"
      backgroundColor="${taskbar.background}"
-     autoShow="false">
+     autoShow="false"
+     onDeactivate="window.hide(startMenu)"
+     >
 
+    <appList dock="fill">
+        <panel dock="fill" height="${startMenu.item.size}" font="${startMenu.item.font}" color="${startMenu.item.fontColor}" onClick="shellExecute(${app.command})">
+            <image src="${app.icon}" x="0" y="0" width="${startMenu.item.size}" height="${startMenu.item.size}"/>
+            <label text="${app.name}" x="${startMenu.item.size}" y="0" width="calc('${startMenu.width} - ${startMenu.item.size}')" height="${startMenu.item.size}" align="middleLeft"/>
+        </panel>
+    </appList>
+   
 </window>

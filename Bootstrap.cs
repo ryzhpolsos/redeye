@@ -42,6 +42,7 @@ namespace RedEye {
             .ExportWidget("label", typeof(Label))
             .ExportWidget("image", typeof(Image))
             .ExportWidget("windowList", typeof(WindowList))
+            .ExportWidget("appList", typeof(AppList))
             .ExportWidget("contextMenu", typeof(ContextMenu));
 
             // var node = new ConfigNode(manager, "meow");
@@ -49,13 +50,31 @@ namespace RedEye {
             // Console.WriteLine(manager.GetComponent<IExpressionParser>().EvaluateExpression("showMessage(concat(${nya}, ' and meow', 'and something else'))", node));
             // Console.ReadLine();
             // return;
-            // manager.GetComponent<IMediaManager>().SetBrightness(70);
-            // Console.WriteLine(manager.GetComponent<IMediaManager>().GetBrightness());
+            // manager.GetComponent<IMediaManager>().DecreaseVolume();
+            // // Console.WriteLine(manager.GetComponent<IMediaManager>().GetBrightness());
+            // Console.WriteLine(manager.GetComponent<IMediaManager>().GetVolume());
             // return;
-            //
+            // //
             // var list = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
             // list.First(e => e.GetName() == "Discord").GetIcon().ToBitmap().Save("meowmeow.bmp");
             // return;
+            
+            // var appList = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
+
+            // void nya(IApplicationListEntry entry, int tab = 0){
+            //     if(entry.GetIsFolder()){
+            //         Console.WriteLine(new string(' ', tab * 4) + entry.GetName() + " -->");
+            //         foreach(var sub in entry.GetChildEntries()){
+            //             nya(sub, tab + 1);
+            //         }
+            //     }else{
+            //         Console.WriteLine(new string(' ', tab * 4) + entry.GetName());
+            //     }
+            // }
+
+            // foreach(var a in appList) nya(a);
+            // return;
+
 
             try{
                 manager.GetComponent<IPluginManager>().LoadPlugins();

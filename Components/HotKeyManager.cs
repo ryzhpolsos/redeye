@@ -41,6 +41,8 @@ namespace RedEye.Components {
             { ",", new(){ "Oemcomma" } }
         };
 
+        int lastLength = 0;
+
         public void SetManager(ComponentManager manager){
             this.manager = manager;
         }
@@ -50,6 +52,14 @@ namespace RedEye.Components {
             var kbHook = SetWindowsHookEx(WH_KEYBOARD_LL, kbProc, IntPtr.Zero, 0);
         }
 
+        public void RegisterKeyHandler(Func<string, bool, bool> handler){
+            keyHandlers.Add(handler);
+        }
+
+        public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler){
+            hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler });
+        }
+
         int KbHandler(int nCode, int wParam, IntPtr lParam){
             if(lParam != IntPtr.Zero){
                 var kbDll = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
@@ -57,26 +67,9 @@ namespace RedEye.Components {
                 var keyName = ((Keys)kbDll.vkCode).ToString();
                 bool isUp = wParam == WM_KEYUP || wParam == WM_SYSKEYUP;
 
-                // Console.WriteLine(keyName);
-
                 foreach(var handler in keyHandlers){
                     if(!handler.Invoke(keyName, isUp)) return 0;
                 }
-
-                // List<List<string>> keyLists = new();
-                // keyLists.Add(keys);
-
-                // for(int i = 0; i < keys.Count; i++){
-                //     if(keyMap.ContainsKey(keys[i])){
-                //         foreach(var mappedKey in keyMap[keys[i]]){
-                //             List<string> newKeys = new();
-                //             newKeys.AddRange(keys);
-                //             newKeys[i] = mappedKey;
-                //             newKeys.Sort();
-                //             keyLists.Add(newKeys);
-                //         }
-                //     }
-                // }
 
                 bool found = false;
 
@@ -98,17 +91,20 @@ namespace RedEye.Components {
                         }
                     }
 
-                    foreach(var keyList in keyLists){
-                        if(keyList.SequenceEqual(keys)){
-                            found = true;
+                    if(isUp){
+                        foreach(var keyList in keyLists){
+                            if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
+                                found = true;
+                                lastLength = keyList.Count();
 
-                            if(!handler.Handler.Invoke()){
-                                break;
+                                if(!handler.Handler.Invoke()){
+                                    break;
+                                }
                             }
                         }
                     }
 
-                    if(found && keys.Any()) keys.Clear();
+                    if(found) break;
                 }
 
                 if(isUp){
@@ -117,19 +113,13 @@ namespace RedEye.Components {
                     keys.Add(keyName);
                 }
 
-                if(keys.Any()) keys.Sort();
+                if(keys.Any()){
+                    keys = keys.Distinct().ToList();
+                    keys.Sort();
+                }
             }
 
             return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
-        }
-
-        public void RegisterKeyHandler(Func<string, bool, bool> handler){
-            keyHandlers.Add(handler);
-        }
-
-        public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler){
-            Console.WriteLine("Registering!");
-            hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler });
         }
     }
 }

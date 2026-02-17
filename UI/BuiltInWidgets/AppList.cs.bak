@@ -1,0 +1,54 @@
+// using System.Drawing;
+// using System.Windows.Forms;
+
+// using RedEye.Core;
+
+// namespace RedEye.UI.BuiltInWidgets {
+//     public class AppList : BaseShellWidget {
+//         TableLayoutPanel tableLayoutPanel = new();
+//         ISpecialFolderWrapper folderWrapper;
+
+//         public override void Initialize(){
+//             base.Initialize();
+
+//             Control = tableLayoutPanel;
+//             folderWrapper = ComponentManager.GetComponent<ISpecialFolderWrapper>();
+
+//             tableLayoutPanel.SuspendLayout();
+//             tableLayoutPanel.AutoScroll = true;
+//             tableLayoutPanel.ColumnCount = 2;
+
+//             int i = 0;
+//             foreach(var app in folderWrapper.GetApplicationList()){
+//                 PictureBox appIcon = new();
+//                 // appIcon.Dock = DockStyle.Fill;
+//                 appIcon.SizeMode = PictureBoxSizeMode.AutoSize;
+//                 appIcon.Image = app.GetIcon().ToBitmap();
+
+//                 System.Windows.Forms.Label title = new();
+//                 title.Dock = DockStyle.Fill;
+//                 title.TextAlign = ContentAlignment.MiddleLeft;
+//                 title.Text = app.GetName();
+
+//                 tableLayoutPanel.SetCellPosition(appIcon, new(0, i));
+//                 tableLayoutPanel.SetCellPosition(title, new(1, i));
+//                 tableLayoutPanel.Controls.AddRange(new Control[]{ appIcon, title });
+
+//                 foreach(var control in new Control[]{ appIcon, title }){
+//                     control.Click += (_, _) => {
+//                         app.Invoke();
+//                     };
+//                 }
+
+//                 i++;
+//             }
+
+//             tableLayoutPanel.ResumeLayout();
+//         }
+
+//         protected override void UpdateControlInternal(){
+//             // base.UpdateControlInternal();
+//             base.UpdateControlInternal();
+//         }
+//     }
+// }

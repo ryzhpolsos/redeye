@@ -1,3 +1,5 @@
+using System;
+
 using RedEye.UI;
 
 namespace RedEye.Core {
@@ -45,5 +47,6 @@ namespace RedEye.Core {
         public void SetTitle(string newTitle);
         public ShellWindowConfig GetConfig();
         public void SetConfig(ShellWindowConfig newConfig);
+        public void RegisterEventHandler(string name, Action eventHandler);
     }
 }

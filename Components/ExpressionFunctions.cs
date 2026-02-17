@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Drawing;
+using System.Diagnostics;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 
@@ -71,6 +72,14 @@ namespace RedEye.Components {
                 return Environment.ExpandEnvironmentVariables(args.ElementAt(0).ToString());
             });
 
+            pluginManager.ExportFunction("shellExecute", args => {
+                ProcessStartInfo psi = new();
+                psi.FileName = args.ElementAt(0).ToString();
+                psi.UseShellExecute = true;
+                Process.Start(psi);
+                return string.Empty;
+            });
+
             pluginManager.ExportFunction("wmx.setWorkArea", args => {
                 wmxManager.SetWorkArea(ParseHelper.ParseInt(args.ElementAt(0).ToString()), ParseHelper.ParseInt(args.ElementAt(1).ToString()), ParseHelper.ParseInt(args.ElementAt(2).ToString()), ParseHelper.ParseInt(args.ElementAt(3).ToString()));
                 return string.Empty;
@@ -125,6 +134,17 @@ namespace RedEye.Components {
                 return string.Empty;
             });
 
+            pluginManager.ExportFunction("media.increaseBrightness", args => {
+                mediaManager.IncreaseBrightness(args.Count() > 0 ? ParseHelper.ParseInt(args.ElementAt(0).ToString()) : 10);
+                return string.Empty;     
+            });
+            
+            pluginManager.ExportFunction("media.decreaseBrightness", args => {
+                mediaManager.DecreaseBrightness(args.Count() > 0 ? ParseHelper.ParseInt(args.ElementAt(0).ToString()) : 10);
+                Console.WriteLine(mediaManager.GetBrightness());
+                return string.Empty;     
+            });
+
             pluginManager.ExportFunction("media.getVolume", args => {
                 return mediaManager.GetVolume().ToString();        
             });
@@ -132,6 +152,16 @@ namespace RedEye.Components {
             pluginManager.ExportFunction("media.setVolume", args => {
                 mediaManager.SetVolume(ParseHelper.ParseInt(args.ElementAt(0).ToString()));
                 return string.Empty;
+            });
+
+            pluginManager.ExportFunction("media.increaseVolume", args => {
+                mediaManager.IncreaseVolume(args.Count() > 0 ? ParseHelper.ParseInt(args.ElementAt(0).ToString()) : 10);
+                return string.Empty;
+            });
+
+            pluginManager.ExportFunction("media.decreaseVolume", args => {
+                mediaManager.DecreaseVolume(args.Count() > 0 ? ParseHelper.ParseInt(args.ElementAt(0).ToString()) : 10);
+                return string.Empty;     
             });
 
             pluginManager.ExportFunction("media.getBatteryLevel", args => {

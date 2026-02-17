@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Threading;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -36,7 +37,12 @@ namespace RedEye.UI {
             }
         }
 
-        public virtual void PostInitialize(){}
+        public virtual void PostInitialize(){
+            var controlType = Control.GetType();
+            // controlType.GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Control, true, null);
+            // controlType.GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Control, new object[]{ ControlStyles.OptimizedDoubleBuffer |  ControlStyles.AllPaintingInWmPaint, true });
+            // controlType.GetMethod("UpdateStyles", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Control, new object[0]);
+        }
 
         public ConfigNode GetNode(){
             return Node;
@@ -148,7 +154,7 @@ namespace RedEye.UI {
             }
         }
 
-        protected void RegisterEventHandlerInternal(string name, Action<ShellWidgetEvent> handler){
+        protected virtual void RegisterEventHandlerInternal(string name, Action<ShellWidgetEvent> handler){
             if(!EventMap.ContainsKey(name)){
                 EventMap.Add(name, new());
                 Control.GetType().GetMethod("add_" + name).Invoke(Control, new object[]{ new EventHandler((sender, args) => {

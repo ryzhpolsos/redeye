@@ -160,6 +160,9 @@ namespace RedEye.Core {
         [DllImport("shell32.dll", CharSet=CharSet.Auto)]
         public static extern int SHGetFileInfo(string pszPath, int dwFileAttributes, ref SHFILEINFO psfi, int cbFileInfo, int uFlags);
 
+        [DllImport("shell32.dll", CharSet=CharSet.Auto)]
+        public static extern int ExtractIconEx(string lpszFile, int nIconIndex, IntPtr phiconLarge, IntPtr phiconSmall, int nIcons);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;
@@ -321,7 +324,11 @@ namespace RedEye.Core {
             public IntPtr hIcon;
             public int iIcon;
             public int dwAttributes;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
             public ushort[] szDisplayName;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 80)]
             public ushort[] szTypeName;
         }
 
@@ -361,6 +368,23 @@ namespace RedEye.Core {
 
             SHGetFileInfo(path, 0, ref shfi, Marshal.SizeOf(shfi), flags);
             return shfi;
+        }
+
+        public static IntPtr GetIconFromLocation(string loc){
+            var commaPos = loc.LastIndexOf(',');
+            var path = loc.Substring(0, commaPos);
+            var index = ParseHelper.ParseInt(loc.Substring(commaPos + 1));
+
+            // Console.WriteLine($"{path}, {index}");
+
+            var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(IntPtr)));
+            ExtractIconEx(path, index, ptr, IntPtr.Zero, 1);
+
+            var hIcon = Marshal.ReadIntPtr(ptr, 0) + 0;
+            Marshal.FreeHGlobal(ptr);
+
+            // Console.WriteLine(hIcon);
+            return hIcon;
         }
     }
 }

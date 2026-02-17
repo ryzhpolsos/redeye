@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
+	<name>sasug</name>
+	<SSIDConfig>
+		<SSID>
+			<hex>7361737567</hex>
+			<name>sasug</name>
+		</SSID>
+	</SSIDConfig>
+	<connectionType>ESS</connectionType>
+	<connectionMode>auto</connectionMode>
+	<MSM>
+		<security>
+			<authEncryption>
+				<authentication>WPA2PSK</authentication>
+				<encryption>AES</encryption>
+				<useOneX>false</useOneX>
+			</authEncryption>
+			<sharedKey>
+				<keyType>passPhrase</keyType>
+				<protected>true</protected>
+				<keyMaterial>01000000D08C9DDF0115D1118C7A00C04FC297EB01000000309C30539C222E4D8B7677D3F48C6B520000000002000000000010660000000100002000000056A692E0147F8875389D2063A59CE91E39964990A5DF1F3007F750470517806B000000000E800000000200002000000037508C4A4AF65DBFA9E2CDC2928A99C332579FB54908AB831FBDBC454229670C10000000BE3F333E8E1DA124D4DCA0630CEC499B40000000075AD1BE7556F601A6C76377374A03254551BB9D6B1D7815CFD989EE6898D88962034A9558A8AEBDAE5B4D316DCA567619E6471752A332C91796227FA74A92B0</keyMaterial>
+			</sharedKey>
+		</security>
+	</MSM>
+	<MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">
+		<enableRandomization>false</enableRandomization>
+		<randomizationSeed>2605392897</randomizationSeed>
+	</MacRandomization>
+</WLANProfile>

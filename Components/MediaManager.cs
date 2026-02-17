@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Management;
+using System.Threading;
 using System.Runtime.InteropServices;
 
 using RedEye.Core;
@@ -18,26 +19,38 @@ namespace RedEye.Components {
 
         public int GetBrightness(){
             using(ManagementObjectSearcher searcher = new(@"Root\wmi", "SELECT CurrentBrightness FROM WmiMonitorBrightness")){
-                using(var results = searcher.Get()){
-                    foreach(var result in results){
-                        return ParseHelper.ParseInt(result["CurrentBrightness"].ToString());
-                    }
-                }
-            }
+                int res = -1;
 
-            return -1;
+                Thread thread = new(() => {
+                    using(ManagementObjectCollection results = searcher.Get()){
+                        foreach(var result in results){
+                            res = ParseHelper.ParseInt(result["CurrentBrightness"].ToString());
+                            return;
+                        }
+                    }  
+                });
+
+                thread.Start();
+                thread.Join();
+                return res;
+            }
         }
 
         public void SetBrightness(int level){
             using(ManagementObjectSearcher searcher = new(new ManagementScope(@"Root\wmi"), new SelectQuery("WmiMonitorBrightnessMethods"))){
-                using(var results = searcher.Get()){
-                    foreach(var result in results){
-                        ((ManagementObject)result).InvokeMethod("WmiSetBrightness", new object[]{ 0, (byte)level });
-                        return;
-                    }
+                Thread thread = new(() => {
+                    using(ManagementObjectCollection results = searcher.Get()){
+                        foreach(var result in results){
+                            ((ManagementObject)result).InvokeMethod("WmiSetBrightness", new object[]{ 0, (byte)level });
+                            return;
+                        }
 
-                    throw new Exception("Failed to set monitor brightness");
-                }
+                        throw new Exception("Failed to set monitor brightness");
+                    }
+                });
+
+                thread.Start();
+                thread.Join();
             }
         }
 
@@ -57,16 +70,31 @@ namespace RedEye.Components {
             SetBrightness(GetBrightness() - amount);
         }
 
+        public void IncreaseVolume(int amount = 10){
+            SetVolume(GetVolume() + amount);
+        }
+
+        public void DecreaseVolume(int amount = 10){
+            SetVolume(GetVolume() - amount);
+        }
+
         public int GetBatteryLevel(){
             using(ManagementObjectSearcher searcher = new("SELECT EstimatedChargeRemaining FROM Win32_Battery")){
-                using(var results = searcher.Get()){
-                    foreach(var result in results){
-                        return ParseHelper.ParseInt(result["EstimatedChargeRemaining"].ToString());
-                    }
-                }
-            }
+                var res = -1;
 
-            return -1;
+                Thread thread = new(() => {
+                    using(var results = searcher.Get()){
+                        foreach(var result in results){
+                            res = ParseHelper.ParseInt(result["EstimatedChargeRemaining"].ToString());
+                            return;
+                        }
+                    }
+                });
+
+                thread.Start();
+                thread.Join();
+                return res;
+            }
         }
     }
 

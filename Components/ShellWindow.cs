@@ -45,6 +45,8 @@ namespace RedEye.Components {
                 }
             }
 
+            form.AutoScaleMode = AutoScaleMode.None;
+
             if(config.BorderType != ShellWindowBorderType.Normal){
                 form.FormBorderStyle = ParseHelper.ParseEnum<FormBorderStyle>(config.BorderType.ToString(), FormBorderStyle.Sizable);
             }
@@ -122,6 +124,17 @@ namespace RedEye.Components {
             if(form.Controls.Contains(widget.GetControl())) form.Controls.Remove(widget.GetControl());
             widgets.Remove(widget.GetConfig().Id);
             widget.SetWindow(null);
+        }
+
+        public void RegisterEventHandler(string name, Action eventHandler){
+             if(form.GetType().GetEvent(name) is var @event){
+                DelegateWrapper<object, EventArgs> delegateWrapper = new((data, args) => {
+                    eventHandler.Invoke();
+                });
+
+                @event.GetAddMethod().Invoke(form, new object[]{ delegateWrapper.GetDelegate(@event.EventHandlerType) });
+            } 
+
         }
     }
 
