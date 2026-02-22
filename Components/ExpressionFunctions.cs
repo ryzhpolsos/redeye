@@ -141,7 +141,6 @@ namespace RedEye.Components {
             
             pluginManager.ExportFunction("media.decreaseBrightness", args => {
                 mediaManager.DecreaseBrightness(args.Count() > 0 ? ParseHelper.ParseInt(args.ElementAt(0).ToString()) : 10);
-                Console.WriteLine(mediaManager.GetBrightness());
                 return string.Empty;     
             });
 

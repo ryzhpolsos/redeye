@@ -111,11 +111,11 @@ namespace RedEye.Components {
         }
 
         public IShellWidget GetWidget(string id){
+            Console.WriteLine(string.Join(",", widgets.Keys));
             return widgets[id];
         }
 
         public void AddWidget(IShellWidget widget, bool addToForm = true){
-            widgets.Add(widget.GetConfig().Id, widget);
             if(addToForm && widget.GetControl() is not null) form.Controls.Add(widget.GetControl());
             widget.SetWindow(this);
         }

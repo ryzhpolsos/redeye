@@ -41,17 +41,6 @@
          height="${taskbar.height}">
 
         <!-- Define template for window list element -->
-<<<<<<< HEAD
-         <panel
-              width="${taskbar.item.size}"
-              height="${taskbar.item.size}"
-              margin="${taskbar.item.padding},${taskbar.item.padding},0,${taskbar.item.padding}"
-              padding="${taskbar.item.padding}"
-              backgroundColor="if(${window.isActive}, ${taskbar.item.backgroundActive}, ${taskbar.item.background})">
-              <image id="icon" src="${window.icon}" dock="fill" onClick="wapi.toggleWindow(${window.handle})"/>
-         </panel>
-     </windowList>
-=======
         <panel
              width="${taskbar.item.size}"
              height="${taskbar.item.size}"
@@ -65,7 +54,6 @@
                 dock="fill"
                 onClick="wapi.toggleWindow(${window.handle})"
                 toolTip="${window.title}"/>
->>>>>>> 96743a1 (start menu fixes, etc)
 
             <contextMenu for="icon">
                 <item action="wapi.closeWindow(${window.handle})">Close window</item>

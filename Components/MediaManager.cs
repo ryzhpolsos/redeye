@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
 using System.Management;
 using System.Threading;
 using System.Runtime.InteropServices;
 
 using RedEye.Core;
-using static RedEye.Core.NativeHelper;
 
 namespace RedEye.Components {
     public class MediaManagerComponent : IMediaManager {
