@@ -6,6 +6,7 @@ namespace RedEye.Core {
         public void AddIgnoredHandle(IntPtr handle);
         public void RegisterEventHandler(Action<ShellWindowEvent, ShellWindowState> handler);
         public void ToggleWindow(IntPtr handle);
+        public void TriggerEvent(ShellWindowEvent et, IntPtr hWnd);
     }
 
     public enum ShellWindowEvent {

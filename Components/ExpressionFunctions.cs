@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 
 using RedEye.Core;
-using static RedEye.Core.NativeHelper;
 
 namespace RedEye.Components {
     public class ExpressionFunctionsComponent : IExpressionFunctions {
@@ -17,6 +16,7 @@ namespace RedEye.Components {
         IResourceManager resourceManager = null;
         IPluginManager pluginManager = null;
         IMediaManager mediaManager = null;
+        IWAPIWrapper wapiWrapper = null;
         IWmxManager wmxManager = null;
         IConfig config = null;
 
@@ -30,6 +30,7 @@ namespace RedEye.Components {
             resourceManager = manager.GetComponent<IResourceManager>();
             pluginManager = manager.GetComponent<IPluginManager>();
             mediaManager = manager.GetComponent<IMediaManager>();
+            wapiWrapper = manager.GetComponent<IWAPIWrapper>();
             wmxManager = manager.GetComponent<IWmxManager>();
             config = manager.GetComponent<IConfig>();
 
@@ -86,17 +87,17 @@ namespace RedEye.Components {
             });
 
             pluginManager.ExportFunction("wapi.minimizeWindow", args => {
-                MinimizeWindow(GetIntPtr(args.ElementAt(0)));
+                wapiWrapper.MinimizeWindow((GetIntPtr(args.ElementAt(0))));
                 return string.Empty;
             });
 
             pluginManager.ExportFunction("wapi.restoreWindow", args => {
-                RestoreWindow(GetIntPtr(args.ElementAt(0)));
+                wapiWrapper.RestoreWindow((GetIntPtr(args.ElementAt(0))));
                 return string.Empty;
             });
 
             pluginManager.ExportFunction("wapi.activateWindow", args => {
-                ActivateWindow(GetIntPtr(args.ElementAt(0)));
+                wapiWrapper.ActivateWindow((GetIntPtr(args.ElementAt(0))));
                 return string.Empty;
             });
 
@@ -106,7 +107,7 @@ namespace RedEye.Components {
             });
 
             pluginManager.ExportFunction("wapi.closeWindow", args => {
-                CloseWindow(GetIntPtr(args.ElementAt(0)));
+                wapiWrapper.CloseWindow((GetIntPtr(args.ElementAt(0))));
                 return string.Empty;
             });
 
@@ -178,7 +179,7 @@ namespace RedEye.Components {
 
             pluginManager.ExportFunction("res.loadIcon", args => {
                 var index = args.Count() > 1 ? ParseHelper.ParseInt(args.ElementAt(1).ToString()) : 0;
-                return resourceManager.AddResource(Icon.FromHandle(ExtractIcon(IntPtr.Zero, args.ElementAt(0).ToString(), index)).ToBitmap());
+                return resourceManager.AddResource(Icon.FromHandle(NativeHelper.ExtractIcon(IntPtr.Zero, args.ElementAt(0).ToString(), index)).ToBitmap());
             });
         }
 

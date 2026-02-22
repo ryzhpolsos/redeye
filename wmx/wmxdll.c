@@ -208,7 +208,7 @@ LRESULT WINAPI HookWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             }
             case WM_PAINT: {
                 // WindowManager feature is disabled now
-                #if 0
+                #if 1 
 
                 DWORD pid;
                 GetWindowThreadProcessId(hWnd, &pid);

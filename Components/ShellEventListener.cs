@@ -74,10 +74,96 @@ namespace RedEye.Components {
             }
         }
 
-        void ProcessEvent(ShellWindowEvent et, ShellWindowState wnd){
-            if(windowWrappers.ContainsKey(wnd.Handle)){
-                windowManager.ProcessWrapperEvent(et, wnd);
+        public void TriggerEvent(ShellWindowEvent et, IntPtr hWnd){
+            ProcessEvent(et, hWnd);
+        }
+
+        void ProcessEvent(ShellWindowEvent et, IntPtr hWnd){
+            ShellWindowState wnd = null;
+
+            switch(et){
+                case ShellWindowEvent.Create: {
+                    var wp = new WINDOWPLACEMENT();
+                    wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                    GetWindowPlacement(hWnd, ref wp);
+
+                    wnd = new ShellWindowState(){ Handle = hWnd, IsMinimized = wp.showCmd == 2, ShowCmd = wp.showCmd, Title = GetWindowText(hWnd), Icon = GetWindowIcon(hWnd), IsActive = GetForegroundWindow() == hWnd };
+                    activeWindows.Add(hWnd, wnd);
+
+                    break;
+                }
+
+                case ShellWindowEvent.Destroy: {
+                    wnd = activeWindows[hWnd];
+                    activeWindows.Remove(hWnd);
+
+                    break;
+                }
+
+                case ShellWindowEvent.Minimize:
+                case ShellWindowEvent.Restore: {
+                    var wp = new WINDOWPLACEMENT();
+                    wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                    GetWindowPlacement(hWnd, ref wp);
+
+                    wnd = activeWindows[hWnd];
+                    wnd.IsMinimized = !wnd.IsMinimized;
+                    wnd.ShowCmd = wp.showCmd;
+                    wnd.IsActive = GetForegroundWindow() == wnd.Handle;
+
+                    break;
+                }
+
+                case ShellWindowEvent.Redraw: {
+                    var wp = new WINDOWPLACEMENT();
+                    wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                    GetWindowPlacement(hWnd, ref wp);
+
+                    wnd = activeWindows[hWnd];
+                    wnd.Title = GetWindowText(hWnd);
+                    wnd.Icon = GetWindowIcon(hWnd);
+                    wnd.ShowCmd = wp.showCmd;
+                    wnd.IsActive = GetForegroundWindow() == wnd.Handle;
+
+                    break;
+                }
+
+                case ShellWindowEvent.Activate: {
+                    var wp = new WINDOWPLACEMENT();
+                    wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+                    GetWindowPlacement(hWnd, ref wp);
+
+                    wnd = activeWindows[hWnd];
+                    wnd.Title = GetWindowText(hWnd);
+                    wnd.Icon = GetWindowIcon(hWnd);
+                    wnd.ShowCmd = wp.showCmd;
+                    wnd.IsActive = true;
+
+                    foreach(var win in activeWindows){
+                        if(win.Key != hWnd){
+                            win.Value.IsActive = false;
+                            SendEvent(ShellWindowEvent.Deactivate, win.Value);
+                        }
+                    }
+
+                    break;
+                }
+
+                default: {
+                    if(!activeWindows.ContainsKey(hWnd)) return;
+                    Console.WriteLine($"Trying to process {et.ToString()} on {hWnd}");
+                    wnd = activeWindows[hWnd];
+                    break;
+                }
             }
+
+            SendEvent(et, wnd); 
+        }
+
+        void SendEvent(ShellWindowEvent et, ShellWindowState wnd){
+            // if(windowWrappers.ContainsKey(wnd.Handle)){
+            //     windowManager.ProcessWrapperEvent(et, wnd);
+            // }
 
             foreach(var handler in eventHandlers){
                 handler.Invoke(et, wnd);
@@ -147,8 +233,7 @@ namespace RedEye.Components {
         int MsgWndProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam){
             foreach(var handle in activeWindows.Keys.ToArray()){
                 if(handle == hWnd || IsWindow(handle)) continue;
-                ProcessEvent(ShellWindowEvent.Destroy, activeWindows[handle]);
-                activeWindows.Remove(handle);
+                ProcessEvent(ShellWindowEvent.Destroy, handle);
             }
 
             if(uMsg == WM_QUIT){
@@ -158,15 +243,16 @@ namespace RedEye.Components {
                 switch((int)wParam){
                     case HSHELL_WINDOWCREATED: {
                         if(IsWindowNonShell(lParam) && IsWindowTopLevel(lParam)){
-                            AddWindow(lParam);
+                            // AddWindow(lParam);
+                            ProcessEvent(ShellWindowEvent.Create, lParam);
                         }
                         break;
                     }
                     case HSHELL_WINDOWDESTROYED: {
                         if(IsWindowNonShell(lParam) && IsWindowTopLevel(lParam) && activeWindows.ContainsKey(lParam)){
                             //logger.Log(logger.MessageType.Information, "destroy window");
-                            ProcessEvent(ShellWindowEvent.Destroy, activeWindows[lParam]);
-                            activeWindows.Remove(lParam);
+                            ProcessEvent(ShellWindowEvent.Destroy, lParam);
+                            //activeWindows.Remove(lParam);
                         }
                         break;
                     }
@@ -179,57 +265,23 @@ namespace RedEye.Components {
                             hwnd = hookInfo.hwnd;
                         }
 
-                        if(IsWindowNonShell(hwnd) && activeWindows.ContainsKey(hwnd)){
+                        if(IsWindowNonShell(hwnd) && IsWindowTopLevel(hwnd) && activeWindows.ContainsKey(hwnd)){
                             var win = activeWindows[hwnd];
-                            var wp = new WINDOWPLACEMENT();
-                            wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                            GetWindowPlacement(hwnd, ref wp);
                             var evt = win.IsMinimized ? ShellWindowEvent.Restore : ShellWindowEvent.Minimize;
-                            win.IsMinimized = !win.IsMinimized;
-                            win.ShowCmd = wp.showCmd;
-                            win.IsActive = GetForegroundWindow() == win.Handle;
-                            //logger.Log(logger.MessageType.Information, "getminrect window");
-                            ProcessEvent(evt, win);
+                            ProcessEvent(evt, hwnd);
                         }
                         break;
                     }
                     case HSHELL_REDRAW: {
                         if(IsWindowNonShell(lParam) && IsWindowTopLevel(lParam) && activeWindows.ContainsKey(lParam)){
-                            var wp = new WINDOWPLACEMENT();
-                            wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                            GetWindowPlacement(lParam, ref wp);
-
-                            var win = activeWindows[lParam];
-                            win.Title = GetWindowText(lParam);
-                            win.Icon = GetWindowIcon(lParam);
-                            win.ShowCmd = wp.showCmd;
-                            win.IsActive = GetForegroundWindow() == win.Handle;
-                            //logger.Log(logger.MessageType.Information, "redraw window");
-                            ProcessEvent(ShellWindowEvent.Redraw, win);
+                            ProcessEvent(ShellWindowEvent.Redraw, lParam);
                         }
                         break;
                     }
                     case HSHELL_WINDOWACTIVATED:
                     case HSHELL_RUDEAPPACTIVATED: {
                         if(IsWindowNonShell(lParam) && activeWindows.ContainsKey(lParam)){
-                            var wp = new WINDOWPLACEMENT();
-                            wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-                            GetWindowPlacement(lParam, ref wp);
-
-                            var win = activeWindows[lParam];
-                            win.Title = GetWindowText(lParam);
-                            win.Icon = GetWindowIcon(lParam);
-                            win.ShowCmd = wp.showCmd;
-                            win.IsActive = true;
-                            //logger.Log(logger.MessageType.Information, "activate window");
-                            ProcessEvent(ShellWindowEvent.Activate, win);
-
-                            foreach(var wnd in activeWindows){
-                                if(wnd.Key != lParam){
-                                    wnd.Value.IsActive = false;
-                                    ProcessEvent(ShellWindowEvent.Deactivate, wnd.Value);
-                                }
-                            }
+                            ProcessEvent(ShellWindowEvent.Activate, lParam);
                         }
                         break;
                     }
@@ -245,7 +297,8 @@ namespace RedEye.Components {
 
                     case WmxResponse.WrapperRequest: {
                         var hWrapper = windowManager.CreateWindowWrapper(lParam);
-                        windowWrappers.Add(lParam, hWrapper);
+                        // windowWrappers.Add(lParam, hWrapper);
+                        ignoreHandles.Add(lParam);
                         return (int)hWrapper;
                     }
                 }
@@ -259,22 +312,23 @@ namespace RedEye.Components {
         bool EnumWindowsHandler(IntPtr hWnd, IntPtr lParam){
             string txt = GetWindowText(hWnd);
             if(IsWindowVisible(hWnd) && IsWindowTopLevel(hWnd) && txt.Length != 0 && txt != "WorkerW"){
-                AddWindow(hWnd);
+                // AddWindow(hWnd);
+                ProcessEvent(ShellWindowEvent.Create, hWnd);
             }
 
             return true;
         }
 
-        void AddWindow(IntPtr hWnd){
-            var wp = new WINDOWPLACEMENT();
-            wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-            GetWindowPlacement(hWnd, ref wp);
+        //void AddWindow(IntPtr hWnd){
+        //    var wp = new WINDOWPLACEMENT();
+        //    wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+        //    GetWindowPlacement(hWnd, ref wp);
 
-            var wnd = new ShellWindowState(){ Handle = hWnd, IsMinimized = wp.showCmd == 2, ShowCmd = wp.showCmd, Title = GetWindowText(hWnd), Icon = GetWindowIcon(hWnd), IsActive = GetForegroundWindow() == hWnd };
-            activeWindows.Add(hWnd, wnd);
-            //logger.Log(logger.MessageType.Information, "create window");
-            ProcessEvent(ShellWindowEvent.Create, wnd);
-        }
+        //    var wnd = new ShellWindowState(){ Handle = hWnd, IsMinimized = wp.showCmd == 2, ShowCmd = wp.showCmd, Title = GetWindowText(hWnd), Icon = GetWindowIcon(hWnd), IsActive = GetForegroundWindow() == hWnd };
+        //    activeWindows.Add(hWnd, wnd);
+        //    //logger.Log(logger.MessageType.Information, "create window");
+        //    ProcessEvent(ShellWindowEvent.Create, wnd);
+        //}
 
         public void SendLayoutChange(int hkl){
             var localeName = new StringBuilder();
@@ -283,7 +337,7 @@ namespace RedEye.Components {
             var lang = new StringBuilder();
             GetLocaleInfoEx(localeName.ToString(), LOCALE_SISO639LANGNAME2, lang, 8);
 
-            ProcessEvent(ShellWindowEvent.LayoutChange, new ShellWindowState(){ Data = lang.ToString(), Handle = (IntPtr)hkl });
+            SendEvent(ShellWindowEvent.LayoutChange, new ShellWindowState(){ Data = lang.ToString(), Handle = (IntPtr)hkl });
             //logger.Log(logger.MessageType.Information, "SendLayoutChange called");
         }
 
@@ -317,6 +371,7 @@ namespace RedEye.Components {
         }
 
         bool IsWindowTopLevel(IntPtr hWnd){
+            if(windowWrappers.ContainsKey(hWnd) || windowWrappers.ContainsValue(hWnd)) return true;
             if(!IsTopLevelWindow(hWnd)) return false;
 
             var className = GetWindowClass(hWnd);

@@ -346,6 +346,10 @@ namespace RedEye.Core {
             ShowWindow(hWnd, 6);
         }
 
+        public static void MaximizeWindow(IntPtr hWnd){
+            ShowWindow(hWnd, 3);
+        }
+
         public static void RestoreWindow(IntPtr hWnd){
             ShowWindow(hWnd, 9);
             RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 257);

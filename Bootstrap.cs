@@ -27,6 +27,7 @@ namespace RedEye {
             .AddComponent<IExpressionParser>(new ExpressionParserComponent())
             .AddComponent<IWindowManager>(new WindowManagerComponent())
             .AddComponent<ISpecialFolderWrapper>(new SpecialFolderWrapperComponent())
+            .AddComponent<IWAPIWrapper>(new WAPIWrapperComponent())
             .InitializeComponents();
 
             manager
