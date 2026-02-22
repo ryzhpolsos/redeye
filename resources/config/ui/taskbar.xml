@@ -8,15 +8,40 @@
      border="none"
      backgroundColor="${taskbar.background}">
 
-     <import from="config/ui/startButton.xml"/>
+    <import from="config/ui/startButton.xml"/>
 
-     <windowList
+    <script>
+        <![CDATA[
+            using System.Linq;
+            using System.Diagnostics;
+            using System.Runtime.InteropServices;
+
+            static class NativeFunctions {
+                [DllImport("user32.dll")]
+                public static extern int GetWindowThreadProcessId(IntPtr hWnd, ref int lpdwProcessId);
+            }
+
+            // --main--
+            PluginManager.ExportFunction("killProcess", (args) => {
+                var hWnd = (IntPtr)long.Parse(args.ElementAt(0).ToString());
+                int pid = 0;
+
+                NativeFunctions.GetWindowThreadProcessId(hWnd, ref pid);
+                Process.GetProcessById(pid).Kill();
+
+                return string.Empty;
+            });
+        ]]>
+    </script>
+
+    <windowList
          x="${taskbar.item.size}"
          y="0"
          width="calc('${taskbar.width} - ${taskbar.tray.width} - ${taskbar.item.size}')"
          height="${taskbar.height}">
 
         <!-- Define template for window list element -->
+<<<<<<< HEAD
          <panel
               width="${taskbar.item.size}"
               height="${taskbar.item.size}"
@@ -26,7 +51,29 @@
               <image id="icon" src="${window.icon}" dock="fill" onClick="wapi.toggleWindow(${window.handle})"/>
          </panel>
      </windowList>
+=======
+        <panel
+             width="${taskbar.item.size}"
+             height="${taskbar.item.size}"
+             margin="${taskbar.item.padding},${taskbar.item.padding},0,${taskbar.item.padding}"
+             padding="${taskbar.item.padding}"
+             backgroundColor="if(${window.isActive}, ${taskbar.item.backgroundActive}, ${taskbar.item.background})">
+        
+            <image
+                id="icon"
+                src="${window.icon}"
+                dock="fill"
+                onClick="wapi.toggleWindow(${window.handle})"
+                toolTip="${window.title}"/>
+>>>>>>> 96743a1 (start menu fixes, etc)
 
-     <import from="config/ui/tray.xml"/>
+            <contextMenu for="icon">
+                <item action="wapi.closeWindow(${window.handle})">Close window</item>
+                <item action="killProcess(${window.handle})">Kill process</item>
+            </contextMenu>
+        </panel>
+    </windowList>
+
+    <import from="config/ui/tray.xml"/>
 </window>
 

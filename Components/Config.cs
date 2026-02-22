@@ -45,7 +45,7 @@ namespace RedEye.Components {
                 hotKeyManager.RegisterHotKey(hotkey.GetAttribute("keys").Split('+'), () => {
                     hotkey.GetAttribute("action");
                     return ParseHelper.ParseBool(hotkey.GetAttribute("continue", "false"));
-                });
+                }, ParseHelper.ParseBool(hotkey.GetAttribute("multiActivate", "false")));
             }
 
             foreach(var keyHandler in rootNode["config"]["hotkeys"].GetNodes("keyHandler")){
@@ -116,6 +116,7 @@ namespace RedEye.Components {
         }
 
         public IConfig ExecuteScripts(){
+            return this;
             rootNode.EnumNodes("script", (scriptNode) => {
                 if(string.IsNullOrEmpty(scriptNode.GetAttribute("defer"))){
                     Dictionary<string, object> nameSpace = new();

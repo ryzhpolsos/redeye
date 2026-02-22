@@ -11,6 +11,7 @@ namespace RedEye.Components {
     internal struct HotKey {
         public Func<bool> Handler;
         public IEnumerable<string> Keys;
+        public bool AllowMultiActivate;
     }
 
     public class HotKeyManagerComponent : IHotKeyManager {
@@ -56,8 +57,8 @@ namespace RedEye.Components {
             keyHandlers.Add(handler);
         }
 
-        public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler){
-            hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler });
+        public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler, bool isContinuing = false){
+            hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler, AllowMultiActivate = isContinuing });
         }
 
         int KbHandler(int nCode, int wParam, IntPtr lParam){
@@ -91,8 +92,10 @@ namespace RedEye.Components {
                         }
                     }
 
-                    if(isUp){
+                    if(isUp || handler.AllowMultiActivate){
                         foreach(var keyList in keyLists){
+                            // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
+
                             if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
                                 found = true;
                                 lastLength = keyList.Count();
@@ -104,7 +107,9 @@ namespace RedEye.Components {
                         }
                     }
 
-                    if(found) break;
+                    if(found){
+                        break;
+                    }
                 }
 
                 if(isUp){
@@ -116,6 +121,8 @@ namespace RedEye.Components {
                 if(keys.Any()){
                     keys = keys.Distinct().ToList();
                     keys.Sort();
+                }else{
+                    lastLength = 0;
                 }
             }
 

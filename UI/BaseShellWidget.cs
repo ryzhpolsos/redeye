@@ -26,6 +26,10 @@ namespace RedEye.UI {
         }
 
         public virtual void Initialize(){
+            toolTip = new();
+            toolTip.ShowAlways = true;
+            toolTip.AutomaticDelay = 500;
+
             if(Config.UpdateInterval > 0){
                 Task.Run(() => {
                     while(true){
@@ -42,6 +46,15 @@ namespace RedEye.UI {
             // controlType.GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Control, true, null);
             // controlType.GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Control, new object[]{ ControlStyles.OptimizedDoubleBuffer |  ControlStyles.AllPaintingInWmPaint, true });
             // controlType.GetMethod("UpdateStyles", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Control, new object[0]);
+            if(!string.IsNullOrEmpty(Config.ToolTip)){
+                Control.MouseHover += (_, _) => {
+                    toolTip.Show(Config.ToolTip, Control, Control.Width / 2, Control.Height / 2);
+                };
+
+                Control.MouseLeave += (_, _) => {
+                    toolTip.Hide(Control);
+                };
+            }
         }
 
         public ConfigNode GetNode(){
@@ -77,6 +90,10 @@ namespace RedEye.UI {
 
             UtilHelper.IfNotEmpty(Config.Font, (font) => {
                 Control.Font = ParseHelper.ParseFont(font);
+            });
+
+            UtilHelper.IfNotEmpty(Config.ToolTip, (toolTipText) => {
+                toolTip.SetToolTip(Control, toolTipText);
             });
 
             var controlType = Control.GetType();

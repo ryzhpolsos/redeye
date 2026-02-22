@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -142,6 +143,36 @@ namespace RedEye.Core {
                     case "eval":
                     case "exec": {
                         node.SetValue(node.GetAttribute("action"));
+                        break;
+                    }
+
+                    case "script": {
+                        if(string.IsNullOrEmpty(node.GetAttribute("defer"))){
+                            Dictionary<string, object> nameSpace = new();
+                            nameSpace.Add("CurrentNode", this);
+                            nameSpace.Add("ComponentManager", manager);
+                            nameSpace.Add("Config", manager.GetComponent<IConfig>());
+                            nameSpace.Add("LayoutLoader", manager.GetComponent<ILayoutLoader>());
+                            nameSpace.Add("Logger", manager.GetComponent<ILogger>());
+                            nameSpace.Add("PluginManager", manager.GetComponent<IPluginManager>());
+                            nameSpace.Add("ScriptEngine", manager.GetComponent<IScriptEngine>());
+                            nameSpace.Add("ShellWindowManager", manager.GetComponent<IShellWindowManager>());
+                            nameSpace.Add("ShellEventListener", manager.GetComponent<IShellEventListener>());
+                            nameSpace.Add("WmxManager", manager.GetComponent<IWmxManager>());
+
+                            var code = string.Empty;
+
+                            if(string.IsNullOrEmpty(node.GetAttribute("src"))){
+                                code = node.GetRawValue();
+                            }else{
+                                code = File.ReadAllText(Path.Combine(config.GetAppDirectory(), node.GetAttribute("src")));
+                            }
+
+                            engine.ExecuteScript(node.GetAttribute("language", "csharp"), code, nameSpace);
+
+                            node.Remove();
+                        }
+
                         break;
                     }
                 }
