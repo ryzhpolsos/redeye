@@ -21,9 +21,9 @@ RedEye - полностью настраиваемая и расширяемая
   <summary>Развернуть</summary>
 
 
-  ![Скриншот 1]()
+  ![Скриншот 1](https://raw.githubusercontent.com/ryzhpolsos/redeye/refs/heads/main/screenshots/1.png)
 
-  ![Скриншот 2]()
+  ![Скриншот 2](https://raw.githubusercontent.com/ryzhpolsos/redeye/refs/heads/main/screenshots/2.png)
 
 </details>
 
