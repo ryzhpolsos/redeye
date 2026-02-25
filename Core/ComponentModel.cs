@@ -46,6 +46,14 @@ namespace RedEye.Core {
         public T CreateInstance<T>() where T: IComponent {
             return CreateInstance<T>(new object[0]);
         }
+
+        public IEnumerable<string> GetComponentNames(){
+            return components.Keys.Select(t => t.Name);
+        }
+
+        public IComponent GetComponentByName(string name){
+            return components.First(c => c.Key.Name == name).Value;
+        }
     }
 
     public interface IComponent {

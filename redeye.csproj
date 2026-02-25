@@ -1,11 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Target Name="CopyResources" AfterTargets="Build">
-        <Exec Command="xcopy /e /y &quot;$(ProjectDir)resources\*&quot; &quot;$(TargetDir)&quot;"/>
+    <Target Name="PreparePluginAPI" BeforeTargets="CoreCompile">
+        <Exec Command="powershell -exec bypass -file &quot;scripts\preparePluginApi.ps1&quot;" />
     </Target>
 
-    <!-- Condition="'$(Wmx)' != ''" -->
-    <Target Name="BuildExternal" AfterTargets="Build" Condition="'$(Wmx)' != ''"> 
-        <Exec Command="taskkill /f /im wmx64.exe &amp; set &quot;_CONF=$(Configuration)&quot; &amp; make" WorkingDirectory="wmx" />
+    <Target Name="CopyResources" AfterTargets="Build">
+        <Exec Command="xcopy /e /y &quot;$(ProjectDir)resources\*&quot; &quot;$(TargetDir)&quot;" />
+    </Target>
+
+    <Target Name="BuildWmx" AfterTargets="Build" Condition="'$(Wmx)' != ''"> 
+        <Exec Command="scripts\buildWmx.bat &quot;$(Configuration)&quot;" />
     </Target>
 
     <PropertyGroup>
@@ -22,5 +25,8 @@
         <Reference Include="System.Management.dll" />
         <Reference Include="System.Web.Extensions.dll" />
         <Reference Include="Microsoft.JScript.dll" />
+
+        <Compile Remove="PluginAPI/Plugin.cs" />
+        <Compile Include="PluginAPI/Plugin.cs.pp" />
     </ItemGroup>
 </Project>

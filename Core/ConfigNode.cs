@@ -151,14 +151,10 @@ namespace RedEye.Core {
                             Dictionary<string, object> nameSpace = new();
                             nameSpace.Add("CurrentNode", this);
                             nameSpace.Add("ComponentManager", manager);
-                            nameSpace.Add("Config", manager.GetComponent<IConfig>());
-                            nameSpace.Add("LayoutLoader", manager.GetComponent<ILayoutLoader>());
-                            nameSpace.Add("Logger", manager.GetComponent<ILogger>());
-                            nameSpace.Add("PluginManager", manager.GetComponent<IPluginManager>());
-                            nameSpace.Add("ScriptEngine", manager.GetComponent<IScriptEngine>());
-                            nameSpace.Add("ShellWindowManager", manager.GetComponent<IShellWindowManager>());
-                            nameSpace.Add("ShellEventListener", manager.GetComponent<IShellEventListener>());
-                            nameSpace.Add("WmxManager", manager.GetComponent<IWmxManager>());
+
+                            foreach(var comp in manager.GetComponentNames()){
+                                nameSpace.Add(comp.Substring(1), manager.GetComponentByName(comp));
+                            }
 
                             var code = string.Empty;
 

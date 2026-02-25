@@ -57,8 +57,8 @@ namespace RedEye.Components {
             keyHandlers.Add(handler);
         }
 
-        public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler, bool isContinuing = false){
-            hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler, AllowMultiActivate = isContinuing });
+        public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler, bool allowMultiActivate = false){
+            hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler, AllowMultiActivate = allowMultiActivate });
         }
 
         int KbHandler(int nCode, int wParam, IntPtr lParam){

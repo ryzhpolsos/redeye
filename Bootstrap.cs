@@ -77,6 +77,7 @@ namespace RedEye {
 
 
             try{
+                Console.WriteLine(string.Join(", ", manager.GetComponentNames()));
                 manager.GetComponent<IPluginManager>().LoadPlugins();
                 manager.GetComponent<IConfig>().LoadConfig().ExecuteScripts();
                 manager.GetComponent<IShellWindowManager>().ShowWindows();

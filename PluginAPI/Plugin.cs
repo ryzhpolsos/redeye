@@ -7,14 +7,8 @@ using RedEye.Core;
 namespace RedEye.PluginAPI {
     public class Plugin {
         protected ComponentManager ComponentManager = null;
-        protected IConfig Config = null;
-        protected ILayoutLoader LayoutLoader = null;
-        protected ILogger Logger = null;
         protected IPluginManager PluginManager = null;
-        protected IScriptEngine ScriptEngine = null;
-        protected IShellWindowManager ShellWindowManager = null;
-        protected IShellEventListener ShellEventListener = null;
-        protected IWmxManager WmxManager = null;
+        //$$COMPONENTS_DEF
 
         public virtual string Name {
             get {
@@ -24,14 +18,8 @@ namespace RedEye.PluginAPI {
 
         public void InitPlugin(ComponentManager manager){
             ComponentManager = manager;
-            Config = manager.GetComponent<IConfig>();
-            LayoutLoader = manager.GetComponent<ILayoutLoader>();
-            Logger = manager.GetComponent<ILogger>();
-            PluginManager = manager.GetComponent<IPluginManager>();
-            ScriptEngine = manager.GetComponent<IScriptEngine>();
-            ShellWindowManager = manager.GetComponent<IShellWindowManager>();
-            ShellEventListener = manager.GetComponent<IShellEventListener>();
-            WmxManager = manager.GetComponent<IWmxManager>();
+            PluginManager = ComponentManager.GetComponent<IPluginManager>();
+            //$$COMPONENTS_SET
         }
 
         public virtual void Main(){}
