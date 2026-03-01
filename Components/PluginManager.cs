@@ -17,7 +17,7 @@ namespace RedEye.Components {
         ComponentManager manager = null;
 
         Dictionary<string, Type> exportedWidgets = new();
-        Dictionary<string, Func<IEnumerable<object>, object>> exportedFunctions = new();
+        Dictionary<string, Func<IEnumerable<object>, IVariableStorage<string>, object>> exportedFunctions = new();
 
         public void SetManager(ComponentManager manager){
             this.manager = manager;
@@ -43,16 +43,16 @@ namespace RedEye.Components {
             return this;
         }
 
-        public IPluginManager ExportFunction(string name, Func<IEnumerable<object>, object> func){
+        public IPluginManager ExportFunction(string name, Func<IEnumerable<object>, IVariableStorage<string>, object> func){
             exportedFunctions.Add(name, func);
             return this;
         }
 
-        public Func<IEnumerable<object>, object> GetExportedFunction(string name){
+        public Func<IEnumerable<object>, IVariableStorage<string>, object> GetExportedFunction(string name){
             return exportedFunctions[name];
         }
 
-        public IDictionary<string, Func<IEnumerable<object>, object>> GetExportedFunctions(){
+        public IDictionary<string, Func<IEnumerable<object>, IVariableStorage<string>, object>> GetExportedFunctions(){
             return exportedFunctions;
         }
 

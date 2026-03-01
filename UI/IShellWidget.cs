@@ -15,7 +15,7 @@ namespace RedEye.UI {
         public void SetContainer(IContainerWidget container);
         public IShellWindow GetWindow();
         public void SetWindow(IShellWindow window);
-        public Control GetControl();
+        public Control GetControl(bool update = true);
         public void UpdateControl();
         public void RegisterEventHandler(string name, Action<ShellWidgetEvent> handler);
     }

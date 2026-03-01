@@ -33,4 +33,23 @@ namespace RedEye.Core {
             callback.Invoke(Data, new object[]{ arg1, arg2 }); 
         }
     }
+
+    public static class DelegateWrapperBuilder {
+        public static DelegateWrapper BuildDelegateWrapper(Action<object, object[]> callback){
+            return new DelegateWrapper(callback);
+        }
+
+        public static Delegate GetDelegateWithDynamicTypes(Action<object, object[]> callback, Type delegateType, object data, params Type[] argTypes){
+            if(argTypes.Length == 0){
+                var wrapper = new DelegateWrapper(callback);
+                wrapper.Data = data;
+                return wrapper.GetDelegate(delegateType);
+            }
+
+            var type = Type.GetType($"RedEye.Core.DelegateWrapper`{argTypes.Length}");
+            var instance = Activator.CreateInstance(type);
+            type.GetProperty("Data").SetValue(instance, data);
+            return (Delegate)type.GetMethod("GetDelegate").Invoke(instance, new object[]{ delegateType });
+        }
+    }
 }

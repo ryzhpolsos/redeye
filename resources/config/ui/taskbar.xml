@@ -22,7 +22,7 @@
             }
 
             // --main--
-            PluginManager.ExportFunction("killProcess", (args) => {
+            PluginManager.ExportFunction("killProcess", (args, _) => {
                 var hWnd = (IntPtr)long.Parse(args.ElementAt(0).ToString());
                 int pid = 0;
 

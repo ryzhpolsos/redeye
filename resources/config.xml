@@ -38,6 +38,13 @@
             <set name="startMenu.item.size" value="50"/>
             <set name="startMenu.item.font" value="Segoe UI,10"/>
             <set name="startMenu.item.fontColor" value="white"/>
+
+            <!-- Run box settings -->
+            <set name="runBox.width" value="500"/>
+            <set name="runBox.height" value="250"/>
+            <set name="runBox.x" value="calc('${screen.width} / 2 - ${runBox.width} / 2')"/>
+            <set name="runBox.y" value="calc('${screen.height} / 2 - ${runBox.height} / 2')"/>
+            <set name="runBox.font" value="Segoe UI,9"/>
         </variables>
 
         <!-- Set the work area -->
@@ -47,6 +54,7 @@
         <import from="config/ui/desktop.xml"/>
         <import from="config/ui/startMenu.xml"/>
         <import from="config/ui/taskbar.xml"/>
+        <import from="config/ui/runBox.xml"/>
     </layout>
     <hotkeys>
         <hotkey keys="Win+F1" action="media.decreaseVolume()" multiActivate="true"/>
@@ -54,5 +62,6 @@
         <hotkey keys="Win+F3" action="media.decreaseBrightness()" multiActivate="true"/>
         <hotkey keys="Win+F4" action="media.increaseBrightness()" multiActivate="true"/>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>
-    </hotkeys>
+        <hotkey keys="Win+R" action="runBox.open()"/>
+     </hotkeys>
 </config>

@@ -46,7 +46,7 @@ namespace RedEye.Components {
 
                 if(exportedFunctions.ContainsKey(function)){
                     // Console.WriteLine(string.Join(", ", args));
-                    return exportedFunctions[function].Invoke(args).ToString();
+                    return exportedFunctions[function].Invoke(args, variables).ToString();
                 }
 
                 logger.LogFatal($"No function with name {function} was found");

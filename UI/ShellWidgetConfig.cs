@@ -14,6 +14,7 @@ namespace RedEye.UI {
         public int Height = 0;
         public bool AutoSize = false;
         public string Dock = string.Empty;
+        public string Anchor = string.Empty;
         public string Color = string.Empty;
         public string BackgroundColor = string.Empty;
         public string Padding = string.Empty;

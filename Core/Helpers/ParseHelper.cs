@@ -10,14 +10,23 @@ namespace RedEye.Core {
         static JavaScriptSerializer serializer = new();
 
         public static T ParseEnum<T>(string name) where T : struct, Enum {
-            name = name.Trim();
-
-            name = name[0].ToString().ToUpper() + name.Substring(1);
-            return (T)Enum.Parse(typeof(T), name);
+            return ParseEnum<T>(name, default);
         }
 
         public static T ParseEnum<T>(string name, T defaultValue) where T : struct, Enum {
+            name = name.Trim();
             if(name.Length == 0) return defaultValue;
+            
+            if(name.Contains("|")){
+                int value = 0;
+
+                foreach(var namePart in name.Split('|')){
+                    value |= Convert.ToInt32(ParseEnum<T>(namePart, defaultValue));
+                }
+
+                return (T)Enum.ToObject(typeof(T), value); 
+            }
+            
             name = name[0].ToString().ToUpper() + name.Substring(1);
 
             if(Enum.TryParse<T>(name, out T result)){

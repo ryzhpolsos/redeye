@@ -1,0 +1,53 @@
+<window
+    id="runBox"
+    x="${runBox.x}"
+    y="${runBox.y}"
+    width="${runBox.width}"
+    height="${runBox.height}"
+    title="Run"
+    type="normal"
+    border="fixedDialog"
+    maximizeButton="false"
+    autoShow="false">
+
+    <script>
+        <![CDATA[
+            using System.Linq;
+            using System.Windows.Forms;
+
+            // --main--
+
+            PluginManager.ExportFunction("runBox.open", (args, _) => {
+                var wnd = ShellWindowManager.GetWindow("runBox");
+                wnd.GetWidget("cmdTextBox").GetControl().Text = "";
+                wnd.ShowWindow();
+
+                return string.Empty;
+            });
+
+            PluginManager.ExportFunction("runBox.processKey", (args, vars) => {
+                switch(((KeyEventArgs)ResourceManager.GetResource(args.ElementAt(0).ToString())).KeyCode){
+                    case Keys.Return: {
+                        PluginManager.GetExportedFunction("shellExecute").Invoke(new object[]{ vars.GetVariable("runBoxCmd").Trim() }, vars);
+                        ShellWindowManager.GetWindow("runBox").HideWindow();
+
+                        break;
+                    }
+
+                    case Keys.Escape: {
+                        ShellWindowManager.GetWindow("runBox").HideWindow();
+                        break;
+                    }
+                }
+
+                return string.Empty;
+            });
+        ]]>
+    </script>
+
+    <tablePanel dock="fill" font="${runBox.font}" padding="16" rowCount="2" columnCount="5">
+        <label dock="fill" align="middleCenter" table.position="0,0" text="Command:"/>
+        <textBox id="cmdTextBox" anchor="left|right" height="28" table.position="1,0" table.columnSpan="4" output="runBoxCmd" multiLine="true" onKeyUp="runBox.processKey(${arg1})"/>
+        <button anchor="left|right|bottom" height="32" table.position="4,1" text="Run" onClick="run(shellExecute(${runBoxCmd}), window.hide(runBox))"/>
+    </tablePanel>
+</window>

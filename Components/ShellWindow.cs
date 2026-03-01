@@ -51,11 +51,10 @@ namespace RedEye.Components {
                 form.FormBorderStyle = ParseHelper.ParseEnum<FormBorderStyle>(config.BorderType.ToString(), FormBorderStyle.Sizable);
             }
 
-            if(!config.AllowClose){
-                form.FormClosing += (sender, eventArgs) => {
-                    eventArgs.Cancel = true;
-                };
-            }
+            form.FormClosing += (sender, eventArgs) => {
+                eventArgs.Cancel = true;
+                if(config.AllowClose) HideWindow();
+            };
 
             form.MinimizeBox = config.MinimizeButton;
             form.MaximizeBox = config.MaximizeButton;
@@ -75,10 +74,15 @@ namespace RedEye.Components {
 
         public void ShowWindow(){
             form.Show();
+            NativeHelper.SetForegroundWindow(form.Handle);
         }
 
         public void HideWindow(){
             form.Hide();
+        }
+
+        public void CloseWindow(){
+            form.Close();
         }
 
         public void ToggleWindow(){
@@ -111,13 +115,23 @@ namespace RedEye.Components {
         }
 
         public IShellWidget GetWidget(string id){
-            Console.WriteLine(string.Join(",", widgets.Keys));
-            return widgets[id];
+            if(widgets.ContainsKey(id)) return widgets[id];
+
+            foreach(var widget in widgets.Values){
+                if(widget is IContainerWidget container && container is not null){
+                    if(container.GetWidget(id) is var wid && wid is not null){
+                        return wid;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public void AddWidget(IShellWidget widget, bool addToForm = true){
             if(addToForm && widget.GetControl() is not null) form.Controls.Add(widget.GetControl());
             widget.SetWindow(this);
+            widgets.Add(widget.GetConfig().Id, widget);
         }
 
         public void RemoveWidget(IShellWidget widget){

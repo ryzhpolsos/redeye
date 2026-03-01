@@ -42,8 +42,10 @@ namespace RedEye {
             .ExportWidget("image", typeof(Image))
             .ExportWidget("windowList", typeof(WindowList))
             .ExportWidget("appList", typeof(AppList))
-            .ExportWidget("contextMenu", typeof(ContextMenu));
-
+            .ExportWidget("contextMenu", typeof(ContextMenu))
+            .ExportWidget("tablePanel", typeof(TablePanel))
+            .ExportWidget("textBox", typeof(TextBox))
+            .ExportWidget("button", typeof(Button));
 
             // var node = new ConfigNode(manager, "meow");
             // node.SetVariable("nya", "uwu");
@@ -82,7 +84,7 @@ namespace RedEye {
                 manager.GetComponent<IConfig>().LoadConfig().ExecuteScripts();
                 manager.GetComponent<IShellWindowManager>().ShowWindows();
             }catch(Exception ex){
-                manager.GetComponent<ILogger>().LogFatal($"{ex.GetType().FullName}: {ex.Message} | {ex.StackTrace}");
+                manager.GetComponent<ILogger>().LogFatal(ExceptionHelper.FormatException(ex, true));
             }
         }
     }

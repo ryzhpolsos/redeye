@@ -25,7 +25,10 @@ namespace RedEye.UI {
             widgets.Add(widget.GetConfig().Id, widget);
             widgetParams.Add(widget.GetConfig().Id, GetDefaultWidgetParams(widget));
             widget.SetContainer(this);
-            if(widget.GetControl() is not null) Control.Controls.Add(widget.GetControl());
+
+            var control = widget.GetControl();
+            if(control is not null) Control.Controls.Add(control);
+            // if(widget.GetType().FullName != typeof(RedEye.UI.BuiltInWidgets.ContextMenu).FullName && widget.GetControl() is not null) Control.Controls.Add(widget.GetControl(false));
 
             foreach(var attr in Node.GetAttributes().Where(a => a.StartsWith("on"))){
                 widget.GetNode().SetAttribute(attr, Node.GetRawAttribute(attr));
@@ -40,7 +43,17 @@ namespace RedEye.UI {
         }
 
         public IShellWidget GetWidget(string id){
-            return widgets[id];
+            if(widgets.ContainsKey(id)) return widgets[id];
+
+            foreach(var widget in widgets.Values){
+                if(widget is IContainerWidget container && container is not null){
+                    if(container.GetWidget(id) is var wid && wid is not null){
+                        return wid;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public IDictionary<string, IShellWidget> GetWidgets(){

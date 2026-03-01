@@ -62,17 +62,18 @@ namespace RedEye.Components {
         }
 
         int KbHandler(int nCode, int wParam, IntPtr lParam){
+            bool cont = true, isUp = false, found = false;
+            string keyName = string.Empty;
+
             if(lParam != IntPtr.Zero){
                 var kbDll = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
 
-                var keyName = ((Keys)kbDll.vkCode).ToString();
-                bool isUp = wParam == WM_KEYUP || wParam == WM_SYSKEYUP;
+                keyName = ((Keys)kbDll.vkCode).ToString();
+                isUp = wParam == WM_KEYUP || wParam == WM_SYSKEYUP;
 
                 foreach(var handler in keyHandlers){
                     if(!handler.Invoke(keyName, isUp)) return 0;
                 }
-
-                bool found = false;
 
                 foreach(var handler in hotKeys){
                     List<List<string>> keyLists = new();
@@ -101,11 +102,27 @@ namespace RedEye.Components {
                                 lastLength = keyList.Count();
 
                                 if(!handler.Handler.Invoke()){
+                                    cont = false;
                                     break;
                                 }
                             }
                         }
                     }
+
+                    foreach(var keyList in keyLists){
+                        // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
+
+                        if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
+                            found = true;
+                            lastLength = keyList.Count();
+
+                            if((isUp || handler.AllowMultiActivate) && !handler.Handler.Invoke()){
+                                cont = false;
+                                break;
+                            }
+                        }
+                    }
+
 
                     if(found){
                         break;
@@ -126,7 +143,7 @@ namespace RedEye.Components {
                 }
             }
 
-            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
+            return !found || !(keyName.Length == 1 || (keyName.Length == 2 && keyName[0] == 'D') || keyName == "OemPeriod" || keyName == "Oemcomma") ? CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam) : 1;
         }
     }
 }

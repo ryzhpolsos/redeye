@@ -42,6 +42,7 @@ namespace RedEye.Core {
         public void InitWindow();
         public void ShowWindow();
         public void HideWindow();
+        public void CloseWindow();
         public void ToggleWindow();
         public string GetTitle();
         public void SetTitle(string newTitle);

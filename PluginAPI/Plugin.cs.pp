@@ -17,7 +17,6 @@ namespace RedEye.PluginAPI {
         protected IResourceManager ResourceManager = null;
         protected IScriptEngine ScriptEngine = null;
         protected IShellEventListener ShellEventListener = null;
-        protected IShellWindow ShellWindow = null;
         protected IShellWindowManager ShellWindowManager = null;
         protected ISpecialFolderWrapper SpecialFolderWrapper = null;
         protected IWindowManager WindowManager = null;
@@ -42,7 +41,6 @@ namespace RedEye.PluginAPI {
             ResourceManager = ComponentManager.GetComponent<IResourceManager>();
             ScriptEngine = ComponentManager.GetComponent<IScriptEngine>();
             ShellEventListener = ComponentManager.GetComponent<IShellEventListener>();
-            ShellWindow = ComponentManager.GetComponent<IShellWindow>();
             ShellWindowManager = ComponentManager.GetComponent<IShellWindowManager>();
             SpecialFolderWrapper = ComponentManager.GetComponent<ISpecialFolderWrapper>();
             WindowManager = ComponentManager.GetComponent<IWindowManager>();
@@ -56,7 +54,7 @@ namespace RedEye.PluginAPI {
             PluginManager.ExportWidget($"{Name}.{name}", typeof(T));
         }
 
-        protected void ExportFunction(string name, Func<IEnumerable<object>, object> func){
+        protected void ExportFunction(string name, Func<IEnumerable<object>, IVariableStorage<string>, object> func){
             PluginManager.ExportFunction($"{Name}.{name}", func);
         }
     }

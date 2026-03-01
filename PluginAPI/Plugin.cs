@@ -28,7 +28,7 @@ namespace RedEye.PluginAPI {
             PluginManager.ExportWidget($"{Name}.{name}", typeof(T));
         }
 
-        protected void ExportFunction(string name, Func<IEnumerable<object>, object> func){
+        protected void ExportFunction(string name, Func<IEnumerable<object>, IVariableStorage<string>, object> func){
             PluginManager.ExportFunction($"{Name}.{name}", func);
         }
     }

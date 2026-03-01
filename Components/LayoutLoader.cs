@@ -68,11 +68,12 @@ namespace RedEye.Components {
             widget.SetManager(manager);
             widget.SetConfig(new());
             widget.SetNode(widgetNode);
+            if(window is not null) widget.SetWindow(window);
             widget.UpdateConfig();
             widget.Initialize();
             widget.UpdateControl();
-            BuildContainerTree(widgetNode, window, widget);
             if(window is not null) window.AddWidget(widget, addToForm);
+            BuildContainerTree(widgetNode, window, widget);
 
             if(init) widget.PostInitialize();
             return widget;
