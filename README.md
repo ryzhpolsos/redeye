@@ -1,14 +1,14 @@
 # RedEye
 
-RedEye is a free, open-source, very flexible, fully customizable and extendable Windows shell. Say goodbye to laggy Explorer with fixed taskbar size!
-
-**Take your desktop look under YOUR control!**
-
 ![GitHub Release](https://img.shields.io/github/v/release/ryzhpolsos/redeye)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ryzhpolsos/redeye/total)
 ![GitHub top language](https://img.shields.io/github/languages/top/ryzhpolsos/redeye)
 ![GitHub License](https://img.shields.io/github/license/ryzhpolsos/redeye)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/ryzhpolsos/redeye)
+
+RedEye is a free, open-source, very flexible, fully customizable and extendable Windows shell. Say goodbye to laggy Explorer with fixed taskbar size!
+
+**Take your desktop look under YOUR control!**
 
 ## Why RedEye?
 1. Explorer is laggy piece of vibecode with CPU-consuming start menu components on React Native;
