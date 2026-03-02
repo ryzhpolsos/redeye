@@ -45,7 +45,7 @@ RedEye is a free, open-source, very flexible, fully customizable and extendable 
 </details>
 
 ## Building
-You'll need [.NET SDK](https://dotnet.microsoft.com/en-us/download) and MinGW-w64 (i recomment portable [w64devkit](https://github.com/skeeto/w64devkit)).
+You'll need [.NET SDK](https://dotnet.microsoft.com/en-us/download) and MinGW-w64 (I recommend portable [w64devkit](https://github.com/skeeto/w64devkit)).
 
 ```
 git clone https://github.com/ryzhpolsos/redeye
