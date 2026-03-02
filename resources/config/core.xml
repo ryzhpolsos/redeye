@@ -1,4 +1,4 @@
 <core>
-    <disableWmx>true</disableWmx>
+    <disableWmx>false</disableWmx>
     <useWmxShellHook>false</useWmxShellHook>
 </core>
