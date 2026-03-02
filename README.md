@@ -56,18 +56,11 @@ dotnet build -c Release -p Wmx=1
 ## Installing
 1. Go to "Releases" section and download the last release
 2. Extract the archive in any folder you like
-3. Run the followed command in the folder where you put redeye's files:
-```
-reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /d "%CD%\redeye.exe" /t REG_SZ /f
-```
-Then log off and log on back to see your new shell.
+3. Run the script named `install.bat`
+4. Log off and log on back to see your new shell.
 
 ## Uninstalling
-Run the following command:
-```
-HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
-```
-Then log off and log on back.
+Run the script named `uninstall.bat` in the RedEye folder.
 
 ## License
 The project is developed and distributed under [The MIT License](https://github.com/ryzhpolsos/redeye/blob/main/LICENSE).
