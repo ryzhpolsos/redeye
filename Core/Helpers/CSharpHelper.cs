@@ -1,8 +1,8 @@
 using System;
-using System.Linq;
 using Microsoft.CSharp;
 using System.Reflection;
 using System.CodeDom.Compiler;
+using System.IO;
 using System.Collections.Generic;
 
 namespace RedEye.Core {
@@ -11,8 +11,11 @@ namespace RedEye.Core {
         static CompilerParameters compilerParameters = new();
 
         static CSharpHelper(){
+            AppContext.SetSwitch("Switch.System.DisableTempFileCollectionDirectoryFeature", false);
+
             compilerParameters.GenerateInMemory = true;
             compilerParameters.GenerateExecutable = false;
+            compilerParameters.TempFiles = new(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), false);
 
             List<string> assemblies = new();
             assemblies.Add(Assembly.GetExecutingAssembly().Location);
