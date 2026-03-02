@@ -93,21 +93,21 @@ namespace RedEye.Components {
                         }
                     }
 
-                    if(isUp || handler.AllowMultiActivate){
-                        foreach(var keyList in keyLists){
-                            // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
+                    // if(isUp || handler.AllowMultiActivate){
+                    //     foreach(var keyList in keyLists){
+                    //         // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
 
-                            if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
-                                found = true;
-                                lastLength = keyList.Count();
+                    //         if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
+                    //             found = true;
+                    //             lastLength = keyList.Count();
 
-                                if(!handler.Handler.Invoke()){
-                                    cont = false;
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    //             if(!handler.Handler.Invoke()){
+                    //                 cont = false;
+                    //                 break;
+                    //             }
+                    //         }
+                    //     }
+                    // }
 
                     foreach(var keyList in keyLists){
                         // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
