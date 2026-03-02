@@ -38,9 +38,9 @@ RedEye is a free, open-source, very flexible, fully customizable and extendable 
 <details>
     <summary>Expand</summary>
 
-    ![Screenshot 1](https://raw.githubusercontent.com/ryzhpolsos/redeye/refs/heads/main/screenshots/1.png)
+![Screenshot 1](https://raw.githubusercontent.com/ryzhpolsos/redeye/refs/heads/main/screenshots/1.png)
 
-    ![Screenshot 2](https://raw.githubusercontent.com/ryzhpolsos/redeye/refs/heads/main/screenshots/2.png)
+![Screenshot 2](https://raw.githubusercontent.com/ryzhpolsos/redeye/refs/heads/main/screenshots/2.png)
 
 </details>
 
