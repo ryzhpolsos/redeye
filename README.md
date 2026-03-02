@@ -54,9 +54,11 @@ dotnet build -c Release -p Wmx=1
 ```
 
 ## Installing
-After building, run the following command in the project root folder:
+1. Go to "Releases" section and download the last release
+2. Extract the archive in any folder you like
+3. Run the followed command in the folder where you put redeye's files:
 ```
-reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /d "%CD%\bin\Release\netframework4.8\redeye.exe" /t REG_SZ /f
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Shell /d "%CD%\redeye.exe" /t REG_SZ /f
 ```
 Then log off and log on back to see your new shell.
 
