@@ -30,8 +30,7 @@ RedEye is a free, open-source, very flexible, fully customizable and extendable 
 4. Window manager :>
 
 ## Technical stack
-- C# (.NET Framework 4.8),
-- A bit of C...
+- C# (.NET Framework 4.8)...
 - and a lot of WinAPI magic :3
 
 ## Screenshots
@@ -45,12 +44,12 @@ RedEye is a free, open-source, very flexible, fully customizable and extendable 
 </details>
 
 ## Building
-You'll need [.NET SDK](https://dotnet.microsoft.com/en-us/download) and MinGW-w64 (I recommend portable [w64devkit](https://github.com/skeeto/w64devkit)).
+You'll need [.NET SDK](https://dotnet.microsoft.com/en-us/download). 
 
 ```
 git clone https://github.com/ryzhpolsos/redeye
 cd redeye
-dotnet build -c Release -p Wmx=1
+dotnet build -c Release
 ```
 
 ## Installing
