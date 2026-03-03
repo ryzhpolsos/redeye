@@ -6,6 +6,5 @@ namespace RedEye.Core {
         public ConfigNode GetRootNode();
         public ConfigNode GetLayoutNode();
         public void LoadFile(string fileName, ConfigNode parentNode);
-        public IConfig ExecuteScripts();
     }
 }

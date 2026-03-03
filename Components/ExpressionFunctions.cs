@@ -18,7 +18,6 @@ namespace RedEye.Components {
         IResourceManager resourceManager = null;
         IPluginManager pluginManager = null;
         IMediaManager mediaManager = null;
-        IWmxManager wmxManager = null;
         IConfig config = null;
 
         public void SetManager(ComponentManager manager){
@@ -32,7 +31,6 @@ namespace RedEye.Components {
             resourceManager = manager.GetComponent<IResourceManager>();
             pluginManager = manager.GetComponent<IPluginManager>();
             mediaManager = manager.GetComponent<IMediaManager>();
-            wmxManager = manager.GetComponent<IWmxManager>();
             config = manager.GetComponent<IConfig>();
 
             pluginManager.ExportFunction("eval", (args, _) => {
@@ -120,8 +118,8 @@ namespace RedEye.Components {
                 return string.Empty;
             });
 
-            pluginManager.ExportFunction("wmx.setWorkArea", (args, _) => {
-                wmxManager.SetWorkArea(ParseHelper.ParseInt(args.ElementAt(0).ToString()), ParseHelper.ParseInt(args.ElementAt(1).ToString()), ParseHelper.ParseInt(args.ElementAt(2).ToString()), ParseHelper.ParseInt(args.ElementAt(3).ToString()));
+            pluginManager.ExportFunction("setWorkArea", (args, _) => {
+                shellEventListener.SetWorkArea(ParseHelper.ParseInt(args.ElementAt(0).ToString()), ParseHelper.ParseInt(args.ElementAt(1).ToString()), ParseHelper.ParseInt(args.ElementAt(2).ToString()), ParseHelper.ParseInt(args.ElementAt(3).ToString()));
                 return string.Empty;
             });
 

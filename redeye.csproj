@@ -7,10 +7,6 @@
         <Exec Command="xcopy /e /y &quot;$(ProjectDir)resources\*&quot; &quot;$(TargetDir)&quot;" />
     </Target>
 
-    <Target Name="BuildWmx" AfterTargets="Build" Condition="'$(Wmx)' != ''"> 
-        <Exec Command="scripts\buildWmx.bat &quot;$(Configuration)&quot;" />
-    </Target>
-
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>netframework4.8</TargetFramework>

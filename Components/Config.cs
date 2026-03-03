@@ -114,38 +114,5 @@ namespace RedEye.Components {
         public ConfigNode GetLayoutNode(){
             return layoutNode;
         }
-
-        public IConfig ExecuteScripts(){
-            return this;
-            rootNode.EnumNodes("script", (scriptNode) => {
-                if(string.IsNullOrEmpty(scriptNode.GetAttribute("defer"))){
-                    Dictionary<string, object> nameSpace = new();
-                    nameSpace.Add("CurrentNode", this);
-                    nameSpace.Add("ComponentManager", manager);
-                    nameSpace.Add("Config", manager.GetComponent<IConfig>());
-                    nameSpace.Add("LayoutLoader", manager.GetComponent<ILayoutLoader>());
-                    nameSpace.Add("Logger", manager.GetComponent<ILogger>());
-                    nameSpace.Add("PluginManager", manager.GetComponent<IPluginManager>());
-                    nameSpace.Add("ScriptEngine", manager.GetComponent<IScriptEngine>());
-                    nameSpace.Add("ShellWindowManager", manager.GetComponent<IShellWindowManager>());
-                    nameSpace.Add("ShellEventListener", manager.GetComponent<IShellEventListener>());
-                    nameSpace.Add("WmxManager", manager.GetComponent<IWmxManager>());
-
-                    var code = string.Empty;
-
-                    if(string.IsNullOrEmpty(scriptNode.GetAttribute("src"))){
-                        code = scriptNode.GetRawValue();
-                    }else{
-                        code = File.ReadAllText(Path.Combine(appDirectory, scriptNode.GetAttribute("src")));
-                    }
-
-                    engine.ExecuteScript(scriptNode.GetAttribute("language", "csharp"), code, nameSpace);
-                }
-
-                return true;
-            });
-
-            return this;
-        }
     }
 }

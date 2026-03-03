@@ -20,7 +20,6 @@ namespace RedEye.PluginAPI {
         protected IShellWindowManager ShellWindowManager = null;
         protected ISpecialFolderWrapper SpecialFolderWrapper = null;
         protected IWindowManager WindowManager = null;
-        protected IWmxManager WmxManager = null;
 
 
         public virtual string Name {
@@ -44,7 +43,6 @@ namespace RedEye.PluginAPI {
             ShellWindowManager = ComponentManager.GetComponent<IShellWindowManager>();
             SpecialFolderWrapper = ComponentManager.GetComponent<ISpecialFolderWrapper>();
             WindowManager = ComponentManager.GetComponent<IWindowManager>();
-            WmxManager = ComponentManager.GetComponent<IWmxManager>();
 
         }
 

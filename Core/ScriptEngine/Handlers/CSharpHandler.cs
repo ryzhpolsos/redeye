@@ -59,7 +59,7 @@ namespace RedEye.Core.ScriptEngine {
 
                 result.Assembly.GetType(type).GetMethod(method).Invoke(null, nameSpace.Values.ToArray());
             }catch(Exception ex){
-                throw new ScriptEngineException($"C# runtime error: {ex.GetType().FullName}: {ex.Message} | inner exception: {(ex.InnerException is not null ? ex.InnerException.GetType().FullName : string.Empty)} {(ex.InnerException is not null ? ex.InnerException.Message : string.Empty)}");
+                throw new ScriptEngineException($"C# runtime error: {ex.GetType().FullName}: {ex.Message} | inner exception: {(ex.InnerException is not null ? ex.InnerException.GetType().FullName : string.Empty)} {(ex.InnerException is not null ? ex.InnerException.Message : string.Empty)} | {(ex.InnerException is not null ? ex.InnerException.StackTrace : string.Empty)}");
             }
         }
     }

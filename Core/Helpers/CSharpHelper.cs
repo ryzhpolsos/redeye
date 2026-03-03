@@ -11,11 +11,15 @@ namespace RedEye.Core {
         static CompilerParameters compilerParameters = new();
 
         static CSharpHelper(){
-            AppContext.SetSwitch("Switch.System.DisableTempFileCollectionDirectoryFeature", false);
+            AppContext.SetSwitch("Switch.System.DisableTempFileCollectionDirectoryFeature", true);
+
+            var tempDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RedEye", "Temp");
+            Directory.CreateDirectory(tempDir);
 
             compilerParameters.GenerateInMemory = true;
             compilerParameters.GenerateExecutable = false;
-            compilerParameters.TempFiles = new(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), false);
+            compilerParameters.TempFiles = new(tempDir, false);
+            compilerParameters.OutputAssembly = Path.Combine(tempDir, Guid.NewGuid() + ".dll");
 
             List<string> assemblies = new();
             assemblies.Add(Assembly.GetExecutingAssembly().Location);

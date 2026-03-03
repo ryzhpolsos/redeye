@@ -17,7 +17,6 @@ namespace RedEye {
             .AddComponent<IShellWindowManager>(new ShellWindowManagerComponent())
             .AddComponent<ILayoutLoader>(new LayoutLoaderComponent())
             .AddComponent<IConfig>(new ConfigComponent())
-            .AddComponent<IWmxManager>(new WmxManagerComponent())
             .AddComponent<IShellEventListener>(new ShellEventListenerComponent())
             .AddComponent<IPluginManager>(new PluginManagerComponent())
             .AddComponent<IResourceManager>(new ResourceManagerComponent())
@@ -79,9 +78,8 @@ namespace RedEye {
 
 
             try{
-                Console.WriteLine(string.Join(", ", manager.GetComponentNames()));
                 manager.GetComponent<IPluginManager>().LoadPlugins();
-                manager.GetComponent<IConfig>().LoadConfig().ExecuteScripts();
+                manager.GetComponent<IConfig>().LoadConfig();
                 manager.GetComponent<IShellWindowManager>().ShowWindows();
             }catch(Exception ex){
                 manager.GetComponent<ILogger>().LogFatal(ExceptionHelper.FormatException(ex, true));

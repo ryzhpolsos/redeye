@@ -15,7 +15,6 @@ namespace RedEye.Components {
         ComponentManager manager = null;
         IConfig config = null;
         ILogger logger = null;
-        IWmxManager wmxManager = null;
         IWindowManager windowManager = null;
 
         Dictionary<IntPtr, IntPtr> windowWrappers = new();
@@ -23,7 +22,6 @@ namespace RedEye.Components {
         List<IntPtr> ignoreHandles = new();
         List<Action<ShellWindowEvent, ShellWindowState>> eventHandlers = new();
         int shellMsg = 0;
-        int wmxMsg = 0;
         bool listenerStarted = false;
         Icon defaultIcon = null;
 
@@ -34,7 +32,6 @@ namespace RedEye.Components {
         public void Initialize(){
             config = manager.GetComponent<IConfig>();
             logger = manager.GetComponent<ILogger>();
-            wmxManager = manager.GetComponent<IWmxManager>();
             windowManager = manager.GetComponent<IWindowManager>();
 
             SetDefaultIcon("imageres.dll", 2);
@@ -42,6 +39,15 @@ namespace RedEye.Components {
 
         public void AddIgnoredHandle(IntPtr handle){
             ignoreHandles.Add(handle);
+        }
+
+        public void SetWorkArea(int x, int y, int width, int height){
+            var rc = new RECT();
+            rc.left = x;
+            rc.top = y;
+            rc.right = x + width;
+            rc.bottom = y + height;
+            SystemParametersInfo(SPI_SETWORKAREA, 0, ref rc, SPIF_SENDCHANGE);
         }
 
         public void SetDefaultIcon(string fileName, int id){
@@ -88,7 +94,6 @@ namespace RedEye.Components {
             listenerStarted = true;
 
             shellMsg = RegisterWindowMessage("SHELLHOOK");
-            wmxMsg = RegisterWindowMessage(wmxManager.GetResponseMessage());
 
             Task.Run(()=>{
                 try{
@@ -118,22 +123,15 @@ namespace RedEye.Components {
                     mm.iArrange = ARW_HIDE;
                     SystemParametersInfo(SPI_SETMINIMIZEDMETRICS, 0, ref mm, SPIF_SENDCHANGE);
 
-                    if(!ParseHelper.ParseBool(config.GetRootNode()["config"]["core"]["useWmxShellHook"].GetValue())){
-                        //SetShellWindow(hWnd);
-                        SetTaskmanWindow(hWnd);
+                    // SetShellWindow(hWnd);
+                    SetTaskmanWindow(hWnd);
 
-                        if(!RegisterShellHookWindow(hWnd)){
-                            logger.LogFatal("Shell hook registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
-                        }
+                    if(!RegisterShellHookWindow(hWnd)){
+                        logger.LogFatal("Shell hook registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
 
-                    var rcFull = new RECT();
-                    rcFull.left = 0;
-                    rcFull.top = 0;
-                    rcFull.right = Screen.PrimaryScreen.Bounds.Width;
-                    rcFull.right = Screen.PrimaryScreen.Bounds.Height;
-                    SystemParametersInfo(SPI_SETWORKAREA, 0, ref rcFull, SPIF_SENDCHANGE);
-
+                    // SetWorkArea(0, 0, Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+                    
                     var msg = new MSG();
                     while(GetMessage(ref msg, IntPtr.Zero, 0, 0)){
                         DispatchMessage(ref msg);
@@ -171,13 +169,8 @@ namespace RedEye.Components {
                         break;
                     }
                     case HSHELL_GETMINRECT: {
-                        IntPtr hwnd;
-                        if(config.GetRootNode()["config"]["core"]["useWmxShellHook"].GetValue() == "true"){
-                            hwnd = lParam;
-                        }else{
-                            var hookInfo = Marshal.PtrToStructure<SHELLHOOKINFO>(lParam);
-                            hwnd = hookInfo.hwnd;
-                        }
+                        var hookInfo = Marshal.PtrToStructure<SHELLHOOKINFO>(lParam);
+                        var hwnd = hookInfo.hwnd;
 
                         if(IsWindowNonShell(hwnd) && activeWindows.ContainsKey(hwnd)){
                             var win = activeWindows[hwnd];
@@ -236,24 +229,9 @@ namespace RedEye.Components {
                 }
 
                 return 1;
-            }else if(uMsg == wmxMsg){
-                switch((WmxResponse)wParam){
-                    case WmxResponse.Lang: {
-                        SendLayoutChange((int)lParam);
-                        break;
-                    }
-
-                    case WmxResponse.WrapperRequest: {
-                        var hWrapper = windowManager.CreateWindowWrapper(lParam);
-                        windowWrappers.Add(lParam, hWrapper);
-                        return (int)hWrapper;
-                    }
-                }
             }else{
                 return DefWindowProc(hWnd, uMsg, wParam, lParam);
             }
-
-            return 0;
         }
 
         bool EnumWindowsHandler(IntPtr hWnd, IntPtr lParam){

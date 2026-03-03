@@ -62,7 +62,7 @@ namespace RedEye.Components {
         }
 
         int KbHandler(int nCode, int wParam, IntPtr lParam){
-            bool cont = true, isUp = false, found = false;
+            bool isUp = false, found = false;
             string keyName = string.Empty;
 
             if(lParam != IntPtr.Zero){
@@ -117,7 +117,6 @@ namespace RedEye.Components {
                             lastLength = keyList.Count();
 
                             if((isUp || handler.AllowMultiActivate) && !handler.Handler.Invoke()){
-                                cont = false;
                                 break;
                             }
                         }
