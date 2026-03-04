@@ -30,7 +30,7 @@
             <set name="workArea.height" value="calc('${screen.height} - ${taskbar.height} - ${taskbar.margin} * 2')"/>
 
             <!-- Desktop settings -->
-            <set name="desktop.wallpaper" value="expand('%SYSTEMROOT%\Web\Wallpaper\Windows\img0.jpg')"/>
+            <set name="desktop.wallpaper" value="C:\Users\ryzh\Pictures\bg.png"/>
 
             <!-- Start menu settings -->
             <set name="startMenu.width" value="400"/>

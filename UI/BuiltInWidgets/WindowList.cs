@@ -80,6 +80,9 @@ namespace RedEye.UI.BuiltInWidgets {
                             PrepareElementNode(widget.GetNode(), windowState);
                             widget.UpdateConfig();
                             widget.UpdateControl();
+                            // Console.WriteLine("Triggered!");
+
+                            // Console.WriteLine(ParseHelper.ToJson(windowState));
 
                             break;
                         }

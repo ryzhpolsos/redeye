@@ -22,5 +22,6 @@ namespace RedEye.UI {
         public string Font = string.Empty;
         public int UpdateInterval = 0;
         public string ToolTip = string.Empty;
+        public int Layer = 0;
     }
 }

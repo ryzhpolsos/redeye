@@ -44,7 +44,8 @@ namespace RedEye {
             .ExportWidget("contextMenu", typeof(ContextMenu))
             .ExportWidget("tablePanel", typeof(TablePanel))
             .ExportWidget("textBox", typeof(TextBox))
-            .ExportWidget("button", typeof(Button));
+            .ExportWidget("button", typeof(Button))
+            .ExportWidget("externalWindow", typeof(ExternalWindow));
 
             // var node = new ConfigNode(manager, "meow");
             // node.SetVariable("nya", "uwu");

@@ -23,17 +23,7 @@ namespace RedEye.UI.BuiltInWidgets {
             pictureBox.SizeMode = ParseHelper.ParseEnum<PictureBoxSizeMode>(Node.GetAttribute("sizeMode", "stretchImage"));
 
             var image = ComponentManager.GetComponent<IResourceManager>().GetResource<System.Drawing.Image>(Node.GetAttribute("src"));
-            byte[] hash = null;
-
-            using(MemoryStream ms = new()){
-                image.Save(ms, ImageFormat.Bmp);
-                hash = sha1.ComputeHash(ms);
-            }
-
-            if(lastHash is null || !hash.SequenceEqual(lastHash)){
-                lastHash = hash;
-                pictureBox.Image = image;    
-            }
+            pictureBox.Image = image; 
 
             base.UpdateControlInternal();
         }

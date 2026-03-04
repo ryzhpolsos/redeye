@@ -1,11 +1,14 @@
 <window
-     id="desktop"
-     x="0"
-     y="0"
-     width="${screen.width}"
-     height="${screen.height}"
-     type="background"
-     border="none">
+ id="desktop"
+ x="0"
+ y="0"
+ width="${screen.width}"
+ height="${screen.height}"
+ type="background"
+ border="none">
 
-     <image src="res.loadImage('${desktop.wallpaper}')" dock="fill"/>
+    <panel dock="fill">
+        <image src="res.loadImage('${desktop.wallpaper}')" dock="fill" layer="1"/>
+        <externalWindow x="100" y="200" width="300" height="200" layer="0" fileName="notepad.exe"/>
+    </panel>
 </window>

@@ -21,14 +21,26 @@ namespace RedEye.UI {
             base.UpdateControlInternal();
         }
 
+        public override void UpdateConfig(){
+            foreach(var widget in widgets.Values) widget.UpdateConfig();
+            base.UpdateConfig();
+        }
+
         protected virtual void AddWidgetInternal(IShellWidget widget){
-            widgets.Add(widget.GetConfig().Id, widget);
+            var config = widget.GetConfig();
+            widgets.Add(config.Id, widget);
             widgetParams.Add(widget.GetConfig().Id, GetDefaultWidgetParams(widget));
             widget.SetContainer(this);
 
             var control = widget.GetControl();
-            if(control is not null) Control.Controls.Add(control);
-            // if(widget.GetType().FullName != typeof(RedEye.UI.BuiltInWidgets.ContextMenu).FullName && widget.GetControl() is not null) Control.Controls.Add(widget.GetControl(false));
+
+            if(control is not null){
+                Control.Controls.Add(control);
+
+                if(config.Layer >= 0){
+                    Control.Controls.SetChildIndex(control, config.Layer);
+                }
+            }
 
             foreach(var attr in Node.GetAttributes().Where(a => a.StartsWith("on"))){
                 widget.GetNode().SetAttribute(attr, Node.GetRawAttribute(attr));

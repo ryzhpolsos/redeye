@@ -163,6 +163,9 @@ namespace RedEye.Core {
         [DllImport("shell32.dll", CharSet=CharSet.Auto)]
         public static extern int ExtractIconEx(string lpszFile, int nIconIndex, IntPtr phiconLarge, IntPtr phiconSmall, int nIcons);
 
+        [DllImport("user32.dll")]
+        public static extern int SetParent(IntPtr hWndChild, IntPtr hWndParent);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;
@@ -195,6 +198,8 @@ namespace RedEye.Core {
         public const int WS_EX_TOOLWINDOW = 0x80;
         public const int WS_MINIMIZE = 0x20000000;
         public const int WS_CAPTION = 0x00C00000;
+        public const int WS_VISIBLE = 0x10000000;
+        public const int WS_CHILD = 0x40000000;
         public const int WM_QUIT = 0x0012;
         public const int WM_GETICON = 0x7F;
         public const int WM_INPUTLANGCHANGE = 81;

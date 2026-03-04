@@ -8,7 +8,7 @@
     </Target>
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetFramework>netframework4.8</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
         <LangVersion>latest</LangVersion>

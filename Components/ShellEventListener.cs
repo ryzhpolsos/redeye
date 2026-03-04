@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -299,7 +298,7 @@ namespace RedEye.Components {
 
             var className = GetWindowClass(hWnd);
 
-            if(className[0] == '#'){
+            if(className.Length > 0 && className[0] == '#'){
                 return className == "#32770";
             }
 

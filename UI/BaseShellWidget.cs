@@ -102,10 +102,6 @@ namespace RedEye.UI {
                 Control.Font = ParseHelper.ParseFont(font);
             });
 
-            UtilHelper.IfNotEmpty(Config.ToolTip, (toolTipText) => {
-                toolTip.SetToolTip(Control, toolTipText);
-            });
-
             var controlType = Control.GetType();
 
             foreach(var attr in Node.GetAttributes()){
@@ -173,6 +169,7 @@ namespace RedEye.UI {
             Config.UpdateInterval = ParseHelper.ParseInt(Node.GetAttribute("updateInterval"));
             Config.Font = Node.GetAttribute("font");
             Config.ToolTip = Node.GetAttribute("toolTip");
+            Config.Layer = ParseHelper.ParseInt(Node.GetAttribute("layer", "-1"));
         }
 
         public IContainerWidget GetContainer(){
