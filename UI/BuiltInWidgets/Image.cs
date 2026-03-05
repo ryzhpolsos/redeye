@@ -1,17 +1,10 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using System.Drawing.Imaging;
-using System.Security.Cryptography;
 
 using RedEye.Core;
 
 namespace RedEye.UI.BuiltInWidgets {
     public class Image : BaseShellWidget {
         PictureBox pictureBox = new();
-        byte[] lastHash = null;
-        SHA1 sha1 = SHA1.Create();
 
         public override void Initialize(){
             Control = pictureBox;

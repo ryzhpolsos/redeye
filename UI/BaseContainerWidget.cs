@@ -7,8 +7,6 @@ namespace RedEye.UI {
         protected Dictionary<string, IShellWidget> widgets = new();
         protected Dictionary<string, Dictionary<string, object>> widgetParams = new();
 
-        public BaseContainerWidget() : base(){}
-
         protected virtual Dictionary<string, object> GetDefaultWidgetParams(IShellWidget widget){
             return new();
         }
