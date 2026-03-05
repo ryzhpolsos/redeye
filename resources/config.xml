@@ -19,7 +19,7 @@
             <set name="taskbar.height" value="calc('${taskbar.item.size} + ${taskbar.item.padding} * 2')"/>
 
             <!-- Tray settings -->
-            <set name="taskbar.tray.width" value="200"/>
+            <set name="taskbar.tray.width" value="250"/>
             <set name="taskbar.tray.font" value="Segoe UI,9"/>
             <set name="taskbar.tray.fontColor" value="white"/>
 
@@ -45,6 +45,12 @@
             <set name="runBox.x" value="calc('${screen.width} / 2 - ${runBox.width} / 2')"/>
             <set name="runBox.y" value="calc('${screen.height} / 2 - ${runBox.height} / 2')"/>
             <set name="runBox.font" value="Segoe UI,9"/>
+
+            <!-- Mixer settings -->
+            <set name="mixer.width" value="300"/>
+            <set name="mixer.height" value="200"/>
+            <set name="mixer.x" value="calc('${taskbar.width} - ${taskbar.tray.width} + ${mixer.width} / 2')"/>
+            <set name="mixer.y" value="${taskbar.y}"/>
         </variables>
 
         <!-- Set the work area -->
@@ -55,6 +61,7 @@
         <import from="config/ui/startMenu.xml"/>
         <import from="config/ui/taskbar.xml"/>
         <import from="config/ui/runBox.xml"/>
+        <import from="config/ui/mixer.xml"/>
     </layout>
     <hotkeys>
         <hotkey keys="Win+F1" action="media.decreaseVolume()" multiActivate="true"/>

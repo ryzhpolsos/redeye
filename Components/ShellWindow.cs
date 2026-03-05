@@ -30,7 +30,7 @@ namespace RedEye.Components {
         public void InitWindow(){
             switch(config.Type){
                 case ShellWindowType.Normal: {
-                    form = new Form();
+                    form = new ShellForm();
                     break;
                 }
 
@@ -152,7 +152,23 @@ namespace RedEye.Components {
         }
     }
 
-    internal class NoTaskbarForm : Form {
+    internal class ShellForm : Form {
+        public ShellForm() : base() {
+            DoubleBuffered = true;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+            UpdateStyles();
+        }
+
+        protected override CreateParams CreateParams {
+            get {
+                var @params = base.CreateParams;
+                @params.ExStyle |= 0x02000000;
+                return @params;
+            }
+        }
+    }
+
+    internal class NoTaskbarForm : ShellForm {
         IShellEventListener listener = null;
 
         public NoTaskbarForm(IShellEventListener listener) : base() {

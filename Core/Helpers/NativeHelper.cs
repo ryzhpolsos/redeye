@@ -166,6 +166,9 @@ namespace RedEye.Core {
         [DllImport("user32.dll")]
         public static extern int SetParent(IntPtr hWndChild, IntPtr hWndParent);
 
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;
@@ -390,6 +393,19 @@ namespace RedEye.Core {
 
             // Console.WriteLine(hIcon);
             return hIcon;
+        }
+
+        public static string GetWindowText(IntPtr h){
+            int len = SendMessage(h, 0xE, 0L, 0L)+1;
+            StringBuilder buff = new StringBuilder(len);
+            SendMessage(h, 0xD, len, buff);
+            return buff.ToString();
+        }
+
+        public static string GetWindowClass(IntPtr h){
+            var buff = new StringBuilder(255);
+            GetClassName(h, buff, buff.Capacity);
+            return buff.ToString();
         }
     }
 }

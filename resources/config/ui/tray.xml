@@ -1,17 +1,16 @@
-<flowPanel
+<tablePanel
     x="calc('${taskbar.width} - ${taskbar.tray.width}')"
     y="0"
     width="${taskbar.tray.width}"
     height="${taskbar.height}"
-    direction="rightToLeft"
     updateInterval="100"
     color="${taskbar.tray.fontColor}"
     font="${taskbar.tray.font}"
+    rowCount="1"
+    columnCount="3"
     >
-    <variables>
-        <set name="taskbar.tray.item.count" value="2"/>
-    </variables>
 
-    <label width="calc('${taskbar.tray.width} / ${taskbar.tray.item.count}')" height="${taskbar.height}" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
-    <label width="calc('${taskbar.tray.width} / ${taskbar.tray.item.count}')" height="${taskbar.height}" align="middleCenter" text="dateTime('HH:mm:ss')"/>
-</flowPanel>
+    <label dock="fill" table.position="0,0" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
+    <label dock="fill" table.position="1,0" align="middleCenter" text="dateTime('HH:mm:ss')"/>
+    <image dock="fill" table.position="2,0" imageWidth="32" imageHeight="32" sizeMode="centerImage" src="res.loadIcon(expand('%SYSTEMROOT%\System32\SndVol.exe'), -110)" onClick="window.toggle(mixer)"/>
+</tablePanel>

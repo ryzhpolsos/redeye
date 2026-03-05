@@ -79,18 +79,5 @@ namespace RedEye.Components {
                 }
             }
         }
-
-        string GetWindowText(IntPtr h){
-            int len = SendMessage(h, 0xE, 0L, 0L)+1;
-            StringBuilder buff = new StringBuilder(len);
-            SendMessage(h, 0xD, len, buff);
-            return buff.ToString();
-        }
-
-        string GetWindowClass(IntPtr h){
-            var buff = new StringBuilder(255);
-            GetClassName(h, buff, buff.Capacity);
-            return buff.ToString();
-        }
     }
 }
