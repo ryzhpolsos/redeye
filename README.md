@@ -1,10 +1,10 @@
 # RedEye
 
-![GitHub Release](https://img.shields.io/github/v/release/ryzhpolsos/redeye)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ryzhpolsos/redeye/total)
-![GitHub top language](https://img.shields.io/github/languages/top/ryzhpolsos/redeye)
-![GitHub License](https://img.shields.io/github/license/ryzhpolsos/redeye)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/ryzhpolsos/redeye)
+[![GitHub Release](https://img.shields.io/github/v/release/ryzhpolsos/redeye)](https://github.com/ryzhpolsos/redeye/releases/latest)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ryzhpolsos/redeye/total)](https://github.com/ryzhpolsos/redeye/releases/latest)
+[![GitHub top language](https://img.shields.io/github/languages/top/ryzhpolsos/redeye)](https://github.com/search?q=repo%3Aryzhpolsos%2Fredeye++language%3AC%23&type=code)
+[![GitHub License](https://img.shields.io/github/license/ryzhpolsos/redeye)](https://github.com/ryzhpolsos/redeye/blob/main/LICENSE)
+[![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/ryzhpolsos/redeye)](https://github.com/ryzhpolsos/redeye/issues)
 
 RedEye is a free, open-source, very flexible, fully customizable and extendable Windows shell. Say goodbye to laggy Explorer with fixed taskbar size!
 
