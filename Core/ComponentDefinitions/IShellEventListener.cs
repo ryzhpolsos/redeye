@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace RedEye.Core {
     public interface IShellEventListener : IComponent {
@@ -7,6 +8,12 @@ namespace RedEye.Core {
         public void RegisterEventHandler(Action<ShellWindowEvent, ShellWindowState> handler);
         public void ToggleWindow(IntPtr handle);
         public void SetWorkArea(int x, int y, int width, int height);
+        public void ReSetWorkArea();
+        public void SetMinimizedMetrics();
+        public void SetDefaultIcon(string fileName, int id);
+        public IEnumerable<ShellWindowState> GetWindows();
+        public void TriggerEvent(ShellWindowEvent et, IntPtr hWnd);
+        public bool HasWindow(IntPtr hWnd);
     }
 
     public enum ShellWindowEvent {

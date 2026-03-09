@@ -16,6 +16,7 @@ namespace RedEye.Components {
 
     public class HotKeyManagerComponent : IHotKeyManager {
         ComponentManager manager = null;
+        IExplorerIntegration explorerIntegration = null;
  
         List<string> keys = new List<string>();
         List<HotKey> hotKeys = new List<HotKey>();
@@ -49,6 +50,8 @@ namespace RedEye.Components {
         }
 
         public void Initialize(){
+            explorerIntegration = manager.GetComponent<IExplorerIntegration>();
+
             kbProc = KbHandler;
             var kbHook = SetWindowsHookEx(WH_KEYBOARD_LL, kbProc, IntPtr.Zero, 0);
         }
@@ -59,6 +62,10 @@ namespace RedEye.Components {
 
         public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler, bool allowMultiActivate = false){
             hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler, AllowMultiActivate = allowMultiActivate });
+        }
+
+        bool IsPrintableKey(string keyName){
+            return keyName.Length == 1 || (keyName.Length == 2 && keyName[0] == 'D') || keyName == "OemPeriod" || keyName == "Oemcomma";
         }
 
         int KbHandler(int nCode, int wParam, IntPtr lParam){
@@ -122,7 +129,6 @@ namespace RedEye.Components {
                         }
                     }
 
-
                     if(found){
                         break;
                     }
@@ -142,7 +148,14 @@ namespace RedEye.Components {
                 }
             }
 
-            return !found || !(keyName.Length == 1 || (keyName.Length == 2 && keyName[0] == 'D') || keyName == "OemPeriod" || keyName == "Oemcomma") ? CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam) : 1;
+            if(
+                (found && IsPrintableKey(keyName)) ||
+                (explorerIntegration.GetIsEnabled() && (keyName == "LWin" || keyName == "RWin"))
+            ){
+                return 1;
+            }
+
+            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam); 
         }
     }
 }

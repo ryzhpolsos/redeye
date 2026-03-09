@@ -26,6 +26,7 @@ namespace RedEye {
             .AddComponent<IExpressionParser>(new ExpressionParserComponent())
             .AddComponent<IWindowManager>(new WindowManagerComponent())
             .AddComponent<ISpecialFolderWrapper>(new SpecialFolderWrapperComponent())
+            .AddComponent<IExplorerIntegration>(new ExplorerIntegrationComponent())
             .InitializeComponents();
 
             manager
@@ -77,10 +78,10 @@ namespace RedEye {
             // foreach(var a in appList) nya(a);
             // return;
 
-
             try{
                 manager.GetComponent<IPluginManager>().LoadPlugins();
                 manager.GetComponent<IConfig>().LoadConfig();
+                manager.GetComponent<IExplorerIntegration>().RunHiddenExplorer();
                 manager.GetComponent<IShellWindowManager>().ShowWindows();
             }catch(Exception ex){
                 manager.GetComponent<ILogger>().LogFatal(ExceptionHelper.FormatException(ex, true));

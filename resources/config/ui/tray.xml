@@ -7,10 +7,9 @@
     color="${taskbar.tray.fontColor}"
     font="${taskbar.tray.font}"
     rowCount="1"
-    columnCount="3"
+    columnCount="2"
     >
 
     <label dock="fill" table.position="0,0" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
     <label dock="fill" table.position="1,0" align="middleCenter" text="dateTime('HH:mm:ss')"/>
-    <image dock="fill" table.position="2,0" imageWidth="32" imageHeight="32" sizeMode="centerImage" src="res.loadIcon(expand('%SYSTEMROOT%\System32\SndVol.exe'), -110)" onClick="window.toggle(mixer)"/>
 </tablePanel>

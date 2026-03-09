@@ -39,9 +39,7 @@ namespace RedEye.UI.BuiltInWidgets {
             
             try{
                 node.SetVariable("window.icon", resourceManager.AddResource(windowState.Icon.ToBitmap()));
-            }catch(Exception exc){
-                MessageBox.Show($"{exc.GetType().FullName}: {exc.Message} | {windowState.Title}");
-            }
+            }catch(Exception){}
         }
 
         void ShellEvent(ShellWindowEvent windowEvent, ShellWindowState windowState){

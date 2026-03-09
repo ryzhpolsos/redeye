@@ -133,6 +133,8 @@ namespace RedEye.UI {
                     }
                 }
             }
+
+            Control.Invalidate(true);
         }
 
         public void UpdateControl(){

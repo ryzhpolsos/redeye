@@ -169,10 +169,23 @@ namespace RedEye.Core {
         [DllImport("user32.dll", CharSet=CharSet.Auto)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        public static extern IntPtr FindWindow(string lpClassName, IntPtr lpWindowName);
+
+        [DllImport("user32.dll")]
+        public static extern int BringWindowToTop(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern int SetActiveWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern int EnableWindow(IntPtr hWnd, int bEnable);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;
         public const int SWP_NOZORDER = 0x0004;
+        public const int SWP_SHOWWINDOW = 0x0040;
         public const int WM_WINDOWPOSCHANGING = 0x0046;
         public const int WM_CLOSE = 16;
         public const int WM_KEYDOWN = 0x100;
@@ -188,6 +201,7 @@ namespace RedEye.Core {
         public static readonly IntPtr HWND_BOTTOM = (IntPtr)1;
         public static readonly IntPtr HWND_TOPMOST = (IntPtr)(-1);
         public static readonly IntPtr HWND_MESSAGE = (IntPtr)(-3);
+        public static readonly IntPtr HWND_TOP = (IntPtr)0;
         public const int HSHELL_GETMINRECT = 5;
         public const int HSHELL_REDRAW = 6;
         public const int HSHELL_WINDOWCREATED = 1;

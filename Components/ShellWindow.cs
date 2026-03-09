@@ -61,10 +61,18 @@ namespace RedEye.Components {
 
             form.Text = title;
 
-            form.Load += (s, e) => {
+            form.Load += (_, _) => {
                 form.Location = new Point(config.X, config.Y);
                 form.Size = new Size(config.Width, config.Height);
                 form.AutoSize = config.AutoSize;
+            };
+
+            form.Shown += (_, _) => {
+                BringWindowToTop(form.Handle);
+                SetForegroundWindow(form.Handle);
+                SetWindowPos(form.Handle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+                // ActivateWindow(form.Handle);
+                // SetActiveWindow(form.Handle);
             };
 
             if(!string.IsNullOrEmpty(config.Padding)) form.Padding = ParseHelper.ParsePadding(config.Padding);
@@ -74,7 +82,6 @@ namespace RedEye.Components {
 
         public void ShowWindow(){
             form.Show();
-            NativeHelper.SetForegroundWindow(form.Handle);
         }
 
         public void HideWindow(){

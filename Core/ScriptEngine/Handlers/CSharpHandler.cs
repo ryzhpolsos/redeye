@@ -38,7 +38,7 @@ namespace RedEye.Core.ScriptEngine {
 
                 var argList = string.Join(", ", args);
                 code = string.Format(codeTemplate, argList, codeBefore, codeMain);
-                Console.WriteLine(code);
+                // Console.WriteLine(code);
             }
             
 

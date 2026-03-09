@@ -61,7 +61,6 @@ namespace RedEye.UI.BuiltInWidgets {
                 });
             }
 
-
             if(hWnd == IntPtr.Zero){
                 try{
                     hWnd = process.MainWindowHandle;
@@ -81,7 +80,11 @@ namespace RedEye.UI.BuiltInWidgets {
                 }, IntPtr.Zero);
             }
 
+            // if(shellEventListener.HasWindow(hWnd)){
+            //     shellEventListener.TriggerEvent(ShellWindowEvent.Destroy, hWnd);
+            // }
 
+            shellEventListener.AddIgnoredHandle(hWnd);
 
             SetParent(hWnd, panel.Handle);
             SetWindowPos(hWnd, IntPtr.Zero, 0, 0, panel.Width, panel.Height, SWP_NOZORDER);

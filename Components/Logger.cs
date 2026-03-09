@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 using RedEye.Core;
 
@@ -34,12 +35,18 @@ namespace RedEye.Components {
         public void LogWarning(string message) => Log(LogType.Warning, message);
 
         public void LogError(string message){
-            MessageBox.Show($"Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Task.Run(() => {
+            //     MessageBox.Show($"Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // });
+
             Log(LogType.Error, message);
         }
 
         public void LogFatal(string message){
-            MessageBox.Show($"Fatal Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Task.Run(() => {
+                MessageBox.Show($"Fatal Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            });
+
             Log(LogType.Fatal, message);
         }
     }

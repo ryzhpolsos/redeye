@@ -6,6 +6,7 @@
      height="${taskbar.height}"
      type="topMost"
      border="none"
+     allowClose="false"
      backgroundColor="${taskbar.background}">
 
     <import from="config/ui/startButton.xml"/>
