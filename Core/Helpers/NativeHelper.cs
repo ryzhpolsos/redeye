@@ -181,6 +181,12 @@ namespace RedEye.Core {
         [DllImport("user32.dll")]
         public static extern int EnableWindow(IntPtr hWnd, int bEnable);
 
+        [DllImport("user32.dll")]
+        public static extern int GetKeyboardState(IntPtr lpKeyState);
+
+        [DllImport("user32.dll")]
+        public static extern short GetAsyncKeyState(int vKey);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;

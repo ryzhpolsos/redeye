@@ -1,6 +1,6 @@
 <core>
     <explorerIntegration>
         <enable>true</enable>
-        <timeout>1000</timeout>
+        <timeout>2000</timeout>
     </explorerIntegration>
 </core>

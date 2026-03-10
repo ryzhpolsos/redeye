@@ -34,6 +34,11 @@ namespace RedEye.Components {
                     break;
                 }
 
+                case ShellWindowType.Top: {
+                    form = new TopForm(listener);
+                    break;
+                }
+
                 case ShellWindowType.TopMost: {
                     form = new TopMostForm(listener);
                     break;
@@ -218,6 +223,19 @@ namespace RedEye.Components {
             base.WndProc(ref msg);
         }
     }
+
+    internal class TopForm : NoTaskbarForm {
+        public TopForm(IShellEventListener listener) : base(listener){}
+
+        protected override void WndProc(ref Message msg){
+            if(msg.Msg == WM_WINDOWPOSCHANGING){
+                SetWindowPos(msg.HWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            }
+
+            base.WndProc(ref msg);
+        }
+    }
+
 
     internal class TopMostForm : NoTaskbarForm {
         public TopMostForm(IShellEventListener listener) : base(listener){}

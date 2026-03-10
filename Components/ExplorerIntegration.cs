@@ -32,10 +32,15 @@ namespace RedEye.Components {
         public bool GetIsEnabled(){
             if(!enabledStateInit){
                 enabledStateInit = true;
+
+#if DEBUG
+                enabled = false;
+#else
                 node = manager.GetComponent<IConfig>().GetRootNode()["config"]["core"]["explorerIntegration"];
                 enabled = ParseHelper.ParseBool(node["enable"].Value);
-            }
+#endif
 
+            }
             return enabled;
         }
 
@@ -61,7 +66,11 @@ namespace RedEye.Components {
 
                 ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
                 ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
-                shellEventListener.ReSetWorkArea();
+                
+                while(true){
+                    shellEventListener.ReSetWorkArea();
+                    Thread.Sleep(100);
+                }
                 // shellEventListener.SetMinimizedMetrics();
             });
         }
