@@ -71,7 +71,6 @@ namespace RedEye.Components {
         }
 
         int KbHandler(int nCode, int wParam, IntPtr lParam){
-            Console.WriteLine("called");
             bool isUp = false, found = false;
             string keyName = string.Empty;
 

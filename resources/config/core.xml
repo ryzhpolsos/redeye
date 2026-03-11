@@ -3,4 +3,7 @@
         <enable>true</enable>
         <timeout>2000</timeout>
     </explorerIntegration>
+    <ui>
+        <transparencyKey>#ff00ff</transparencyKey>
+    </ui>
 </core>

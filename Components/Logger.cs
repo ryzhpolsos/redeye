@@ -35,17 +35,13 @@ namespace RedEye.Components {
         public void LogWarning(string message) => Log(LogType.Warning, message);
 
         public void LogError(string message){
-            // Task.Run(() => {
-            //     MessageBox.Show($"Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            // });
+            MessageBox.Show($"Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             Log(LogType.Error, message);
         }
 
         public void LogFatal(string message){
-            Task.Run(() => {
-                MessageBox.Show($"Fatal Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            });
+            MessageBox.Show($"Fatal Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             Log(LogType.Fatal, message);
         }

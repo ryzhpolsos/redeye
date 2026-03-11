@@ -20,6 +20,7 @@ namespace RedEye.UI {
 
         private System.Windows.Forms.ToolTip toolTip = null;
         private IResourceManager resourceManager = null;
+        private IConfig config = null;
         private List<string> processedEvents = new();
 
         public void SetManager(ComponentManager manager){
@@ -44,6 +45,10 @@ namespace RedEye.UI {
 
         public virtual void PostInitialize(){
             if(Control is null) return;
+
+            if(!string.IsNullOrEmpty(Config.Parent)){
+                Control.Parent = (Container is null ? (IWidgetContainer)Container : (IWidgetContainer)Window).GetWidget(Config.Parent).GetControl();
+            }
 
             if(!string.IsNullOrEmpty(Config.ToolTip)){
                 Control.MouseHover += (_, _) => {
@@ -75,7 +80,11 @@ namespace RedEye.UI {
             if(resourceManager is null){
                 resourceManager = ComponentManager.GetComponent<IResourceManager>();
             }
- 
+
+            if(config is null){
+                config = ComponentManager.GetComponent<IConfig>();
+            }
+
             Control.Location = new Point(Config.X, Config.Y);
             Control.Size = new Size(Config.Width, Config.Height);
             Control.AutoSize = Config.AutoSize;
@@ -101,6 +110,11 @@ namespace RedEye.UI {
             UtilHelper.IfNotEmpty(Config.Font, (font) => {
                 Control.Font = ParseHelper.ParseFont(font);
             });
+
+            if(Config.IsTransparent){
+                // Control.BackColor = ColorTranslator.FromHtml(config.GetRootNode()["config"]["core"]["ui"]["transparencyKey"].Value);
+                Control.BackColor = Color.Transparent;
+            }
 
             var controlType = Control.GetType();
 
@@ -172,6 +186,8 @@ namespace RedEye.UI {
             Config.Font = Node.GetAttribute("font");
             Config.ToolTip = Node.GetAttribute("toolTip");
             Config.Layer = ParseHelper.ParseInt(Node.GetAttribute("layer", "-1"));
+            Config.IsTransparent = ParseHelper.ParseBool(Node.GetAttribute("isTransparent", "false"));
+            Config.Parent = Node.GetAttribute("parent");
         }
 
         public IContainerWidget GetContainer(){

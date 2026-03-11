@@ -11,6 +11,7 @@ using static RedEye.Core.NativeHelper;
 namespace RedEye.Components {
     public class ShellWindowComponent : IShellWindow {
         ComponentManager manager = null;
+        IConfig shellConfig = null;
         IShellEventListener listener = null;
 
         string title = null;
@@ -24,6 +25,7 @@ namespace RedEye.Components {
         }
 
         public void Initialize(){
+            shellConfig = manager.GetComponent<IConfig>();
             listener = manager.GetComponent<IShellEventListener>();
         }
 
@@ -83,6 +85,13 @@ namespace RedEye.Components {
             if(!string.IsNullOrEmpty(config.Padding)) form.Padding = ParseHelper.ParsePadding(config.Padding);
             if(!string.IsNullOrEmpty(config.Color)) form.ForeColor = ColorTranslator.FromHtml(config.Color);
             if(!string.IsNullOrEmpty(config.BackgroundColor)) form.BackColor = ColorTranslator.FromHtml(config.BackgroundColor);
+
+            if(config.AllowTransparency){
+                form.AllowTransparency = true;
+                form.TransparencyKey = ColorTranslator.FromHtml(shellConfig.GetRootNode()["config"]["core"]["ui"]["transparencyKey"].Value);
+            }
+
+            form.Opacity = config.Opacity;
         }
 
         public void ShowWindow(){

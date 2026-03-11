@@ -37,6 +37,8 @@ namespace RedEye.Core {
         public string Color = null;
         public string BackgroundColor = null;
         public string Padding = null;
+        public double Opacity = 1.0;
+        public bool AllowTransparency = false;
     }
 
     public interface IShellWindow : IComponent, IWidgetContainer {

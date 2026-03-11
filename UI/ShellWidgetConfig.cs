@@ -23,5 +23,8 @@ namespace RedEye.UI {
         public int UpdateInterval = 0;
         public string ToolTip = string.Empty;
         public int Layer = 0;
+        public bool IsTransparent = false;
+        public string TransparencyKey = "#ff00ff";
+        public string Parent = string.Empty;
     }
 }

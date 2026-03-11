@@ -46,7 +46,8 @@ namespace RedEye {
             .ExportWidget("tablePanel", typeof(TablePanel))
             .ExportWidget("textBox", typeof(TextBox))
             .ExportWidget("button", typeof(Button))
-            .ExportWidget("externalProcess", typeof(ExternalProcess));
+            .ExportWidget("externalProcess", typeof(ExternalProcess))
+            .ExportWidget("webView", typeof(WebView));
 
             // var node = new ConfigNode(manager, "meow");
             // node.SetVariable("nya", "uwu");
