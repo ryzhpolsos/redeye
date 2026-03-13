@@ -187,6 +187,9 @@ namespace RedEye.Core {
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(int vKey);
 
+        [DllImport("user32.dll")]
+        public static extern int ChangeWindowMessageFilterEx(IntPtr hWnd, int message, int action, IntPtr pChangeFilterStruct);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;
@@ -245,6 +248,8 @@ namespace RedEye.Core {
         public const int HKL_NEXT = 1;
         public const int MONITOR_DEFAULTTOPRIMARY = 1;
         public const int SHGFI_ICON = 0x100;
+        public const int MSGFLT_ALLOW = 1;
+        public const int MSGFLT_DISALLOW = 2;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct WINDOWPOS {

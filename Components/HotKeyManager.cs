@@ -43,6 +43,8 @@ namespace RedEye.Components {
             { ",", new(){ "Oemcomma" } }
         };
 
+        int lastLength = 0;
+
         public void SetManager(ComponentManager manager){
             this.manager = manager;
         }
@@ -59,8 +61,7 @@ namespace RedEye.Components {
         }
 
         public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler, bool allowMultiActivate = false){
-            hotKeys.Add(new(){ Keys = keys, Handler = handler, AllowMultiActivate = allowMultiActivate });
-            hotKeys = hotKeys.OrderBy(x => x.Keys.Count()).Reverse().ToList();
+            hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler, AllowMultiActivate = allowMultiActivate });
         }
 
         bool IsPrintableKey(string keyName){
@@ -71,7 +72,7 @@ namespace RedEye.Components {
             bool isUp = false, found = false;
             string keyName = string.Empty;
 
-            if(nCode >= 0 && lParam != IntPtr.Zero){
+            if(lParam != IntPtr.Zero){
                 var kbDll = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
 
                 keyName = ((Keys)kbDll.vkCode).ToString();
@@ -81,70 +82,70 @@ namespace RedEye.Components {
                     if(!handler.Invoke(keyName, isUp)) return 0;
                 }
 
-                if(true){
-                    foreach(var handler in hotKeys){
-                        // Console.WriteLine($"Checking: {string.Join(", ", handler.Keys)}");
-                        found = true;
+                foreach(var handler in hotKeys){
+                    List<List<string>> keyLists = new();
+                    keyLists.Add(handler.Keys.ToList());
 
-                        List<List<string>> keyLists = new();
-                        keyLists.Add(handler.Keys.ToList());
+                    for(int i = 0; i < handler.Keys.Count(); i++){
+                        var key = handler.Keys.ElementAt(i);
 
-                        for(int i = 0; i < handler.Keys.Count(); i++){
-                            var key = handler.Keys.ElementAt(i);
-
-                            if(keyMap.ContainsKey(key)){
-                                foreach(var mappedKey in keyMap[key]){
-                                    List<string> newKeys = new();
-                                    newKeys.AddRange(handler.Keys);
-                                    newKeys[i] = mappedKey;
-                                    keyLists.Add(newKeys);
-                                }
+                        if(keyMap.ContainsKey(key)){
+                            foreach(var mappedKey in keyMap[key]){
+                                List<string> newKeys = new();
+                                newKeys.AddRange(handler.Keys);
+                                newKeys[i] = mappedKey;
+                                newKeys.Sort();
+                                keyLists.Add(newKeys);
                             }
                         }
+                    }
 
-                        // Console.WriteLine("Keylists are:");
-                        // foreach(var k in keyLists){
-                        //     Console.WriteLine(string.Join(", ", k));
-                        // }
+                    // if(isUp || handler.AllowMultiActivate){
+                    //     foreach(var keyList in keyLists){
+                    //         // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
 
-                        bool needBreak = false;
+                    //         if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
+                    //             found = true;
+                    //             lastLength = keyList.Count();
 
-                        foreach(var keyList in keyLists){
+                    //             if(!handler.Handler.Invoke()){
+                    //                 cont = false;
+                    //                 break;
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    foreach(var keyList in keyLists){
+                        // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
+
+                        if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
                             found = true;
+                            lastLength = keyList.Count();
 
-                            foreach(var key in keyList){
-                                var nKey = (int)ParseHelper.ParseEnum<Keys>(key, (Keys)0xFF);
-                                
-                                // Console.WriteLine($"Testing {nKey.ToString("x")} ({key}): {GetAsyncKeyState(nKey).ToString("x")}");
-                                if(!keys.Contains(key) || nKey == 0xFF || (GetAsyncKeyState(nKey) & 0x8000) == 0){
-                                    found = false;
-                                    break;
-                                }
-                            }
-
-                            if(found){
-                                // Console.WriteLine($"Found: {string.Join(", ", keyList)}");
-
-                                if(isUp || handler.AllowMultiActivate){
-                                    if(!handler.Handler.Invoke()){
-                                        needBreak = true;
-                                        break;
-                                    }
-                                }else{
-                                    found = false;
-                                }
+                            if((isUp || handler.AllowMultiActivate) && !handler.Handler.Invoke()){
+                                break;
                             }
                         }
+                    }
 
-                        if(needBreak) break;
+                    if(found){
+                        break;
                     }
                 }
-            }
 
-            if(isUp){
-                if(keys.Contains(keyName)) keys.Remove(keyName);
-            }else{
-                keys.Add(keyName);
+                if(isUp){
+                    keys.Remove(keyName);
+                }else{
+                    keys.Add(keyName);
+                }
+
+                if(keys.Any()){
+                    keys = keys.Distinct().ToList();
+                    keys.Sort();
+                }else{
+                    lastLength = 0;
+                }
             }
 
             if(

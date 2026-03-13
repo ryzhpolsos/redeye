@@ -49,12 +49,6 @@ namespace RedEye {
             .ExportWidget("externalProcess", typeof(ExternalProcess))
             .ExportWidget("webView", typeof(WebView));
 
-            string s = """
-                <tag v="something">
-
-                </tag>
-                """;
-
             try{
                 manager.GetComponent<IPluginManager>().LoadPlugins();
                 manager.GetComponent<IConfig>().LoadConfig();

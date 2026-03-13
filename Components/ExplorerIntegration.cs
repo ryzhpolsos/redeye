@@ -43,6 +43,7 @@ namespace RedEye.Components {
 #endif
 
             }
+
             return enabled;
         }
 
@@ -54,6 +55,10 @@ namespace RedEye.Components {
             // SetWindowPos(hWnd, IntPtr.Zero, -9999, -9999, 1, 1, SWP_NOZORDER);
             ShowWindow(hWnd, 0);
             EnableWindow(hWnd, 0);
+            
+            foreach(var msg in new int[]{ WM_KEYDOWN, WM_SYSKEYDOWN, WM_KEYUP, WM_SYSKEYUP }){
+                ChangeWindowMessageFilterEx(hWnd, msg, MSGFLT_DISALLOW, IntPtr.Zero);
+            }
         }
 
         public void RunHiddenExplorer(){
@@ -68,8 +73,8 @@ namespace RedEye.Components {
                 BackgroundColor = "#000000"
             };
 
-            var wnd = shellWindowManager.CreateWindow(cfg);
-            wnd.ShowWindow();
+            // var wnd = shellWindowManager.CreateWindow(cfg);
+            // wnd.ShowWindow();
 
             var proc = Process.Start("explorer.exe");
             proc.WaitForInputIdle();
@@ -81,11 +86,11 @@ namespace RedEye.Components {
                 ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
                 ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
 
-                wnd.CloseWindow();
+                // wnd.CloseWindow();
                 
                 while(true){
                     shellEventListener.ReSetWorkArea();
-                    Thread.Sleep(100);
+                    Thread.Sleep(1000);
                 }
                 // shellEventListener.SetMinimizedMetrics();
             });
