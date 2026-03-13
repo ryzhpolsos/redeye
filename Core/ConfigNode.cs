@@ -154,7 +154,7 @@ namespace RedEye.Core {
 
                     case "eval":
                     case "exec": {
-                        node.SetValue(node.GetAttribute("action"));
+                        node.SetValue(node.GetAttribute("command"));
                         break;
                     }
 

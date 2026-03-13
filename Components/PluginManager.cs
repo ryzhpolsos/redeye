@@ -75,7 +75,6 @@ namespace RedEye.Components {
                     var pluginConfig = ParseHelper.ParseJson<Dictionary<string, object>>(File.ReadAllText(Path.Combine(dir, "plugin.json")));
                     if(pluginConfig.ContainsKey("requiredAssemblies") && pluginConfig["requiredAssemblies"] is not null && pluginConfig["requiredAssemblies"] is ArrayList){
                         foreach(var asm in (ArrayList)pluginConfig["requiredAssemblies"]){
-                            Console.WriteLine($"Adding {asm}...");
                             CSharpHelper.AddAssembly(Assembly.Load(asm.ToString()));
                         }
                     }

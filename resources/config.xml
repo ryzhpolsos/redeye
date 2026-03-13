@@ -47,6 +47,9 @@
             <set name="runBox.font" value="Segoe UI,9"/>
         </variables>
 
+        <eval command="powerSearch.config(width, 600)"/>
+        <eval command="powerSearch.config(font, 'Segoe UI,12')"/>
+
         <!-- Set the work area -->
         <import from="config/workArea.xml"/>
 
@@ -59,5 +62,6 @@
     <hotkeys>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>
         <hotkey keys="Win+R" action="runBox.open()"/>
+        <hotkey keys="Win+Space" action="powerSearch.open()"/>
      </hotkeys>
 </config>

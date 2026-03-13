@@ -29,18 +29,10 @@ namespace RedEye.Components {
             List<IApplicationListEntry> entries = new();
 
             foreach(var dir in dirs){
-                foreach(var entry in Directory.GetFileSystemEntries(dir)){
-                    bool isFolder = false;
+                foreach(var entry in Directory.GetFiles(dir, "*.lnk", SearchOption.AllDirectories)){
                     IEnumerable<IApplicationListEntry> childEntries = null;
 
-                    if(Directory.Exists(entry)){
-                        isFolder = true;
-                        childEntries = GetApplicationListInternal(new[]{entry});
-                    }else{
-                        if(!new[]{".lnk", ".url"}.Contains(Path.GetExtension(entry))) continue;
-                    }
-
-                    entries.Add(new ApplicationListEntryImpl(entry, isFolder, childEntries));
+                    entries.Add(new ApplicationListEntryImpl(entry, false, childEntries));
                 }
             }
 

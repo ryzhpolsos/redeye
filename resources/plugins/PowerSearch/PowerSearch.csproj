@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <TargetPlatform>x64</TargetPlatform>
+        <UseWindowsForms>true</UseWindowsForms>
+        <LangVersion>7.3</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="../../../Core/**"/>
+        <Compile Include="../../../Components/**"/>
+        <Compile Include="../../../PluginAPI/**"/>
+        <Compile Remove="../../../PluginAPI/Plugin.cs"/>
+    </ItemGroup>
+</Project>
