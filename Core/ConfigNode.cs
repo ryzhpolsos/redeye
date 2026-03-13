@@ -69,6 +69,18 @@ namespace RedEye.Core {
         IConfig config = null;
         ILogger logger = null;
 
+        public static ComponentManager ComponentManager;
+
+        public static ConfigNode CreateEmpty(string name){
+            return new ConfigNode(ComponentManager, name);
+        }
+
+        public static ConfigNode CreateFromString(string data){
+            var rootNode = CreateEmpty("root");
+            ComponentManager.GetComponent<IConfig>().LoadString(data, rootNode);
+            return rootNode.GetNodes().First();
+        }
+
         public ConfigNode(ComponentManager manager, string name, IDictionary<string, string> attributes = null, string value = null, Dictionary<string, Dictionary<string, string>> childNodeAttributes = null){
             this.name = name;
             this.manager = manager;

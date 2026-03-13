@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -30,12 +31,15 @@ namespace RedEye.Components {
             hotKeyManager = manager.GetComponent<IHotKeyManager>();
             layoutLoader = manager.GetComponent<ILayoutLoader>();
             engine = manager.GetComponent<IScriptEngine>();
+            
+            ConfigNode.ComponentManager = manager;
+
         }
 
         public IConfig LoadConfig(){
             rootNode = new ConfigNode(manager, "root");
-            rootNode.SetVariable("screen.width", Screen.PrimaryScreen.Bounds.Width.ToString());
-            rootNode.SetVariable("screen.height", Screen.PrimaryScreen.Bounds.Height.ToString());
+            rootNode.SetVariable("screen.width", Screen.AllScreens.Select(s => s.Bounds.Width).Sum().ToString());
+            rootNode.SetVariable("screen.height", Screen.AllScreens.Select(s => s.Bounds.Height).Sum().ToString());
             LoadFile("config.xml", rootNode);
 
             layoutNode = rootNode["config"]["layout"];
@@ -74,6 +78,12 @@ namespace RedEye.Components {
         public void LoadFile(string fileName, ConfigNode parentNode){
             XmlDocument doc = new();
             doc.Load(Path.Combine(appDirectory, fileName));
+            LoadNode(doc.DocumentElement, parentNode);
+        }
+
+        public void LoadString(string data, ConfigNode parentNode){
+            XmlDocument doc = new();
+            doc.LoadXml(data);
             LoadNode(doc.DocumentElement, parentNode);
         }
 

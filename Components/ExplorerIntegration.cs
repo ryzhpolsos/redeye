@@ -10,6 +10,7 @@ namespace RedEye.Components {
     public class ExplorerIntegrationComponent : IExplorerIntegration {
         ComponentManager manager = null;
         IConfig config = null;
+        IShellWindowManager shellWindowManager = null;
         IShellEventListener shellEventListener = null;
 
         readonly string trayWndClassName = "Shell_TrayWnd";
@@ -26,6 +27,7 @@ namespace RedEye.Components {
 
         public void Initialize(){
             config = manager.GetComponent<IConfig>();
+            shellWindowManager = manager.GetComponent<IShellWindowManager>();
             shellEventListener = manager.GetComponent<IShellEventListener>();
         }
 
@@ -57,6 +59,18 @@ namespace RedEye.Components {
         public void RunHiddenExplorer(){
             if(!GetIsEnabled()) return;
 
+            ShellWindowConfig cfg = new(){
+                Type = ShellWindowType.TopMost,
+                X = 0,
+                Y = 0,
+                Width = ParseHelper.ParseInt(config.GetRootNode().GetVariable("screenWidth")),
+                Height = ParseHelper.ParseInt(config.GetRootNode().GetVariable("screenHeight")),
+                BackgroundColor = "#000000"
+            };
+
+            var wnd = shellWindowManager.CreateWindow(cfg);
+            wnd.ShowWindow();
+
             var proc = Process.Start("explorer.exe");
             proc.WaitForInputIdle();
             pid = proc.Id;
@@ -66,6 +80,8 @@ namespace RedEye.Components {
 
                 ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
                 ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
+
+                wnd.CloseWindow();
                 
                 while(true){
                     shellEventListener.ReSetWorkArea();

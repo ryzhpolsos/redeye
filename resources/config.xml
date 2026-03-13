@@ -57,10 +57,6 @@
         <import from="config/ui/runBox.xml"/>
     </layout>
     <hotkeys>
-        <hotkey keys="Win+F1" action="media.decreaseVolume()" multiActivate="true"/>
-        <hotkey keys="Win+F2" action="media.increaseVolume()" multiActivate="true"/>
-        <hotkey keys="Win+F3" action="media.decreaseBrightness()" multiActivate="true"/>
-        <hotkey keys="Win+F4" action="media.increaseBrightness()" multiActivate="true"/>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>
         <hotkey keys="Win+R" action="runBox.open()"/>
      </hotkeys>

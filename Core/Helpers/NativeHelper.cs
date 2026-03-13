@@ -206,6 +206,7 @@ namespace RedEye.Core {
         public const int WM_INPUTLANGCHANGEREQUEST = 0x0050;
         public static readonly IntPtr HWND_BOTTOM = (IntPtr)1;
         public static readonly IntPtr HWND_TOPMOST = (IntPtr)(-1);
+        public static readonly IntPtr HWND_NOTOPMOST = (IntPtr)(-2);
         public static readonly IntPtr HWND_MESSAGE = (IntPtr)(-3);
         public static readonly IntPtr HWND_TOP = (IntPtr)0;
         public const int HSHELL_GETMINRECT = 5;

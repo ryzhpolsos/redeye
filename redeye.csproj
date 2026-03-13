@@ -31,5 +31,7 @@
 
         <Compile Remove="PluginAPI/Plugin.cs" />
         <Compile Include="PluginAPI/Plugin.cs.pp" />
+
+        <Compile Remove="resources/**" />
     </ItemGroup>
 </Project>

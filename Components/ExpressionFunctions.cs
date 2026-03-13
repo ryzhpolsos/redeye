@@ -110,9 +110,13 @@ namespace RedEye.Components {
 
             pluginManager.ExportFunction("shellExecute", (args, _) => {
                 try{
+                    var arg0 = args.ElementAt(0).ToString();
+
                     ProcessStartInfo psi = new();
-                    psi.FileName = args.ElementAt(0).ToString();
-                    psi.UseShellExecute = true;
+                    psi.FileName = "cmd.exe";
+                    psi.Arguments = $"/c start \"{arg0.Replace("\"", "")}\" {arg0}";
+                    psi.UseShellExecute = false;
+                    psi.WindowStyle = ProcessWindowStyle.Hidden;
                     Process.Start(psi);
                 }catch(Exception){}
                 return string.Empty;

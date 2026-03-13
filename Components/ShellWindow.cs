@@ -75,9 +75,10 @@ namespace RedEye.Components {
             };
 
             form.Shown += (_, _) => {
+                SetWindowPos(form.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+                SetWindowPos(form.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
                 BringWindowToTop(form.Handle);
                 SetForegroundWindow(form.Handle);
-                SetWindowPos(form.Handle, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
                 // ActivateWindow(form.Handle);
                 // SetActiveWindow(form.Handle);
             };
