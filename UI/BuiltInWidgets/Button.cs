@@ -1,6 +1,5 @@
+using System.Drawing;
 using System.Windows.Forms;
-
-using RedEye.Core;
 
 namespace RedEye.UI.BuiltInWidgets {
     public class Button : BaseShellWidget {
@@ -12,6 +11,16 @@ namespace RedEye.UI.BuiltInWidgets {
 
         protected override void UpdateControlInternal(){
             button.Text = Node.GetAttribute("text");
+
+            if(Node.GetAttribute("border") == "none"){
+                button.FlatStyle = FlatStyle.Flat;
+                button.FlatAppearance.BorderSize = 0;
+                button.FlatAppearance.BorderColor = Color.FromArgb(0, 255, 255, 255);
+                
+                button.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml(Node.GetAttribute("hoverColor"));
+                button.FlatAppearance.MouseDownBackColor = ColorTranslator.FromHtml(Node.GetAttribute("pressedColor"));
+            }
+
             base.UpdateControlInternal();
         }
     }

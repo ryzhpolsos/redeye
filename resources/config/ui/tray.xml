@@ -4,8 +4,8 @@
     width="${taskbar.tray.width}"
     height="${taskbar.height}"
     updateInterval="100"
-    color="${taskbar.tray.fontColor}"
-    font="${taskbar.tray.font}"
+    color="${theme.font.color}"
+    font="${theme.font.main}"
     rowCount="1"
     columnCount="2"
     >

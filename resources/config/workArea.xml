@@ -1,1 +1,1 @@
-<eval action="setWorkArea(${workArea.x}, ${workArea.y}, ${workArea.width}, ${workArea.height})"/>
+<eval command="setWorkArea(${workArea.x}, ${workArea.y}, ${workArea.width}, ${workArea.height})"/>

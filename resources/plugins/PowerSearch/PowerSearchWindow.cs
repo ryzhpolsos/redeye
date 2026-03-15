@@ -1,15 +1,22 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Drawing;
+using System.Diagnostics;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+using Microsoft.Win32;
 
 using RedEye.Core;
 
 enum SuggestType {
     Application,
     Command,
-    InternalCommand
+    InternalCommand,
+    Expression,
+    Url
 }
 
 struct Suggest {
@@ -24,11 +31,27 @@ class PowerSearchWindow : Form {
     TextBox tbSearchBox = new TextBox();
 
     IEnumerable<IApplicationListEntry> applicationList = null; 
+    List<string> pathDirs = new List<string>();
+    string[] pathExt = null;
+
     List<Suggest> suggests = new List<Suggest>();
     int selectedSuggest = -1;
 
+    Regex expressionRegex = new Regex(@"^[0-9+\-*/\(\)\s\.]+$", RegexOptions.Compiled);
+    Regex urlRegex = new Regex(@"^\w+:", RegexOptions.Compiled);
+
+    Bitmap cmdIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\shell32.dll,-16767"))).ToBitmap();
+    Bitmap calcIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\calc.exe,0"))).ToBitmap();
+    Bitmap urlIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\inetcpl.cpl,-4460"))).ToBitmap();
+
     public PowerSearchWindow(ComponentManager manager, Dictionary<string, string> config){
         applicationList = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
+
+        pathDirs.AddRange(Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Process).Split(';'));
+        pathDirs.AddRange(Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User).Split(';'));
+        pathDirs.AddRange(Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine).Split(';'));
+        pathDirs = pathDirs.Distinct().ToList();
+        pathExt = Environment.GetEnvironmentVariable("PathExt").Split(';');
 
         HandleCreated += (s, e) => {
             manager.GetComponent<IShellEventListener>().AddIgnoredHandle(Handle);
@@ -41,12 +64,20 @@ class PowerSearchWindow : Form {
             tlpSuggests.MaximumSize = new Size(tbSearchBox.Width, screenHeight - Location.X);
         };
 
-        // Deactivate += (s, e) => {
-        //     Close();
-        // };
+        Shown += (s, e) => {
+            NativeHelper.SetWindowPos(Handle, NativeHelper.HWND_TOPMOST, 0, 0, 0, 0, NativeHelper.SWP_NOMOVE | NativeHelper.SWP_NOSIZE);
+            NativeHelper.ForceSetForegroundWindow(Handle);            
+        };
+        
+        DoubleBuffered = true;
+        SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+        UpdateStyles();
 
         Font = ParseHelper.ParseFont(config["font"]);
+        ForeColor = ColorTranslator.FromHtml(config["fontColor"]);
+        BackColor = ColorTranslator.FromHtml(config["background"]);
 
+        KeyPreview = true;
         ShowInTaskbar = false;
         FormBorderStyle = FormBorderStyle.None;
         AutoSize = true;
@@ -62,29 +93,45 @@ class PowerSearchWindow : Form {
         tlpSuggests.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         tlpSuggests.HorizontalScroll.Maximum = 0;
         tlpSuggests.AutoScroll = true;
-        // tlpSuggests.HorizontalScroll.Visible = false;
-        // tlpSuggests.VerticalScroll.Visible = false;
 
         tbSearchBox.Width = ParseHelper.ParseInt(config["width"]);
         tbSearchBox.Dock = DockStyle.Fill;
         tbSearchBox.AcceptsReturn = true;
+        tbSearchBox.BackColor = BackColor;
+        tbSearchBox.ForeColor = ForeColor;
+        tbSearchBox.BorderStyle = BorderStyle.None;
 
         long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        tbSearchBox.KeyPress += (s, e) => {
+            if(e.KeyChar == (char)Keys.Enter || e.KeyChar == (char)Keys.Escape){
+                e.Handled = true;
+            }
+        };
 
         tbSearchBox.KeyUp += (s, e) => {
             switch(e.KeyCode){
                 case Keys.Escape: {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+
                     Close();
                     break;
                 }
 
-                case Keys.Return: {
+                case Keys.Enter: {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+
                     if(suggests.Count > 0){
-                        suggests[selectedSuggest].Invoke();
+                        if(selectedSuggest < 0) selectedSuggest = 0;
+                        
+                        try{
+                            suggests[selectedSuggest].Invoke();
+                        }catch{}
                     }
 
                     Close();
-                    // RunCommand(content);
                     break;
                 }
 
@@ -93,7 +140,7 @@ class PowerSearchWindow : Form {
 
                     long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    if(lastTime + 300 <= time){
+                    if(true || lastTime + 300 <= time){
                         lastTime = time;
 
                         if(tbSearchBox.Text.Length > 0){
@@ -114,9 +161,10 @@ class PowerSearchWindow : Form {
                 
                 case Keys.Up: {
                     e.Handled = true;
+                    e.SuppressKeyPress = true;
 
                     tlpSuggests.SuspendLayout();
-                    if(selectedSuggest >= 0 && selectedSuggest < suggests.Count) suggests[selectedSuggest].Control.BackColor = SystemColors.Control;
+                    if(selectedSuggest >= 0 && selectedSuggest < suggests.Count) suggests[selectedSuggest].Control.BackColor = BackColor;
 
                     selectedSuggest--;
 
@@ -134,9 +182,10 @@ class PowerSearchWindow : Form {
 
                 case Keys.Down: {
                     e.Handled = true;
+                    e.SuppressKeyPress = true;
 
                     tlpSuggests.SuspendLayout();
-                    if(selectedSuggest >= 0 && selectedSuggest < suggests.Count) suggests[selectedSuggest].Control.BackColor = SystemColors.Control;
+                    if(selectedSuggest >= 0 && selectedSuggest < suggests.Count) suggests[selectedSuggest].Control.BackColor = BackColor;
 
                     selectedSuggest++;
 
@@ -179,7 +228,7 @@ class PowerSearchWindow : Form {
         tlp.RowCount = 1;
         tlp.ColumnCount = 5;
         tlp.Width = tbSearchBox.Width;
-        tlp.Height = (int)(tbSearchBox.Height * 1.5);
+        tlp.Height = (int)(tbSearchBox.Height * 2);
 
         var pictureBox = new PictureBox();
         pictureBox.Dock = DockStyle.Fill;
@@ -207,6 +256,46 @@ class PowerSearchWindow : Form {
                 suggest.Invoke = () => { ale.Invoke(); };
                 break;
             }
+
+            case SuggestType.Command: {
+                var cmd = (string)data;
+                pictureBox.Image = cmdIcon;
+                label.Text = "Execute command: " + cmd;
+                
+                suggest.Invoke = () => {
+                    var splitted = cmd.Split(' ');
+                    var psi = new ProcessStartInfo();
+                    psi.FileName = splitted[0];
+                    if(splitted.Length > 1) psi.Arguments = string.Join(" ", splitted.Skip(1));
+                    Process.Start(psi);
+                };
+            
+                break;
+            }
+
+            case SuggestType.Expression: {
+                var expr = (string)data;
+                var result = "<error>";
+                
+                try{
+                    result = EvalHelper.Eval(expr);
+                }catch(Exception){}
+
+                label.Text = expr + " = " + result + " (Enter to copy)"; 
+                pictureBox.Image = calcIcon;
+                suggest.Invoke = () => { Clipboard.SetText(result); };
+
+                break;
+            }
+
+            case SuggestType.Url: {
+                var url = (string)data;
+                label.Text = "Open URL: " + url;
+                pictureBox.Image = urlIcon;
+                suggest.Invoke = () => { Process.Start(url); };
+            
+                break;
+            }
         }
 
         suggests.Add(suggest);
@@ -224,6 +313,38 @@ class PowerSearchWindow : Form {
 
         foreach(var app in applicationList.Where(x => x.GetName().ToLower().StartsWith(content))){
             AddSuggest(SuggestType.Application, app);
+        }
+
+        var splitted = content.Split(' ');
+        var firstPart = splitted[0];
+
+        if(firstPart.Contains('.')){
+            if(pathDirs.Any(d => File.Exists(Path.Combine(d, firstPart)))){
+                AddSuggest(SuggestType.Command, content);
+            }
+        }else{
+            foreach(var ext in pathExt){
+                if(pathDirs.Any(d => File.Exists(Path.Combine(d, firstPart + ext)))){
+                    AddSuggest(SuggestType.Command, content);
+                }
+            }
+        }
+
+        if(content.Contains(':')){
+            var first = content.Split(':')[0];
+            var regKey = Registry.ClassesRoot.OpenSubKey(first, false);
+
+            if(regKey != null){
+                if(regKey.GetValue("URL Protocol") != null){
+                    AddSuggest(SuggestType.Url, content);
+                }
+
+                regKey.Close();
+            }
+        }
+
+        if(expressionRegex.IsMatch(content)){
+            AddSuggest(SuggestType.Expression, content);
         }
 
         tlpMain.ResumeLayout();

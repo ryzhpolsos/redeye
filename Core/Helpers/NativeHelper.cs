@@ -190,6 +190,15 @@ namespace RedEye.Core {
         [DllImport("user32.dll")]
         public static extern int ChangeWindowMessageFilterEx(IntPtr hWnd, int message, int action, IntPtr pChangeFilterStruct);
 
+        [DllImport("user32.dll")]
+        public static extern int SetFocus(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        public static extern int MapVirtualKey(int uCode, int uMapType);
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOACTIVATE = 0x0010;
@@ -250,6 +259,8 @@ namespace RedEye.Core {
         public const int SHGFI_ICON = 0x100;
         public const int MSGFLT_ALLOW = 1;
         public const int MSGFLT_DISALLOW = 2;
+        public const int KEYEVENTF_KEYUP = 2;
+        public const int MAPVK_VK_TO_VSC = 0;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct WINDOWPOS {
@@ -432,6 +443,12 @@ namespace RedEye.Core {
             var buff = new StringBuilder(255);
             GetClassName(h, buff, buff.Capacity);
             return buff.ToString();
+        }
+
+        public static void ForceSetForegroundWindow(IntPtr hWnd){
+            keybd_event(0xA4, (byte)MapVirtualKey(0xA4, MAPVK_VK_TO_VSC), 0, 0);
+            SetForegroundWindow(hWnd);
+            keybd_event(0xA4, (byte)MapVirtualKey(0xA4, MAPVK_VK_TO_VSC), KEYEVENTF_KEYUP, 0);
         }
     }
 }

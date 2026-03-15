@@ -6,22 +6,23 @@
     <layout>
         <!-- Define variables used to configure the desktop -->
         <variables>
+            <set name="theme.color.background" value="#13293d"/>
+            <set name="theme.color.backgroundChild" value="#2a628f"/>
+            <set name="theme.color.backgroundActive" value="#3e92cc"/>
+            <set name="theme.font.main" value="Segoe UI,10"/>
+            <set name="theme.font.color" value="#ffffff"/>
+
             <!-- Taskbar item settings -->
             <set name="taskbar.item.size" value="50" />
-            <set name="taskbar.item.padding" value="5"/>
-            <set name="taskbar.item.background" value="#2a628f"/>
-            <set name="taskbar.item.backgroundActive" value="#3e92cc"/>
+            <set name="taskbar.item.padding" value="8"/>
 
             <!-- Taskbar settings -->
             <set name="taskbar.margin" value="20"/>
-            <set name="taskbar.background" value="#13293d"/>
             <set name="taskbar.width" value="calc('${screen.width} - ${taskbar.margin} * 2')"/>
             <set name="taskbar.height" value="calc('${taskbar.item.size} + ${taskbar.item.padding} * 2')"/>
 
             <!-- Tray settings -->
             <set name="taskbar.tray.width" value="250"/>
-            <set name="taskbar.tray.font" value="Segoe UI,9"/>
-            <set name="taskbar.tray.fontColor" value="white"/>
 
             <!-- Work area settings -->
             <set name="workArea.x" value="0"/>
@@ -36,19 +37,12 @@
             <set name="startMenu.width" value="400"/>
             <set name="startMenu.height" value="600"/>
             <set name="startMenu.item.size" value="50"/>
-            <set name="startMenu.item.font" value="Segoe UI,10"/>
-            <set name="startMenu.item.fontColor" value="white"/>
-
-            <!-- Run box settings -->
-            <set name="runBox.width" value="500"/>
-            <set name="runBox.height" value="250"/>
-            <set name="runBox.x" value="calc('${screen.width} / 2 - ${runBox.width} / 2')"/>
-            <set name="runBox.y" value="calc('${screen.height} / 2 - ${runBox.height} / 2')"/>
-            <set name="runBox.font" value="Segoe UI,9"/>
         </variables>
 
         <eval command="powerSearch.config(width, 600)"/>
-        <eval command="powerSearch.config(font, 'Segoe UI,12')"/>
+        <eval command="powerSearch.config(font, ${theme.font.main})"/>
+        <eval command="powerSearch.config(fontColor, ${theme.font.color})"/>
+        <eval command="powerSearch.config(background, ${theme.color.background})"/>
 
         <!-- Set the work area -->
         <import from="config/workArea.xml"/>
@@ -57,11 +51,9 @@
         <import from="config/ui/desktop.xml"/>
         <import from="config/ui/startMenu.xml"/>
         <import from="config/ui/taskbar.xml"/>
-        <import from="config/ui/runBox.xml"/>
     </layout>
     <hotkeys>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>
-        <hotkey keys="Win+R" action="runBox.open()"/>
-        <hotkey keys="Win+Space" action="powerSearch.open()"/>
+        <hotkey keys="Win+R" action="powerSearch.open()"/>
      </hotkeys>
 </config>

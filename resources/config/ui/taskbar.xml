@@ -7,7 +7,7 @@
      type="top"
      border="none"
      allowClose="false"
-     backgroundColor="${taskbar.background}">
+     backgroundColor="${theme.color.background}">
 
     <import from="config/ui/startButton.xml"/>
 
@@ -47,7 +47,7 @@
              height="${taskbar.item.size}"
              margin="${taskbar.item.padding},${taskbar.item.padding},0,${taskbar.item.padding}"
              padding="${taskbar.item.padding}"
-             backgroundColor="if(${window.isActive}, ${taskbar.item.backgroundActive}, ${taskbar.item.background})">
+             backgroundColor="if(${window.isActive}, ${theme.color.backgroundActive}, ${theme.color.backgroundChild})">
         
             <image
                 id="icon"

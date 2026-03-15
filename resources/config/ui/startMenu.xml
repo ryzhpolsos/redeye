@@ -6,16 +6,22 @@
      height="${startMenu.height}"
      type="topMost"
      border="none"
-     backgroundColor="${taskbar.background}"
+     backgroundColor="${theme.color.background}"
      autoShow="false"
      onDeactivate="window.hide(startMenu)"
      >
 
-    <appList dock="fill">
-        <panel dock="fill" height="${startMenu.item.size}" font="${startMenu.item.font}" color="${startMenu.item.fontColor}" onClick="shellExecute(${app.command})">
-            <image src="${app.icon}" x="0" y="0" width="${startMenu.item.size}" height="${startMenu.item.size}"/>
-            <label text="${app.name}" x="${startMenu.item.size}" y="0" width="calc('${startMenu.width} - ${startMenu.item.size}')" height="${startMenu.item.size}" align="middleLeft"/>
-        </panel>
-    </appList>
+    <tablePanel dock="fill" rowCount="10" columnCount="2" font="${theme.font.main}" color="${theme.font.color}">
+        <appList dock="fill" table.position="0,0" table.rowSpan="8" table.columnSpan="2">
+            <panel dock="fill" height="${startMenu.item.size}" onClick="shellExecute(${app.command})">
+                <image src="${app.icon}" x="0" y="0" width="${startMenu.item.size}" height="${startMenu.item.size}"/>
+                <label text="${app.name}" x="${startMenu.item.size}" y="0" width="calc('${startMenu.width} - ${startMenu.item.size}')" height="${startMenu.item.size}" align="middleLeft"/>
+            </panel>
+        </appList>
+        <button margin="8,8,4,4" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="0,6" text="meow"/>
+        <button margin="4,8,8,4" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="1,6" text="nya"/>
+        <button margin="8,4,4,8" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="0,7" text=":3c"/>
+        <button margin="4,4,8,8" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="1,7" text="wzw"/>
+    </tablePanel>
    
 </window>
