@@ -18,10 +18,10 @@
                 <label text="${app.name}" x="${startMenu.item.size}" y="0" width="calc('${startMenu.width} - ${startMenu.item.size}')" height="${startMenu.item.size}" align="middleLeft"/>
             </panel>
         </appList>
-        <button margin="8,8,4,4" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="0,6" text="meow"/>
-        <button margin="4,8,8,4" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="1,6" text="nya"/>
-        <button margin="8,4,4,8" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="0,7" text=":3c"/>
-        <button margin="4,4,8,8" border="none" backgroundColor="${theme.color.backgroundChild}" hoverColor="${theme.color.backgroundActive}" pressedColor="${theme.color.backgroundActive}" dock="fill" table.position="1,7" text="wzw"/>
+        <button margin="${theme.paddingMiddle},${theme.paddingMiddle},${theme.paddingSmall},${theme.paddingSmall}" attrList="flatButton" dock="fill" table.position="0,6" text="Lock" onClick="shellExecuteHidden('rundll32.exe', 'user32,LockWorkStation')"/>
+        <button margin="${theme.paddingSmall},${theme.paddingMiddle},${theme.paddingMiddle},${theme.paddingSmall}" attrList="flatButton" dock="fill" table.position="1,6" text="Log off" onClick="shellExecuteHidden('shutdown.exe', '/l')"/>
+        <button margin="${theme.paddingMiddle},${theme.paddingSmall},${theme.paddingSmall},${theme.paddingMiddle}" attrList="flatButton" dock="fill" table.position="0,7" text="Shutdown..." onClick="window.show(shutdownOptions)"/>
+        <button margin="${theme.paddingSmall},${theme.paddingSmall},${theme.paddingMiddle},${theme.paddingMiddle}" attrList="flatButton" dock="fill" table.position="1,7" text="Run..." onClick="powerSearch.open()"/>
     </tablePanel>
    
 </window>

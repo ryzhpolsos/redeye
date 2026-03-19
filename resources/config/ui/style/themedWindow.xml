@@ -1,0 +1,5 @@
+<attributeList name="themedWindow">
+    <attribute name="color" value="${theme.font.color}"/>
+    <attribute name="backgroundColor" value="${theme.color.background}"/>
+    <attribute name="font" value="${theme.font.main}"/>
+</attributeList>

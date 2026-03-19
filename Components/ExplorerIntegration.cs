@@ -38,10 +38,15 @@ namespace RedEye.Components {
 #if DEBUG
                 enabled = false;
 #else
-                node = manager.GetComponent<IConfig>().GetRootNode()["config"]["core"]["explorerIntegration"];
+                var rootNode = manager.GetComponent<IConfig>().GetRootNode();
+
+                if(rootNode is null){
+                    manager.GetComponent<ILogger>().LogFatal("root node is null somehow");
+                }
+
+                node = rootNode["config"]["core"]["explorerIntegration"];
                 enabled = ParseHelper.ParseBool(node["enable"].Value);
 #endif
-
             }
 
             return enabled;

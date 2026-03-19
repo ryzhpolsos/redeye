@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Xml;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -30,6 +31,16 @@ namespace RedEye.Core {
         public bool IsRecursive = false;
     }
 
+    internal struct ConfigNodeAttributeList {
+        public IDictionary<string, string> Attributes;
+        public IEnumerable<string> ArgumentNames;
+    }
+
+    internal struct ConfigNodeTemplate {
+        public IEnumerable<ConfigNode> Nodes;
+        public IEnumerable<string> ArgumentNames;
+    }
+
     public class ConfigNode : IVariableStorage<string> {
         string name = null;
         public string Name { get => name; }
@@ -55,11 +66,30 @@ namespace RedEye.Core {
             }
         }
 
+        bool isVirtual = false;
+        public bool IsVirtual { get => isVirtual; }
+
+        XmlNode underlyingXmlNode = null;
+        public XmlNode UnderlyingXmlNode {
+            get {
+                if(isVirtual) throw new InvalidOperationException("Cannot get underlying XML node of virtual node");
+                return underlyingXmlNode;
+            }
+
+            set {
+                if(underlyingXmlNode is null) throw new InvalidOperationException("Cannot set underlying XML node");
+                underlyingXmlNode = value;
+            }
+        }
+
         Dictionary<string, Dictionary<string, string>> childNodeAttributes = new();
         Dictionary<string, ConfigNodeEventWatcher> watchers = new();
         Dictionary<string, string> variables = new();
         Dictionary<string, string> attributes = new();
         List<ConfigNode> childNodes = new();
+        string fileName = null;
+        Dictionary<string, ConfigNodeAttributeList> attributeLists = new();
+        Dictionary<string, ConfigNodeTemplate> templates = new();
 
         ComponentManager manager = null;
 
@@ -72,7 +102,7 @@ namespace RedEye.Core {
         public static ComponentManager ComponentManager;
 
         public static ConfigNode CreateEmpty(string name){
-            return new ConfigNode(ComponentManager, name);
+            return new ConfigNode(ComponentManager, name, isVirtual: true);
         }
 
         public static ConfigNode CreateFromString(string data){
@@ -81,7 +111,7 @@ namespace RedEye.Core {
             return rootNode.GetNodes().First();
         }
 
-        public ConfigNode(ComponentManager manager, string name, IDictionary<string, string> attributes = null, string value = null, Dictionary<string, Dictionary<string, string>> childNodeAttributes = null){
+        public ConfigNode(ComponentManager manager, string name, IDictionary<string, string> attributes = null, string value = null, Dictionary<string, Dictionary<string, string>> childNodeAttributes = null, XmlNode underlyingXmlNode = null, bool isVirtual = false, string fileName = null){
             this.name = name;
             this.manager = manager;
             this.config = manager.GetComponent<IConfig>();
@@ -89,6 +119,9 @@ namespace RedEye.Core {
             this.engine = manager.GetComponent<IScriptEngine>();
             this.pluginManager = manager.GetComponent<IPluginManager>();
             this.expressionParser = manager.GetComponent<IExpressionParser>();
+            this.underlyingXmlNode = underlyingXmlNode;
+            this.isVirtual = isVirtual;
+            this.fileName = fileName;
 
             if(attributes is not null){
                 foreach(var kvp in attributes){
@@ -113,24 +146,27 @@ namespace RedEye.Core {
             parentNode = node;
         }
 
-        public void ProcessNodes(){
-            for(int i = 0; i < childNodes.Count; i++){
-                var node = childNodes[i];
+        public void ProcessNodes(bool postProcess = true){
+            var childNodesArray = childNodes.ToArray();
 
+            for(int i = 0; i < childNodesArray.Length; i++){
+                var removeNode = false;
+                var node = childNodesArray[i];
+                // Console.WriteLine($"'{node.Name}'");
                 switch(node.Name){
                     case "variables": {
                         foreach(var setNode in node.GetNodes("set")){
                             SetVariable(setNode.GetAttribute("name"), setNode.GetAttribute("value"));
                         }
 
-                        node.Remove();
+                        removeNode = true;
                         break;
                     }
 
                     case "import": {
                         config.LoadFile(node.GetAttribute("from"), this);
-                        node.Remove();
-                        ProcessNodes();
+                        removeNode = true;
+                        // ProcessNodes(false);
                         break;
                     }
 
@@ -147,14 +183,15 @@ namespace RedEye.Core {
                             }
                         }
 
-                        node.Remove();
-                        ProcessNodes();
+                        removeNode = true;
+                        ProcessNodes(false);
                         break;
                     }
 
                     case "eval":
                     case "exec": {
-                        node.SetValue(node.GetAttribute("command"));
+                        node.GetAttribute("command");
+                        removeNode = true;
                         break;
                     }
 
@@ -178,12 +215,103 @@ namespace RedEye.Core {
 
                             engine.ExecuteScript(node.GetAttribute("language", "csharp"), code, nameSpace);
 
-                            node.Remove();
+                            removeNode = true;
                         }
 
                         break;
                     }
+
+                    case "attributeList": {
+                        ConfigNodeAttributeList attrList = new();
+                        attrList.Attributes = new Dictionary<string, string>();
+
+
+                        foreach(var attrNode in node.GetNodes("attribute")){
+                            attrList.Attributes.Add(attrNode.GetRawAttribute("name"), attrNode.GetRawAttribute("value"));
+                        }
+
+                        UtilHelper.IfNotEmpty(node.GetRawAttribute("arguments"), args => {
+                            attrList.ArgumentNames = args.Split(',').Select(x => x.Trim());
+                        });
+
+                        attributeLists.Add(node.GetAttribute("name"), attrList);
+                        removeNode = true;
+                        
+                        break;
+                    }
+
+                    case "defineTemplate": {
+                        ConfigNodeTemplate template = new();
+                        template.Nodes = node.childNodes;
+                        
+                        UtilHelper.IfNotEmpty(node.GetRawAttribute("arguments"), args => {
+                            template.ArgumentNames = args.Split(',').Select(x => x.Trim());
+                        });
+                    
+                        templates.Add(node.GetAttribute("name"), template);
+                        removeNode = true;
+
+                        break;
+                    }
+
+                    case "template": {
+                        var name = node.GetAttribute("name");
+                        var args = node.GetRawAttribute("arguments").Split(';').Select(x => x.Trim());
+                        var template = GetTemplate(name);
+
+                        foreach(var cNode in template.Nodes){
+                            for(int j = 0; j < template.ArgumentNames.Count(); j++){
+                                Console.WriteLine($"Setting {template.ArgumentNames.ElementAt(j)} to {expressionParser.EvaluateExpression(args.ElementAt(j), cNode)}");
+                                cNode.SetVariable(template.ArgumentNames.ElementAt(j), expressionParser.EvaluateExpression(args.ElementAt(j), cNode));
+                            }
+
+                            childNodes.Insert(i, cNode);
+                            cNode.SetParentNode(this);
+                        }
+
+                        removeNode = true;
+                        // ProcessNodes(false);
+
+                        break;
+                    }
                 }
+
+                node.ProcessNodes();
+                if(removeNode) node.Remove();
+            }
+
+            if(!postProcess) return;
+            PostProcessNodes();
+        }
+
+        public void PostProcessNodes(){
+        for(int i = 0; i < childNodes.Count; i++){
+                var node = childNodes[i];
+
+                UtilHelper.IfNotEmpty(node.GetRawAttribute("attrList"), attrList => {
+                    foreach(var lstName in attrList.Split(';').Select(x => x.Trim())){
+                        var result = expressionParser.ParseExpression(lstName, this);
+                        ConfigNodeAttributeList list;
+
+                        if(result.FunctionName is not null){
+                            list = GetAttributeList(result.FunctionName);
+
+                            for(int i = 0; i < result.Arguments.Count(); i++){
+                                node.SetVariable(list.ArgumentNames.ElementAt(i), result.Arguments.ElementAt(i));
+                            }
+                        }else{
+                            list = GetAttributeList(result.Value);
+                        }
+
+                        foreach(var attr in list.Attributes){
+                            node.SetAttribute(
+                                expressionParser.EvaluateExpression(attr.Key, node),
+                                expressionParser.EvaluateExpression(attr.Value, node)      
+                            );
+                        }
+                    }
+                });
+
             }
         }
 
@@ -260,7 +388,7 @@ namespace RedEye.Core {
         public void RemoveNode(ConfigNode node){
             childNodes.Remove(node);
 
-            ProcessEventWatchers(new(){ EventType =ConfigNodeEventType.RemoveNode, RemovedNode = node });
+            ProcessEventWatchers(new(){ EventType = ConfigNodeEventType.RemoveNode, RemovedNode = node });
         }
 
         public void Remove(){
@@ -365,6 +493,26 @@ namespace RedEye.Core {
             ProcessEventWatchers(new(){ EventType = ConfigNodeEventType.SetAttribute, OldAttributeValue = oldValue, NewAttributeValue = value });
         }
 
+        public void Save(){
+            if(isVirtual) throw new InvalidOperationException("Failed to save virtual node");
+
+            foreach(var attr in attributes){
+                ((XmlElement)underlyingXmlNode).SetAttribute(attr.Key, attr.Value);
+            }
+
+            underlyingXmlNode.InnerText = value;
+
+            foreach(var node in childNodes){
+                if(!node.isVirtual) node.Save();
+            }
+        }
+
+        public void SaveFile(){
+            if(fileName is null) throw new InvalidOperationException("Failed to save virtual or non-file node");
+            Save();
+            underlyingXmlNode.OwnerDocument.Save(fileName);           
+        }
+
         public ConfigNode Clone(){
             var node = new ConfigNode(manager, name, attributes, value);
 
@@ -381,6 +529,18 @@ namespace RedEye.Core {
 
         string ParseValue(string value){
             return expressionParser.EvaluateExpression(value, this);
+        }
+
+        ConfigNodeAttributeList GetAttributeList(string name){
+            if(attributeLists.ContainsKey(name)) return attributeLists[name];
+            if(ParentNode is not null) return ParentNode.GetAttributeList(name);
+            throw new KeyNotFoundException("No attribute list with given name was found: " + name);
+        }
+
+        ConfigNodeTemplate GetTemplate(string name){
+            if(templates.ContainsKey(name)) return templates[name];
+            if(ParentNode is not null) return ParentNode.GetTemplate(name);
+            throw new KeyNotFoundException("No template with given name was found: " + name);
         }
    }
 }

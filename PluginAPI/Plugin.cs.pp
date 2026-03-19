@@ -11,6 +11,7 @@ namespace RedEye.PluginAPI {
         protected IConfig Config = null;
         protected IExplorerIntegration ExplorerIntegration = null;
         protected IExpressionFunctions ExpressionFunctions = null;
+        protected IExpressionParser ExpressionParser = null;
         protected IHotKeyManager HotKeyManager = null;
         protected ILayoutLoader LayoutLoader = null;
         protected ILogger Logger = null;
@@ -35,6 +36,7 @@ namespace RedEye.PluginAPI {
             Config = ComponentManager.GetComponent<IConfig>();
             ExplorerIntegration = ComponentManager.GetComponent<IExplorerIntegration>();
             ExpressionFunctions = ComponentManager.GetComponent<IExpressionFunctions>();
+            ExpressionParser = ComponentManager.GetComponent<IExpressionParser>();
             HotKeyManager = ComponentManager.GetComponent<IHotKeyManager>();
             LayoutLoader = ComponentManager.GetComponent<ILayoutLoader>();
             Logger = ComponentManager.GetComponent<ILogger>();

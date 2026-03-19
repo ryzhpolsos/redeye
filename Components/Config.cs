@@ -11,6 +11,7 @@ using System.Collections.Generic;
 namespace RedEye.Components {
     public class ConfigComponent :IConfig {
         ComponentManager manager = null;
+
         ILogger logger = null;
         IShellWindowManager windowManager = null;
         IHotKeyManager hotKeyManager = null;
@@ -33,7 +34,6 @@ namespace RedEye.Components {
             engine = manager.GetComponent<IScriptEngine>();
             
             ConfigNode.ComponentManager = manager;
-
         }
 
         public IConfig LoadConfig(){
@@ -69,16 +69,19 @@ namespace RedEye.Components {
         }
 
         void PrintNode(ConfigNode node, int tabAmount = 0){
-            Console.WriteLine(new string(' ', tabAmount * 4) + $"{node.Name} [{string.Join(", ", node.GetAttributes())}]");
+            if(node is null) Console.WriteLine("no node");
+            Console.WriteLine(new string(' ', tabAmount * 4) + $"{node.Name} [{string.Join(", ", node.GetAttributes().Select(x => $"{x} = {node.GetRawAttribute(x)}"))}]");
+
             foreach(var nd in node.GetNodes()){
                 PrintNode(nd, tabAmount + 1);
             }
         }
 
         public void LoadFile(string fileName, ConfigNode parentNode){
+            fileName = Path.Combine(appDirectory, fileName);
             XmlDocument doc = new();
-            doc.Load(Path.Combine(appDirectory, fileName));
-            LoadNode(doc.DocumentElement, parentNode);
+            doc.Load(fileName);
+            LoadNode(doc.DocumentElement, parentNode, fileName);
         }
 
         public void LoadString(string data, ConfigNode parentNode){
@@ -87,7 +90,7 @@ namespace RedEye.Components {
             LoadNode(doc.DocumentElement, parentNode);
         }
 
-        void LoadNode(XmlNode docNode, ConfigNode parentNode){
+        void LoadNode(XmlNode docNode, ConfigNode parentNode, string fileName = null){
             if(docNode.Name.StartsWith("#")) return;
             Dictionary<string, string> attributes = new();
 
@@ -98,11 +101,11 @@ namespace RedEye.Components {
                 }
             }
 
-            var node = new ConfigNode(manager, docNode.Name, attributes, docNode.InnerText);
+            var node = new ConfigNode(manager, docNode.Name, attributes, docNode.InnerText, underlyingXmlNode: docNode, isVirtual: false, fileName: fileName);
             parentNode.AddNode(node);
 
             foreach(XmlNode childNode in docNode.ChildNodes){
-                LoadNode(childNode, node);
+                LoadNode(childNode, node, fileName);
             }
         }
 

@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <!-- Import the core config -->
+    <!-- Import core config -->
     <import from="config/core.xml"/>
-
+    <import from="config/ui/theme.xml"/>
     <layout>
-        <!-- Define variables used to configure the desktop -->
+
+        <!-- Define variables used to configure desktop -->
         <variables>
             <set name="theme.color.background" value="#13293d"/>
             <set name="theme.color.backgroundChild" value="#2a628f"/>
             <set name="theme.color.backgroundActive" value="#3e92cc"/>
             <set name="theme.font.main" value="Segoe UI,10"/>
             <set name="theme.font.color" value="#ffffff"/>
+            <set name="theme.paddingLarge" value="16"/>
+            <set name="theme.paddingMiddle" value="8"/>
+            <set name="theme.paddingSmall" value="4"/>
 
             <!-- Taskbar item settings -->
-            <set name="taskbar.item.size" value="50" />
-            <set name="taskbar.item.padding" value="8"/>
+            <set name="taskbar.item.size" value="50"/>
 
             <!-- Taskbar settings -->
             <set name="taskbar.margin" value="20"/>
             <set name="taskbar.width" value="calc('${screen.width} - ${taskbar.margin} * 2')"/>
-            <set name="taskbar.height" value="calc('${taskbar.item.size} + ${taskbar.item.padding} * 2')"/>
+            <set name="taskbar.height" value="calc('${taskbar.item.size} + ${theme.paddingMiddle} * 2')"/>
 
             <!-- Tray settings -->
             <set name="taskbar.tray.width" value="250"/>
@@ -37,20 +40,39 @@
             <set name="startMenu.width" value="400"/>
             <set name="startMenu.height" value="600"/>
             <set name="startMenu.item.size" value="50"/>
+
+            <!-- Configuration utility window settings -->
+            <set name="configUtil.width" value="700"/>
+            <set name="configUtil.height" value="500"/>
+
+            <!-- Shutdown options window settings -->
+            <set name="shutdownOptions.width" value="400"/>
+            <set name="shutdownOptions.height" value="300"/>
         </variables>
 
+        <!-- PowerSearch settings -->
         <eval command="powerSearch.config(width, 600)"/>
         <eval command="powerSearch.config(font, ${theme.font.main})"/>
         <eval command="powerSearch.config(fontColor, ${theme.font.color})"/>
         <eval command="powerSearch.config(background, ${theme.color.background})"/>
 
-        <!-- Set the work area -->
+        <!-- Import styles -->
+        <import from="config/ui/style/themedWindow.xml"/>
+        <import from="config/ui/style/flatButton.xml"/>
+
+        <!-- Set work area -->
         <import from="config/workArea.xml"/>
 
         <!-- Create desktop components -->
         <import from="config/ui/desktop.xml"/>
         <import from="config/ui/startMenu.xml"/>
         <import from="config/ui/taskbar.xml"/>
+
+        <!-- Set up configuration utility window -->
+        <import from="config/ui/configUtil.xml"/>
+
+        <!-- Set up shutdown options window -->
+        <import from="config/ui/shutdownOptions.xml"/>
     </layout>
     <hotkeys>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>

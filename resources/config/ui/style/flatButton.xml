@@ -1,0 +1,6 @@
+<attributeList name="flatButton">
+    <attribute name="border" value="none"/>
+    <attribute name="backgroundColor" value="${theme.color.backgroundChild}"/>
+    <attribute name="hoverColor" value="${theme.color.backgroundActive}"/>
+    <attribute name="pressedColor" value="${theme.color.backgroundActive}"/>
+</attributeList>

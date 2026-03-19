@@ -39,6 +39,7 @@ namespace RedEye.Core {
         public string Padding = null;
         public double Opacity = 1.0;
         public bool AllowTransparency = false;
+        public string Icon = null;
     }
 
     public interface IShellWindow : IComponent, IWidgetContainer {

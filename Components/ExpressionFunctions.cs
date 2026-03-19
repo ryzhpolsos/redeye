@@ -65,6 +65,10 @@ namespace RedEye.Components {
                 return string.Empty;
             });
 
+            pluginManager.ExportFunction("getvar", (args, varStorage) => {
+                return varStorage.GetVariable(string.Join("", args));
+            });
+
             pluginManager.ExportFunction("get", (args, _) => {
                 var obj = resourceManager.GetResource(args.ElementAt(0).ToString());
                 var type = obj.GetType();
@@ -108,17 +112,37 @@ namespace RedEye.Components {
                 return Environment.ExpandEnvironmentVariables(args.ElementAt(0).ToString());
             });
 
+            pluginManager.ExportFunction("guid", (args, _) => {
+                return Guid.NewGuid().ToString();
+            });
+
             pluginManager.ExportFunction("shellExecute", (args, _) => {
                 try{
-                    var arg0 = args.ElementAt(0).ToString();
+                    var fileName = args.ElementAt(0).ToString();
+                    var arguments = args.ElementAt(1).ToString();
 
                     ProcessStartInfo psi = new();
-                    psi.FileName = "cmd.exe";
-                    psi.Arguments = $"/c start \"{arg0.Replace("\"", "")}\" {arg0}";
+                    psi.FileName = fileName;
+                    psi.Arguments = arguments;
+                    Process.Start(psi);
+                }catch(Exception){}
+                return string.Empty;
+            });
+
+            pluginManager.ExportFunction("shellExecuteHidden", (args, _) => {
+                try{
+                    var fileName = args.ElementAt(0).ToString();
+                    var arguments = args.ElementAt(1).ToString();
+
+                    ProcessStartInfo psi = new();
+                    psi.FileName = fileName;
+                    psi.Arguments = arguments;
                     psi.UseShellExecute = false;
+                    psi.CreateNoWindow = true;
                     psi.WindowStyle = ProcessWindowStyle.Hidden;
                     Process.Start(psi);
                 }catch(Exception){}
+
                 return string.Empty;
             });
 

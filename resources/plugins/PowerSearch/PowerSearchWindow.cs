@@ -26,6 +26,8 @@ struct Suggest {
 }
 
 class PowerSearchWindow : Form {
+    IExpressionParser expressionParser = null;
+
     TableLayoutPanel tlpMain = new TableLayoutPanel();
     TableLayoutPanel tlpSuggests = new TableLayoutPanel();
     TextBox tbSearchBox = new TextBox();
@@ -43,8 +45,10 @@ class PowerSearchWindow : Form {
     Bitmap cmdIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\shell32.dll,-16767"))).ToBitmap();
     Bitmap calcIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\calc.exe,0"))).ToBitmap();
     Bitmap urlIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\inetcpl.cpl,-4460"))).ToBitmap();
+    Bitmap intCmdIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\imageres.dll,-5342"))).ToBitmap();
 
     public PowerSearchWindow(ComponentManager manager, Dictionary<string, string> config){
+        expressionParser = manager.GetComponent<IExpressionParser>();
         applicationList = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
 
         pathDirs.AddRange(Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Process).Split(';'));
@@ -67,6 +71,10 @@ class PowerSearchWindow : Form {
         Shown += (s, e) => {
             NativeHelper.SetWindowPos(Handle, NativeHelper.HWND_TOPMOST, 0, 0, 0, 0, NativeHelper.SWP_NOMOVE | NativeHelper.SWP_NOSIZE);
             NativeHelper.ForceSetForegroundWindow(Handle);            
+        };
+
+        FormClosing += (s, e) => {
+            PowerSearchWindowState.Opened = false;
         };
         
         DoubleBuffered = true;
@@ -140,11 +148,11 @@ class PowerSearchWindow : Form {
 
                     long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    if(true || lastTime + 300 <= time){
+                    if(lastTime + 300 <= time){
                         lastTime = time;
 
                         if(tbSearchBox.Text.Length > 0){
-                            ProcessSearch(tbSearchBox.Text.ToLower());
+                            ProcessSearch(tbSearchBox.Text);
                         }else{
                             ClearSuggests();
                         }
@@ -296,6 +304,14 @@ class PowerSearchWindow : Form {
             
                 break;
             }
+
+            case SuggestType.InternalCommand: {
+                var cmd = (string)data;
+                label.Text = "Execute RedEye command: " + cmd;
+                pictureBox.Image = intCmdIcon;
+                suggest.Invoke = () => { expressionParser.EvaluateExpression(cmd, EmptyVariableStorage.EmptyStringStorage); };
+                break;
+            }
         }
 
         suggests.Add(suggest);
@@ -311,7 +327,8 @@ class PowerSearchWindow : Form {
 
         ClearSuggests();
 
-        foreach(var app in applicationList.Where(x => x.GetName().ToLower().StartsWith(content))){
+        var lowerContent = content.ToLower();
+        foreach(var app in applicationList.Where(x => x.GetName().ToLower().StartsWith(lowerContent))){
             AddSuggest(SuggestType.Application, app);
         }
 
@@ -345,6 +362,10 @@ class PowerSearchWindow : Form {
 
         if(expressionRegex.IsMatch(content)){
             AddSuggest(SuggestType.Expression, content);
+        }
+
+        if(content.StartsWith("~")){
+            AddSuggest(SuggestType.InternalCommand, content.Substring(1));
         }
 
         tlpMain.ResumeLayout();

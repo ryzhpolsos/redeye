@@ -1,0 +1,61 @@
+<window
+    id="configUtil"
+    x="calc('${screen.width} / 2 - ${configUtil.width} / 2')"
+    y="calc('${screen.height} / 2 - ${configUtil.height} / 2')"
+    width="${configUtil.width}"
+    height="${configUtil.height}"
+    icon="res.loadIcon(expand('%SYSTEMROOT%\System32\shell32.dll'), -177)"
+    title="RedEye Configuration Utility"
+    autoShow="false"
+    >
+
+    <script>
+        <![CDATA[
+            using System.Linq;
+            using System.Drawing;
+            using System.Windows.Forms;
+        
+            // --main--
+
+            PluginManager.ExportFunction("configUtil.selectColor", (args, _) => {
+                var textBox = ShellWindowManager.GetWindow("configUtil").GetWidget(args.ElementAt(0).ToString());
+                var textBoxControl = textBox.GetControl();
+
+                var colorDialog = new ColorDialog();
+                colorDialog.FullOpen = true;
+                colorDialog.Color = ColorTranslator.FromHtml(textBoxControl.Text);
+
+                if(colorDialog.ShowDialog() == DialogResult.OK){
+                    textBoxControl.Text = "#" + colorDialog.Color.R.ToString("x2") + colorDialog.Color.G.ToString("x2") + colorDialog.Color.B.ToString("x2");
+                    textBox.UpdateControl();
+                }
+
+                return string.Empty;
+            });
+
+        ]]>
+    </script>
+
+    <tablePanel dock="fill" columnCount="3" rowCount="6" attrList="themedWindow">
+
+        <label margin="${theme.paddingLarge},0,0,0" dock="fill" align="middleLeft" table.position="0,0" text="Background"/>
+        <tablePanel margin="${theme.paddingLarge},${theme.paddingLarge},${theme.paddingLarge},0" dock="fill" columnCount="3" table.position="1,0" table.columnSpan="2">
+            <textBox id="tbBackground" margin="0,0,${theme.paddingLarge},0" dock="fill" table.position="0,0" table.columnSpan="2" font="${theme.font.main}" color="${theme.font.color}" backgroundColor="${theme.color.background}" output="configUtil.setting.background" text="${theme.color.background}"/>
+            <button dock="fill" attrList="flatButton" table.position="2,0" text="Select" onClick="configUtil.selectColor(tbBackground)"/>
+        </tablePanel>
+
+        <label margin="${theme.paddingLarge},0,0,0" dock="fill" align="middleLeft" table.position="0,1" text="~Background (elements)"/>
+        <tablePanel margin="${theme.paddingLarge},${theme.paddingLarge},${theme.paddingLarge},0" dock="fill" columnCount="3" table.position="1,1" table.columnSpan="2">
+            <textBox id="tbBackgroundChild" margin="0,0,${theme.paddingLarge},0" dock="fill" table.position="0,0" table.columnSpan="2" font="${theme.font.main}" color="${theme.font.color}" backgroundColor="${theme.color.background}" output="configUtil.setting.backgroundChild" text="${theme.color.backgroundChild}"/>
+            <button dock="fill" attrList="flatButton" table.position="2,0" text="Select" onClick="configUtil.selectColor(tbBackgroundChild)"/>
+        </tablePanel>
+
+        <label margin="${theme.paddingLarge},0,0,0" dock="fill" align="middleLeft" table.position="0,2" text="~Background (active)"/>
+        <tablePanel margin="${theme.paddingLarge},${theme.paddingLarge},${theme.paddingLarge},0" dock="fill" columnCount="3" table.position="1,2" table.columnSpan="2">
+            <textBox id="tbBackgroundActive" margin="0,0,${theme.paddingLarge},0" dock="fill" table.position="0,0" table.columnSpan="2" font="${theme.font.main}" color="${theme.font.color}" backgroundColor="${theme.color.background}" output="configUtil.setting.backgroundActive" text="${theme.color.backgroundActive}"/>
+            <button dock="fill" attrList="flatButton" table.position="2,0" text="Select" onClick="configUtil.selectColor(tbBackgroundActive)"/>
+        </tablePanel>
+
+        <button dock="fill" attrList="flatButton" margin="${theme.paddingLarge}" text="OK" onClick="configUtil.saveConfig()" table.position="2,5"/>
+    </tablePanel>
+</window>

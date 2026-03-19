@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 using RedEye.PluginAPI;
 
+static class PowerSearchWindowState {
+    public static bool Opened = false;
+}
+
 public class PowerSearchPlugin : Plugin {
     public override string Name {
         get {
@@ -14,7 +18,11 @@ public class PowerSearchPlugin : Plugin {
 
     public override void Main(){
         ExportFunction("open", (args, _) => {
-            new PowerSearchWindow(ComponentManager, psConfig).Show(); 
+            if(!PowerSearchWindowState.Opened){
+                PowerSearchWindowState.Opened = true;
+                new PowerSearchWindow(ComponentManager, psConfig).Show(); 
+            }
+
             return string.Empty;
         });
 

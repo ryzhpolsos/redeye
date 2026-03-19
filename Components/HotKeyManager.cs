@@ -123,8 +123,12 @@ namespace RedEye.Components {
                             found = true;
                             lastLength = keyList.Count();
 
-                            if((isUp || handler.AllowMultiActivate) && !handler.Handler.Invoke()){
-                                break;
+                            if(isUp || handler.AllowMultiActivate){
+                                if(!handler.Handler.Invoke()){
+                                    break;
+                                }
+
+                                keys.Clear();
                             }
                         }
                     }

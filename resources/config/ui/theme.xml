@@ -1,0 +1,10 @@
+<variables>
+    <set name="theme.color.background" value="#13293d"/>
+    <set name="theme.color.backgroundChild" value="#2a628f"/>
+    <set name="theme.color.backgroundActive" value="#3e92cc"/>
+    <set name="theme.font.main" value="Segoe UI,10"/>
+    <set name="theme.font.color" value="#ffffff"/>
+    <set name="theme.paddingLarge" value="16"/>
+    <set name="theme.paddingMiddle" value="8"/>
+    <set name="theme.paddingSmall" value="4"/>
+</variables>

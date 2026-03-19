@@ -41,6 +41,7 @@ namespace RedEye.Components {
             config.BackgroundColor = node.GetAttribute("backgroundColor");
             config.Opacity = ParseHelper.ParseDouble(node.GetAttribute("opacity", "1.0"));
             config.AllowTransparency = ParseHelper.ParseBool(node.GetAttribute("allowTransparency", "false"));
+            config.Icon = node.GetAttribute("icon");
 
             var window = windowManager.CreateWindow(config);
 

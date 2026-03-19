@@ -13,6 +13,7 @@ namespace RedEye.Components {
         ComponentManager manager = null;
         IConfig shellConfig = null;
         IShellEventListener listener = null;
+        IResourceManager resourceManager = null;
 
         string title = null;
         ShellWindowConfig config = null;
@@ -27,6 +28,7 @@ namespace RedEye.Components {
         public void Initialize(){
             shellConfig = manager.GetComponent<IConfig>();
             listener = manager.GetComponent<IShellEventListener>();
+            resourceManager = manager.GetComponent<IResourceManager>();
         }
 
         public void InitWindow(){
@@ -77,8 +79,7 @@ namespace RedEye.Components {
             form.Shown += (_, _) => {
                 SetWindowPos(form.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
                 SetWindowPos(form.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-                BringWindowToTop(form.Handle);
-                SetForegroundWindow(form.Handle);
+                ForceSetForegroundWindow(form.Handle);
                 // ActivateWindow(form.Handle);
                 // SetActiveWindow(form.Handle);
             };
@@ -86,6 +87,14 @@ namespace RedEye.Components {
             if(!string.IsNullOrEmpty(config.Padding)) form.Padding = ParseHelper.ParsePadding(config.Padding);
             if(!string.IsNullOrEmpty(config.Color)) form.ForeColor = ColorTranslator.FromHtml(config.Color);
             if(!string.IsNullOrEmpty(config.BackgroundColor)) form.BackColor = ColorTranslator.FromHtml(config.BackgroundColor);
+
+            if(config.Icon is not null){
+                if(config.Icon.Length == 0){
+                    form.ShowIcon = false;
+                }else{
+                    form.Icon = Icon.FromHandle(resourceManager.GetResource<Bitmap>(config.Icon).GetHicon());
+                }
+            }
 
             if(config.AllowTransparency){
                 form.AllowTransparency = true;

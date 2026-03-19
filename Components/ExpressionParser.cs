@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -24,10 +23,27 @@ namespace RedEye.Components {
             pluginManager = manager.GetComponent<IPluginManager>();
         }
 
-        public string EvaluateExpression(string expression, IVariableStorage<string> variables = null){
+        public ExpressionParseResult ParseExpression(string expression, IVariableStorage<string> variables = null){
+            ExpressionParseResult result = new();
+
+            if(expression.Length > 0 && expression[0] =='~'){
+                if(expression.Length == 1){
+                    result.Value = expression;
+                    return result;
+                }
+
+                result.Value = expression.Substring(1);
+                return result;
+            }
+
             if(!expression.Contains("(")){
-                if(expression.Length > 2 && (expression[0] == '\'' || expression[0] == '"')) return ParseVariables(expression.Substring(1, expression.Length - 2), variables);
-                return ParseVariables(expression, variables);
+                if(expression.Length > 2 && (expression[0] == '\'' || expression[0] == '"')){
+                    result.Value = ParseVariables(expression.Substring(1, expression.Length - 2), variables);
+                    return result;
+                }
+
+                result.Value = ParseVariables(expression, variables);
+                return result;
             }
 
             var match = expressionRegex.Match(expression);
@@ -40,19 +56,28 @@ namespace RedEye.Components {
                     args.Add(EvaluateExpression(capture.Value, variables));
                 }
 
-                var exportedFunctions = pluginManager.GetExportedFunctions();
-
-                // Console.WriteLine(function);
-
-                if(exportedFunctions.ContainsKey(function)){
-                    // Console.WriteLine(string.Join(", ", args));
-                    return exportedFunctions[function].Invoke(args, variables).ToString();
-                }
-
-                logger.LogFatal($"No function with name {function} was found");
+                result.FunctionName = function;
+                result.Arguments = args;
             }
 
-            return string.Empty;
+            return result;
+        } 
+
+        public string EvaluateExpression(string expression, IVariableStorage<string> variables = null){
+            var result = ParseExpression(expression, variables);
+
+            if(result.FunctionName is not null){
+                var exportedFunctions = pluginManager.GetExportedFunctions();
+
+
+                if(exportedFunctions.ContainsKey(result.FunctionName)){
+                    return exportedFunctions[result.FunctionName].Invoke(result.Arguments, variables).ToString();
+                }
+
+                logger.LogFatal($"No function with name {result.FunctionName} was found");
+            }
+
+            return result.Value;
         }
 
         public string ParseVariables(string value, IVariableStorage<string> variables){

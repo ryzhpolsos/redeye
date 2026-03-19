@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -118,7 +119,7 @@ namespace RedEye.UI {
 
             var controlType = Control.GetType();
 
-            foreach(var attr in Node.GetAttributes()){
+            foreach(var attr in Node.GetAttributes().ToArray()){
                 if(!attr.StartsWith("on") || processedEvents.Contains(attr)) continue;
                 processedEvents.Add(attr);
                 var eventName = attr.Substring(2);
@@ -210,6 +211,21 @@ namespace RedEye.UI {
             foreach(var handler in EventMap[eventName]){
                 handler.Invoke(new ShellWidgetEvent());
             }
+        }
+
+        public void Update(){
+            ThreadSafeInvoke(() => {
+                UpdateConfig();
+                UpdateControlInternal();        
+            });
+        }
+
+        public void Modify(Action<IShellWidget> callback){
+            ThreadSafeInvoke(() => {
+                callback.Invoke(this);
+                UpdateConfig();
+                UpdateControlInternal();
+            });
         }
 
         protected virtual void RegisterEventHandlerInternal(string name, Action<ShellWidgetEvent> handler){
