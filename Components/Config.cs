@@ -13,6 +13,7 @@ namespace RedEye.Components {
         ComponentManager manager = null;
 
         ILogger logger = null;
+        IExplorerIntegration explorerIntegration = null;
         IShellWindowManager windowManager = null;
         IHotKeyManager hotKeyManager = null;
         ILayoutLoader layoutLoader = null;
@@ -28,6 +29,7 @@ namespace RedEye.Components {
 
         public void Initialize(){
             logger = manager.GetComponent<ILogger>();
+            explorerIntegration = manager.GetComponent<IExplorerIntegration>();
             windowManager = manager.GetComponent<IShellWindowManager>();
             hotKeyManager = manager.GetComponent<IHotKeyManager>();
             layoutLoader = manager.GetComponent<ILayoutLoader>();
@@ -44,7 +46,11 @@ namespace RedEye.Components {
 
             layoutNode = rootNode["config"]["layout"];
             PrintNode(rootNode);
-            
+
+            explorerIntegration.SetIsEnabled(ParseHelper.ParseBool(rootNode["config"]["core"]["explorerIntegration"]["enable"].Value));
+            explorerIntegration.SetTimeout(ParseHelper.ParseInt(rootNode["config"]["core"]["explorerIntegration"]["timeout"].Value));
+            if(explorerIntegration.GetIsEnabled()) explorerIntegration.RunHiddenExplorer();
+
             foreach(var hotkey in rootNode["config"]["hotkeys"].GetNodes("hotkey")){
                 hotKeyManager.RegisterHotKey(hotkey.GetAttribute("keys").Split('+'), () => {
                     hotkey.GetAttribute("action");

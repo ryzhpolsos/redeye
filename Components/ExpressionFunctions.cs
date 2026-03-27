@@ -125,7 +125,9 @@ namespace RedEye.Components {
                     psi.FileName = fileName;
                     psi.Arguments = arguments;
                     Process.Start(psi);
-                }catch(Exception){}
+                }catch(Exception ex){
+                    MessageBox.Show(ExceptionHelper.FormatException(ex));
+                }
                 return string.Empty;
             });
 

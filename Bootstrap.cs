@@ -50,24 +50,8 @@ namespace RedEye {
             .ExportWidget("webView", typeof(WebView));
 
             try{
-                // var config = manager.GetComponent<IConfig>();
-                // var node = ConfigNode.CreateFromString("""
-                //     <root>
-                //         <variables>
-                //             <set name="x" value="5"/>
-                //         </variables>
-                //         <variables>
-                //             <set name="y" value="6"/>
-                //         </variables>
-
-                //         <eval command="showMessage('${x} ${y}')"/>
-                //     </root> 
-                // """);
-                // Console.ReadLine();
-
                 manager.GetComponent<IPluginManager>().LoadPlugins();
                 manager.GetComponent<IConfig>().LoadConfig();
-                manager.GetComponent<IExplorerIntegration>().RunHiddenExplorer();
                 manager.GetComponent<IShellWindowManager>().ShowWindows();
             }catch(Exception ex){
                 manager.GetComponent<ILogger>().LogFatal(ExceptionHelper.FormatException(ex, true));

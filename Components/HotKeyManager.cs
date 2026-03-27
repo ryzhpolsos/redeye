@@ -82,54 +82,35 @@ namespace RedEye.Components {
                     if(!handler.Invoke(keyName, isUp)) return 0;
                 }
 
-                foreach(var handler in hotKeys){
-                    List<List<string>> keyLists = new();
-                    keyLists.Add(handler.Keys.ToList());
+                foreach(var handler in hotKeys.OrderBy(h => h.Keys.Count()).Reverse()){
+                    if(handler.Keys.Count() < lastLength) continue;
+
+                    found = true;
 
                     for(int i = 0; i < handler.Keys.Count(); i++){
-                        var key = handler.Keys.ElementAt(i);
+                        if(keys.Count <= i){
+                            found = false;
+                            break;
+                        }
 
-                        if(keyMap.ContainsKey(key)){
-                            foreach(var mappedKey in keyMap[key]){
-                                List<string> newKeys = new();
-                                newKeys.AddRange(handler.Keys);
-                                newKeys[i] = mappedKey;
-                                newKeys.Sort();
-                                keyLists.Add(newKeys);
-                            }
+                        var key = handler.Keys.ElementAt(i);
+                        if(keyMap.ContainsKey(key) ? !keys.Any(k => keyMap[key].Contains(k)) : !keys.Contains(key)){
+                            found = false;
+                            break;
                         }
                     }
 
-                    // if(isUp || handler.AllowMultiActivate){
-                    //     foreach(var keyList in keyLists){
-                    //         // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
+                    Console.WriteLine(string.Join(",", handler.Keys) + " " + string.Join(",", keys) + $" found: {found} isUp: {isUp}");
 
-                    //         if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
-                    //             found = true;
-                    //             lastLength = keyList.Count();
+                    if(found){
+                        lastLength = handler.Keys.Count();
 
-                    //             if(!handler.Handler.Invoke()){
-                    //                 cont = false;
-                    //                 break;
-                    //             }
-                    //         }
-                    //     }
-                    // }
-
-                    foreach(var keyList in keyLists){
-                        // Console.WriteLine(string.Join(", ", keys) + " --> " + string.Join(", ", keyList));
-
-                        if(keyList.Count() >= lastLength && keyList.SequenceEqual(keys)){
-                            found = true;
-                            lastLength = keyList.Count();
-
-                            if(isUp || handler.AllowMultiActivate){
-                                if(!handler.Handler.Invoke()){
-                                    break;
-                                }
-
-                                keys.Clear();
+                        if(isUp || handler.AllowMultiActivate){
+                            if(!handler.Handler.Invoke()){
+                                break;
                             }
+
+                            keys.Clear();
                         }
                     }
 
@@ -138,17 +119,16 @@ namespace RedEye.Components {
                     }
                 }
 
+                if(keys.Any()){
+                    keys = keys.Distinct().ToList();
+                }else{
+                    lastLength = 0;
+                }
+
                 if(isUp){
                     keys.Remove(keyName);
                 }else{
                     keys.Add(keyName);
-                }
-
-                if(keys.Any()){
-                    keys = keys.Distinct().ToList();
-                    keys.Sort();
-                }else{
-                    lastLength = 0;
                 }
             }
 

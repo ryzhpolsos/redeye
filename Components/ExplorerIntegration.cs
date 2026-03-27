@@ -17,9 +17,8 @@ namespace RedEye.Components {
         readonly string progManClassName = "Progman";
 
         bool enabled = false;
-        bool enabledStateInit = false;
+        int timeout = 0;
         int pid = 0;
-        ConfigNode node = null;
 
         public void SetManager(ComponentManager manager){
             this.manager = manager;
@@ -32,24 +31,19 @@ namespace RedEye.Components {
         }
 
         public bool GetIsEnabled(){
-            if(!enabledStateInit){
-                enabledStateInit = true;
-
 #if DEBUG
-                enabled = false;
+            return false;
 #else
-                var rootNode = manager.GetComponent<IConfig>().GetRootNode();
-
-                if(rootNode is null){
-                    manager.GetComponent<ILogger>().LogFatal("root node is null somehow");
-                }
-
-                node = rootNode["config"]["core"]["explorerIntegration"];
-                enabled = ParseHelper.ParseBool(node["enable"].Value);
-#endif
-            }
-
             return enabled;
+#endif
+        }
+
+        public void SetIsEnabled(bool enabled){
+            this.enabled = enabled;
+        }
+
+        public void SetTimeout(int timeout){
+            this.timeout = timeout;
         }
 
         public int GetExplorerPID(){
@@ -67,8 +61,6 @@ namespace RedEye.Components {
         }
 
         public void RunHiddenExplorer(){
-            if(!GetIsEnabled()) return;
-
             ShellWindowConfig cfg = new(){
                 Type = ShellWindowType.TopMost,
                 X = 0,
@@ -86,7 +78,7 @@ namespace RedEye.Components {
             pid = proc.Id;
 
             Task.Run(() => {
-                Thread.Sleep(ParseHelper.ParseInt(node["timeout"].Value));
+                Thread.Sleep(timeout);
 
                 ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
                 ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
