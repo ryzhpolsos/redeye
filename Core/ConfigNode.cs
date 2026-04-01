@@ -102,7 +102,9 @@ namespace RedEye.Core {
         public static ComponentManager ComponentManager;
 
         public static ConfigNode CreateEmpty(string name){
-            return new ConfigNode(ComponentManager, name, isVirtual: true);
+            ConfigNode node = new();
+            node.Init(ComponentManager, name, isVirtual: true);
+            return node;
         }
 
         public static ConfigNode CreateFromString(string data){
@@ -111,7 +113,9 @@ namespace RedEye.Core {
             return rootNode.GetNodes().First();
         }
 
-        public ConfigNode(ComponentManager manager, string name, IDictionary<string, string> attributes = null, string value = null, Dictionary<string, Dictionary<string, string>> childNodeAttributes = null, XmlNode underlyingXmlNode = null, bool isVirtual = false, string fileName = null){
+        public ConfigNode(){}
+        
+        public void Init(ComponentManager manager, string name, IDictionary<string, string> attributes = null, string value = null, Dictionary<string, Dictionary<string, string>> childNodeAttributes = null, XmlNode underlyingXmlNode = null, bool isVirtual = false, string fileName = null){
             this.name = name;
             this.manager = manager;
             this.config = manager.GetComponent<IConfig>();
@@ -514,7 +518,8 @@ namespace RedEye.Core {
         }
 
         public ConfigNode Clone(){
-            var node = new ConfigNode(manager, name, attributes, value);
+            var node = new ConfigNode();
+            node.Init(manager, name, attributes, value);
 
             foreach(var variable in variables){
                 node.SetVariable(variable.Key, variable.Value);

@@ -1,4 +1,4 @@
- 
+
 namespace RedEye.Core {
     public enum LogType {
         Debug,

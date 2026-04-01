@@ -10,6 +10,7 @@ namespace RedEye.Components {
     public class ExplorerIntegrationComponent : IExplorerIntegration {
         ComponentManager manager = null;
         IConfig config = null;
+        ILogger logger = null;
         IShellWindowManager shellWindowManager = null;
         IShellEventListener shellEventListener = null;
 
@@ -26,6 +27,7 @@ namespace RedEye.Components {
 
         public void Initialize(){
             config = manager.GetComponent<IConfig>();
+            logger = manager.GetComponent<ILogger>();
             shellWindowManager = manager.GetComponent<IShellWindowManager>();
             shellEventListener = manager.GetComponent<IShellEventListener>();
         }
@@ -39,6 +41,7 @@ namespace RedEye.Components {
         }
 
         public void SetIsEnabled(bool enabled){
+            logger.LogInformation($"Explorer integration is {(enabled ? "enabled" : "disabled")}");
             this.enabled = enabled;
         }
 
@@ -70,8 +73,17 @@ namespace RedEye.Components {
                 BackgroundColor = "#000000"
             };
 
-            // var wnd = shellWindowManager.CreateWindow(cfg);
-            // wnd.ShowWindow();
+            var wnd = shellWindowManager.CreateWindow(cfg);
+            wnd.ShowWindow();
+
+            foreach(var explorer in Process.GetProcessesByName("explorer")){
+                try{
+                    explorer.Kill();
+                    logger.LogInformation($"Killed Explorer process with PID {explorer.Id}");
+                }catch(Exception ex){
+                    logger.LogWarning($"Failed to kill Explorer process with PID {explorer.Id}: {ex.Message}");
+                }
+            }
 
             var proc = Process.Start("explorer.exe");
             proc.WaitForInputIdle();
@@ -87,7 +99,7 @@ namespace RedEye.Components {
                 
                 while(true){
                     shellEventListener.ReSetWorkArea();
-                    Thread.Sleep(1000);
+                    Thread.Sleep(250);
                 }
                 // shellEventListener.SetMinimizedMetrics();
             });

@@ -4,12 +4,12 @@ using System.Xml;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-
-using RedEye.Core;
 using System.Collections.Generic;
 
+using RedEye.Core;
+
 namespace RedEye.Components {
-    public class ConfigComponent :IConfig {
+    public class ConfigComponent : IConfig {
         ComponentManager manager = null;
 
         ILogger logger = null;
@@ -39,7 +39,8 @@ namespace RedEye.Components {
         }
 
         public IConfig LoadConfig(){
-            rootNode = new ConfigNode(manager, "root");
+            rootNode = new();
+            rootNode.Init(manager, "root");
             rootNode.SetVariable("screen.width", Screen.AllScreens.Select(s => s.Bounds.Width).Sum().ToString());
             rootNode.SetVariable("screen.height", Screen.AllScreens.Select(s => s.Bounds.Height).Sum().ToString());
             LoadFile("config.xml", rootNode);
@@ -96,6 +97,14 @@ namespace RedEye.Components {
             LoadNode(doc.DocumentElement, parentNode);
         }
 
+        public ConfigNode CreateNode(string name){
+            return ConfigNode.CreateEmpty(name);
+        }
+
+        public ConfigNode CreateNodeFromString(string data){
+            return ConfigNode.CreateFromString(data);
+        }
+
         void LoadNode(XmlNode docNode, ConfigNode parentNode, string fileName = null){
             if(docNode.Name.StartsWith("#")) return;
             Dictionary<string, string> attributes = new();
@@ -107,7 +116,8 @@ namespace RedEye.Components {
                 }
             }
 
-            var node = new ConfigNode(manager, docNode.Name, attributes, docNode.InnerText, underlyingXmlNode: docNode, isVirtual: false, fileName: fileName);
+            var node = new ConfigNode();
+            node.Init(manager, docNode.Name, attributes, docNode.InnerText, underlyingXmlNode: docNode, isVirtual: false, fileName: fileName);
             parentNode.AddNode(node);
 
             foreach(XmlNode childNode in docNode.ChildNodes){

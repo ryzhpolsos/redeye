@@ -1,5 +1,7 @@
+using System.Runtime.InteropServices;
 
 namespace RedEye.Core {
+    [ComVisible(true)]
     public interface IExplorerIntegration : IComponent {
         public void RunHiddenExplorer();
         public bool GetIsEnabled();

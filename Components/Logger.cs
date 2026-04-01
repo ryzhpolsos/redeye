@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 
 using RedEye.Core;
 
@@ -18,7 +17,7 @@ namespace RedEye.Components {
 
         public void Log(LogType type, string message){
             if(writer == null){
-                writer = new StreamWriter(Path.Combine(manager.GetComponent<IConfig>().GetAppDirectory(), "log.txt"), true);
+                writer = new StreamWriter(Path.Combine(manager.GetComponent<IConfig>().GetAppDirectory(), "redeye.log"), true);
             }
 
             writer.WriteLine($"{DateTime.Now.ToString()} [{type.ToString().ToUpper()}] {message}");

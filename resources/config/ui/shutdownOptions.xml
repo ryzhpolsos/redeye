@@ -5,6 +5,7 @@
     width="${shutdownOptions.width}"
     height="${shutdownOptions.height}"
     border="fixedDialog"
+    maximizeButton="false"
     autoShow="false">
 
     <tablePanel dock="fill" attrList="themedWindow" rowCount="3" columnCount="1" padding="${theme.paddingLarge},0,${theme.paddingLarge},${theme.paddingLarge}">

@@ -18,9 +18,13 @@
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
         <TargetPlatform>x64</TargetPlatform>
+        <!-- <SignAssembly>true</SignAssembly> -->
+        <!-- <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile> -->
         <UseWindowsForms>true</UseWindowsForms>
         <LangVersion>latest</LangVersion>
         <Win32Manifest>redeye.manifest</Win32Manifest>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <AssemblyComVisible>false</AssemblyComVisible>
     </PropertyGroup>
 
     <ItemGroup>

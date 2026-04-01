@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace RedEye.Core {
     public class NativeHelper {
@@ -198,6 +199,13 @@ namespace RedEye.Core {
 
         [DllImport("user32.dll", CharSet=CharSet.Auto)]
         public static extern int MapVirtualKey(int uCode, int uMapType);
+
+        [DllImport("ole32.dll")]
+        public static extern int GetRunningObjectTable(int reserved, out IRunningObjectTable pROT);
+
+        [DllImport("ole32.dll", CharSet = CharSet.Unicode)]
+        public static extern int CreateItemMoniker([MarshalAs(UnmanagedType.LPWStr)] string lpszDelim, [MarshalAs(UnmanagedType.LPWStr)] string lpszItem, out IMoniker ppmk);
+
 
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;

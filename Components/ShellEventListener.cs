@@ -193,6 +193,8 @@ namespace RedEye.Components {
         void StartListener(){
             listenerStarted = true;
 
+            logger.LogInformation("Shell event listener started");
+
             shellMsg = RegisterWindowMessage("SHELLHOOK");
 
             Task.Run(()=>{
@@ -206,13 +208,13 @@ namespace RedEye.Components {
                     wndClass.lpfnWndProc = MsgWndProc;
 
                     if(RegisterClassEx(ref wndClass) == 0){
-                        logger.LogFatal("ShellWindowState class registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
+                        logger.LogFatal("ShellWindow class registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
 
                     IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, HWND_MESSAGE, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
 
                     if(hWnd == IntPtr.Zero){
-                        logger.LogFatal("ShellWindowState creation failed, last error: " + Marshal.GetLastWin32Error().ToString());
+                        logger.LogFatal("ShellWindow creation failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
 
                     if(!explorerIntegration.GetIsEnabled()){

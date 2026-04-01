@@ -16,6 +16,8 @@ namespace RedEye.Components {
 
     public class HotKeyManagerComponent : IHotKeyManager {
         ComponentManager manager = null;
+
+        ILogger logger = null;
         IExplorerIntegration explorerIntegration = null;
  
         List<string> keys = new List<string>();
@@ -50,6 +52,7 @@ namespace RedEye.Components {
         }
 
         public void Initialize(){
+            logger = manager.GetComponent<ILogger>();
             explorerIntegration = manager.GetComponent<IExplorerIntegration>();
 
             kbProc = KbHandler;
@@ -61,6 +64,7 @@ namespace RedEye.Components {
         }
 
         public void RegisterHotKey(IEnumerable<string> keys, Func<bool> handler, bool allowMultiActivate = false){
+            logger.LogInformation($"Registering hotkey: {string.Join("+", keys)}");
             hotKeys.Add(new(){ Keys = keys.OrderBy(x => x), Handler = handler, AllowMultiActivate = allowMultiActivate });
         }
 
@@ -100,7 +104,7 @@ namespace RedEye.Components {
                         }
                     }
 
-                    Console.WriteLine(string.Join(",", handler.Keys) + " " + string.Join(",", keys) + $" found: {found} isUp: {isUp}");
+                    // Console.WriteLine(string.Join(",", handler.Keys) + " " + string.Join(",", keys) + $" found: {found} isUp: {isUp}");
 
                     if(found){
                         lastLength = handler.Keys.Count();

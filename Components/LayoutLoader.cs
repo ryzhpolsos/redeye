@@ -1,4 +1,5 @@
 using System;
+
 using RedEye.Core;
 using RedEye.UI;
 

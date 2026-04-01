@@ -77,5 +77,6 @@
     <hotkeys>
         <hotkey keys="Win" action="window.toggle(startMenu)"/>
         <hotkey keys="Win+R" action="powerSearch.open()"/>
+        <hotkey keys="Win+G" action="com.sendMessage(MYTEST,Meow,UwU)"/>
      </hotkeys>
 </config>

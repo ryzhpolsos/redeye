@@ -8,6 +8,7 @@ namespace RedEye.PluginAPI {
     public class Plugin {
         protected ComponentManager ComponentManager = null;
         protected IPluginManager PluginManager = null;
+        protected ICOMAPI COMAPI = null;
         protected IConfig Config = null;
         protected IExplorerIntegration ExplorerIntegration = null;
         protected IExpressionFunctions ExpressionFunctions = null;
@@ -33,6 +34,7 @@ namespace RedEye.PluginAPI {
         public void InitPlugin(ComponentManager manager){
             ComponentManager = manager;
             PluginManager = ComponentManager.GetComponent<IPluginManager>();
+            COMAPI = ComponentManager.GetComponent<ICOMAPI>();
             Config = ComponentManager.GetComponent<IConfig>();
             ExplorerIntegration = ComponentManager.GetComponent<IExplorerIntegration>();
             ExpressionFunctions = ComponentManager.GetComponent<IExpressionFunctions>();

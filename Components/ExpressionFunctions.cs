@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using RedEye.Core;
 using static RedEye.Core.NativeHelper;
@@ -18,6 +19,7 @@ namespace RedEye.Components {
         IResourceManager resourceManager = null;
         IPluginManager pluginManager = null;
         IMediaManager mediaManager = null;
+        ICOMAPI comApi = null;
         IConfig config = null;
 
         public void SetManager(ComponentManager manager){
@@ -31,6 +33,7 @@ namespace RedEye.Components {
             resourceManager = manager.GetComponent<IResourceManager>();
             pluginManager = manager.GetComponent<IPluginManager>();
             mediaManager = manager.GetComponent<IMediaManager>();
+            comApi = manager.GetComponent<ICOMAPI>();
             config = manager.GetComponent<IConfig>();
 
             pluginManager.ExportFunction("eval", (args, _) => {
@@ -253,6 +256,17 @@ namespace RedEye.Components {
             pluginManager.ExportFunction("res.loadIcon", (args, _) => {
                 var index = args.Count() > 1 ? ParseHelper.ParseInt(args.ElementAt(1).ToString()) : 0;
                 return resourceManager.AddResource(Icon.FromHandle(ExtractIcon(IntPtr.Zero, args.ElementAt(0).ToString(), index)).ToBitmap());
+            });
+
+            pluginManager.ExportFunction("com.sendMessage", (args, _) => {
+                Dictionary<string, string> dict = new();
+
+                for(int i = 1; i < args.Count(); i += 2){
+                    dict.Add(args.ElementAt(i).ToString(), args.ElementAt(i + 1).ToString());
+                }
+
+                comApi.SendMessage(args.ElementAt(0).ToString(), dict);
+                return string.Empty;
             });
         }
 

@@ -27,6 +27,7 @@ namespace RedEye {
             .AddComponent<IWindowManager>(new WindowManagerComponent())
             .AddComponent<ISpecialFolderWrapper>(new SpecialFolderWrapperComponent())
             .AddComponent<IExplorerIntegration>(new ExplorerIntegrationComponent())
+            .AddComponent<ICOMAPI>(new COMAPIComponent())
             .InitializeComponents();
 
             manager
@@ -49,7 +50,19 @@ namespace RedEye {
             .ExportWidget("externalProcess", typeof(ExternalProcess))
             .ExportWidget("webView", typeof(WebView));
 
+            var comApi = manager.GetComponent<ICOMAPI>();
+            comApi.RegisterInROT();
+
+            // Console.ReadLine();
+            // Console.WriteLine(comApi.SendMessage(
+            //     "MYTEST",
+            //     new System.Collections.Generic.Dictionary<string, string>(){
+            //         {"Meow", "UwU"}
+            //     }
+            // ));
+
             try{
+                manager.GetComponent<ILogger>().LogInformation("Shell started");
                 manager.GetComponent<IPluginManager>().LoadPlugins();
                 manager.GetComponent<IConfig>().LoadConfig();
                 manager.GetComponent<IShellWindowManager>().ShowWindows();
