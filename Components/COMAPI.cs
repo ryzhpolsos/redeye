@@ -25,6 +25,28 @@ namespace RedEye.COM {
     }
 
     [ComVisible(true)]
+    public class ShellWindowManager {
+        IConfig config;
+        ILayoutLoader layoutLoader;
+        IShellWindowManager shellWindowManager;
+
+        public ShellWindowManager(){
+            config = ComStorage.Manager.GetComponent<IConfig>();
+            layoutLoader = ComStorage.Manager.GetComponent<ILayoutLoader>();
+            shellWindowManager = ComStorage.Manager.GetComponent<IShellWindowManager>();
+        }
+
+        public IShellWindow GetWindow(string id){
+            return shellWindowManager.GetWindow(id);
+        }
+
+        public IShellWindow CreateWindow(string xml){
+            var node = config.CreateNodeFromString(xml);
+            return layoutLoader.CreateWindowFromNode(node);
+        }
+    }
+
+    [ComVisible(true)]
     public class Message {
         public StringDictionary Data;
 
@@ -55,6 +77,7 @@ namespace RedEye.COM {
     [ClassInterface(ClassInterfaceType.None)]
     public class Shell : IShell {
         ICOMAPI comApi;
+        ShellWindowManager shellWindowManager = new();
 
         public Shell(){
             comApi = ComStorage.Manager.GetComponent<ICOMAPI>();
@@ -69,6 +92,8 @@ namespace RedEye.COM {
         public IComponent GetComponent(string name){
             return ComStorage.Manager.GetComponentByName("I" + name);
         }
+
+        public ShellWindowManager ShellWindowManager() => shellWindowManager;
     }
 }
 
