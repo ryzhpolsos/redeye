@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -102,6 +103,15 @@ namespace RedEye.Components {
             }
 
             form.Opacity = config.Opacity;
+        }
+
+        public void ShowWindowAsync(){
+            while(true);
+            Thread thread = new(() => {
+                form.ShowDialog();
+            });
+
+            thread.Start();
         }
 
         public void ShowWindow(){

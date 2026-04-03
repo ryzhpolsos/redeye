@@ -45,6 +45,7 @@ namespace RedEye.Core {
     public interface IShellWindow : IComponent, IWidgetContainer {
         public void InitWindow();
         public void ShowWindow();
+        public void ShowWindowAsync();
         public void HideWindow();
         public void CloseWindow();
         public void ToggleWindow();
