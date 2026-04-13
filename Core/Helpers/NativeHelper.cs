@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
@@ -48,13 +49,16 @@ namespace RedEye.Core {
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int SendMessage(IntPtr hWnd, int wMsg, long lParam, StringBuilder wParam);
+        public static extern int SendMessage(IntPtr hWnd, int wMsg, long wParam, StringBuilder lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int SendMessage(IntPtr hWnd, int wMsg, long lParam, long wParam);
+        public static extern int SendMessage(IntPtr hWnd, int wMsg, long wParam, long lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int lParam, int wParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetAncestor(IntPtr hWnd, int gaFlags);
@@ -402,12 +406,12 @@ namespace RedEye.Core {
         public static void RestoreWindow(IntPtr hWnd){
             ShowWindow(hWnd, 9);
             RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 257);
-            SetForegroundWindow(hWnd);
+            ForceSetForegroundWindow(hWnd);
         }
 
         public static void ActivateWindow(IntPtr hWnd){
             ShowWindow(hWnd, 5);
-            SetForegroundWindow(hWnd);
+            ForceSetForegroundWindow(hWnd);
         }
 
         public static void CloseWindow(IntPtr hWnd){

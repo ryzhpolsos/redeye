@@ -1,4 +1,4 @@
-$components = Get-ChildItem 'Core/ComponentDefinitions' -Name -Exclude @('IPluginManager.cs', 'IShellWindow.cs') | ForEach-Object { $_.Substring(1, $_.Length - 4) }
+$components = Get-ChildItem 'Core/ComponentDefinitions' -Name -Exclude @('IPluginManager.cs', 'IShellWindow.cs', 'ITrayEventListener.cs') | ForEach-Object { $_.Substring(1, $_.Length - 4) }
 
 $src = 'PluginAPI/Plugin.cs'
 $dst = 'PluginAPI/Plugin.cs.pp'

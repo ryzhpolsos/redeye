@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -65,7 +65,7 @@ namespace RedEye.Components {
                 mm.iArrange = ARW_HIDE;
             }
 
-            // SystemParametersInfo(SPI_SETMINIMIZEDMETRICS, 0, ref mm, SPIF_SENDCHANGE);
+            SystemParametersInfo(SPI_SETMINIMIZEDMETRICS, 0, ref mm, SPIF_SENDCHANGE);
         }
 
         public void SetDefaultIcon(string fileName, int id){
@@ -94,11 +94,11 @@ namespace RedEye.Components {
             var window = activeWindows[handle];
 
             if(window.IsActive){
-                MinimizeWindow(handle);
+                windowManager.GetWindow(handle).Minimize();
             }else if(window.IsMinimized){
-                RestoreWindow(handle);
+                windowManager.GetWindow(handle).Restore();
             }else{
-                ActivateWindow(handle);
+                windowManager.GetWindow(handle).Activate();
             }
         }
 
@@ -181,10 +181,6 @@ namespace RedEye.Components {
                 }
             }
 
-            if(windowWrappers.ContainsKey(wnd.Handle)){
-                windowManager.ProcessWrapperEvent(et, wnd);
-            }
-
             foreach(var handler in eventHandlers){
                 handler.Invoke(et, wnd);
             }
@@ -197,7 +193,7 @@ namespace RedEye.Components {
 
             shellMsg = RegisterWindowMessage("SHELLHOOK");
 
-            Task.Run(()=>{
+            Thread thread = new(()=>{
                 try{
                     EnumWindows(EnumWindowsHandler, IntPtr.Zero);
 
@@ -217,7 +213,9 @@ namespace RedEye.Components {
                         logger.LogFatal("ShellWindow creation failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
 
+
                     if(!explorerIntegration.GetIsEnabled()){
+                        logger.LogDebug("Explorer integration disabled, activating minimizied metrics");
                         SetTaskmanWindow(hWnd);
                         SetMinimizedMetrics();
                     }
@@ -238,6 +236,8 @@ namespace RedEye.Components {
                     logger.LogFatal($"ShellEventListener crashed: {ex.GetType().FullName}: {ex.Message}\n{ex.StackTrace}");
                 }
             });
+
+            thread.Start();
         }
 
         int MsgWndProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam){
@@ -247,10 +247,7 @@ namespace RedEye.Components {
                 activeWindows.Remove(handle);
             }
 
-            if(uMsg == WM_QUIT){
-                DestroyWindow(hWnd);
-                return 1;
-            }else if(uMsg == shellMsg){
+            if(uMsg == shellMsg){
                 switch((int)wParam){
                     case HSHELL_WINDOWCREATED: {
                         if(IsWindowNonShell(lParam) && IsWindowTopLevel(lParam)){
@@ -299,8 +296,10 @@ namespace RedEye.Components {
         }
 
         bool EnumWindowsHandler(IntPtr hWnd, IntPtr lParam){
+            if(!IsWindowVisible(hWnd) || !IsWindowTopLevel(hWnd)) return true;
+
             string txt = GetWindowText(hWnd);
-            if(IsWindowVisible(hWnd) && IsWindowTopLevel(hWnd) && txt.Length != 0 && txt != "WorkerW"){
+            if(txt.Length != 0 && txt != "WorkerW"){
                 ProcessEvent(ShellWindowEvent.Create, hWnd);
             }
 
@@ -318,17 +317,6 @@ namespace RedEye.Components {
             //logger.Log(logger.MessageType.Information, "SendLayoutChange called");
         }
 
-        Icon GetWindowIcon(IntPtr hWnd){
-            IntPtr iconHandle = SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
-            if(iconHandle == IntPtr.Zero) iconHandle = SendMessage(hWnd, WM_GETICON, ICON_SMALL, 0);
-            if(iconHandle == IntPtr.Zero) iconHandle = SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
-            if(iconHandle == IntPtr.Zero) iconHandle = GetClassPtr(hWnd, GCL_HICON);
-            if(iconHandle == IntPtr.Zero) iconHandle = GetClassPtr(hWnd, GCL_HICONSM);
-
-            if(iconHandle == IntPtr.Zero) return defaultIcon;
-            return Icon.FromHandle(iconHandle);
-        }
-
         string GetWindowClass(IntPtr h){
             var buff = new StringBuilder(255);
             GetClassName(h, buff, buff.Capacity);
@@ -338,6 +326,17 @@ namespace RedEye.Components {
         public IntPtr GetClassPtr(IntPtr hWnd, int nIndex){
             if(IntPtr.Size > 4) return GetClassLongPtr(hWnd, nIndex);
             return new IntPtr(GetClassLong(hWnd, nIndex));
+        }
+        
+        public Icon GetWindowIcon(IntPtr hWnd){
+            IntPtr iconHandle = SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
+            if(iconHandle == IntPtr.Zero) iconHandle = SendMessage(hWnd, WM_GETICON, ICON_SMALL, 0);
+            if(iconHandle == IntPtr.Zero) iconHandle = SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
+            if(iconHandle == IntPtr.Zero) iconHandle = GetClassPtr(hWnd, GCL_HICON);
+            if(iconHandle == IntPtr.Zero) iconHandle = GetClassPtr(hWnd, GCL_HICONSM);
+
+            if(iconHandle == IntPtr.Zero) return defaultIcon;
+            return Icon.FromHandle(iconHandle);
         }
 
         string GetWindowText(IntPtr h){

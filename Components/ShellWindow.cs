@@ -106,7 +106,6 @@ namespace RedEye.Components {
         }
 
         public void ShowWindowAsync(){
-            while(true);
             Thread thread = new(() => {
                 form.ShowDialog();
             });

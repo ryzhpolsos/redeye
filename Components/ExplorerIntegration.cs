@@ -33,16 +33,18 @@ namespace RedEye.Components {
         }
 
         public bool GetIsEnabled(){
-#if DEBUG
-            return false;
-#else
             return enabled;
-#endif
         }
 
         public void SetIsEnabled(bool enabled){
-            logger.LogInformation($"Explorer integration is {(enabled ? "enabled" : "disabled")}");
-            this.enabled = enabled;
+#if DEBUG
+            bool _enabled = false;
+#else
+            bool _enabled = enabled;
+#endif
+
+            logger.LogInformation($"Explorer integration is {(_enabled ? "enabled" : "disabled")}");
+            this.enabled = _enabled;
         }
 
         public void SetTimeout(int timeout){
@@ -64,33 +66,21 @@ namespace RedEye.Components {
         }
 
         public void RunHiddenExplorer(){
-            ShellWindowConfig cfg = new(){
-                Type = ShellWindowType.TopMost,
-                X = 0,
-                Y = 0,
-                Width = ParseHelper.ParseInt(config.GetRootNode().GetVariable("screenWidth")),
-                Height = ParseHelper.ParseInt(config.GetRootNode().GetVariable("screenHeight")),
-                BackgroundColor = "#000000"
-            };
-
-            var wnd = shellWindowManager.CreateWindow(cfg);
-            wnd.ShowWindow();
-
-            foreach(var explorer in Process.GetProcessesByName("explorer")){
-                try{
-                    explorer.Kill();
-                    logger.LogInformation($"Killed Explorer process with PID {explorer.Id}");
-                }catch(Exception ex){
-                    logger.LogWarning($"Failed to kill Explorer process with PID {explorer.Id}: {ex.Message}");
+            Task.Run(async () => {
+                foreach(var explorer in Process.GetProcessesByName("explorer")){
+                    try{
+                        explorer.Kill();
+                        logger.LogInformation($"Killed Explorer process with PID {explorer.Id}");
+                    }catch(Exception ex){
+                        logger.LogWarning($"Failed to kill Explorer process with PID {explorer.Id}: {ex.Message}");
+                    }
                 }
-            }
 
-            var proc = Process.Start("explorer.exe");
-            proc.WaitForInputIdle();
-            pid = proc.Id;
+                var proc = Process.Start("explorer.exe");
+                proc.WaitForInputIdle();
+                pid = proc.Id;
 
-            Task.Run(() => {
-                Thread.Sleep(timeout);
+                await Task.Delay(timeout);
 
                 ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
                 ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
@@ -99,7 +89,7 @@ namespace RedEye.Components {
                 
                 while(true){
                     shellEventListener.ReSetWorkArea();
-                    Thread.Sleep(250);
+                    await Task.Delay(250);
                 }
                 // shellEventListener.SetMinimizedMetrics();
             });

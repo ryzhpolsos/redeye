@@ -46,7 +46,7 @@ namespace RedEye.Components {
             LoadFile("config.xml", rootNode);
 
             layoutNode = rootNode["config"]["layout"];
-            PrintNode(rootNode);
+            // PrintNode(rootNode);
 
             explorerIntegration.SetIsEnabled(ParseHelper.ParseBool(rootNode["config"]["core"]["explorerIntegration"]["enable"].Value));
             explorerIntegration.SetTimeout(ParseHelper.ParseInt(rootNode["config"]["core"]["explorerIntegration"]["timeout"].Value));

@@ -9,9 +9,9 @@ namespace RedEye {
     public class Program {
 
         [STAThread]
-        public static void Main(){
+        public static void Main(string[] args){
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            new Bootstrap().StartApplication();
+            new Bootstrap().StartApplication(args);
         }
     }
 }

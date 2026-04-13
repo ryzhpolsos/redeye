@@ -18,6 +18,7 @@ namespace RedEye.Components {
         IExpressionParser expressionParser = null;
         IResourceManager resourceManager = null;
         IPluginManager pluginManager = null;
+        IWindowManager windowManager = null;
         IMediaManager mediaManager = null;
         ICOMAPI comApi = null;
         IConfig config = null;
@@ -32,6 +33,7 @@ namespace RedEye.Components {
             expressionParser = manager.GetComponent<IExpressionParser>();
             resourceManager = manager.GetComponent<IResourceManager>();
             pluginManager = manager.GetComponent<IPluginManager>();
+            windowManager = manager.GetComponent<IWindowManager>();
             mediaManager = manager.GetComponent<IMediaManager>();
             comApi = manager.GetComponent<ICOMAPI>();
             config = manager.GetComponent<IConfig>();
@@ -157,17 +159,17 @@ namespace RedEye.Components {
             });
 
             pluginManager.ExportFunction("wapi.minimizeWindow", (args, _) => {
-                MinimizeWindow(GetIntPtr(args.ElementAt(0)));
+                windowManager.GetWindow(GetIntPtr(args.ElementAt(0))).Minimize();
                 return string.Empty;
             });
 
             pluginManager.ExportFunction("wapi.restoreWindow", (args, _) => {
-                RestoreWindow(GetIntPtr(args.ElementAt(0)));
+                windowManager.GetWindow(GetIntPtr(args.ElementAt(0))).Restore();
                 return string.Empty;
             });
 
             pluginManager.ExportFunction("wapi.activateWindow", (args, _) => {
-                ActivateWindow(GetIntPtr(args.ElementAt(0)));
+                windowManager.GetWindow(GetIntPtr(args.ElementAt(0))).Activate();
                 return string.Empty;
             });
 

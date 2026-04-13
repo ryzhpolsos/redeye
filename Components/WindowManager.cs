@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
@@ -7,75 +8,74 @@ using static RedEye.Core.NativeHelper;
 
 namespace RedEye.Components {
     public class WindowManagerComponent : IWindowManager {
-        Dictionary<IntPtr, Form> windowWrappers = new();
-
         ComponentManager manager = null;
+        IElevatedService elevatedService = null;
 
         public void SetManager(ComponentManager manager){
             this.manager = manager;
         }
 
-        public void Initialize(){}
-
-        public IntPtr CreateWindowWrapper(IntPtr hWnd){
-            Console.WriteLine($"title = '{GetWindowText(hWnd)}', class = {GetWindowClass(hWnd)}");
-
-            RECT rc = new();
-            GetWindowRect(hWnd, ref rc);
-
-            SetWindowPos(hWnd, IntPtr.Zero, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOZORDER);
-
-            var form = new Form();
-
-            form.Load += (_, _) => {
-                Console.WriteLine($"{(int)(rc.right - rc.left)}, {(int)(rc.bottom - rc.top)}");
-                form.ClientSize = new((int)(rc.right - rc.left), (int)(rc.bottom - rc.top));
-            };
-
-            form.SizeChanged += (_, _) => {
-                SetWindowPos(hWnd, IntPtr.Zero, 0, 0, form.ClientSize.Width, form.ClientSize.Height, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
-            };
-
-            form.FormClosed += (_, _) => {
-                SendMessage(hWnd, WM_CLOSE, 0, 0);
-            };
-
-            windowWrappers.Add(hWnd, form);
-
-            form.Show();
-            return form.Handle;
+        public void Initialize(){
+            elevatedService = manager.GetComponent<IElevatedService>();
         }
 
-        public void ProcessWrapperEvent(ShellWindowEvent evt, ShellWindowState state){
-            var wrapper = windowWrappers[state.Handle];
-            
-            switch(evt){
-                case ShellWindowEvent.Create: {
-                    wrapper.Text = state.Title;
-                    wrapper.Icon = state.Icon;
-                    break;
-                }
+        public INativeWindow GetWindow(IntPtr hWnd){
+            return new NativeWindowImpl(manager, hWnd);
+        }
+    }
 
-                case ShellWindowEvent.Activate: {
-                    ActivateWindow(wrapper.Handle);
-                    break;
-                }
+    class NativeWindowImpl : INativeWindow {
+        IntPtr hWnd;
+        IElevatedService elevatedService;
+        IShellEventListener shellEventListener;
 
-                case ShellWindowEvent.Destroy: {
-                    wrapper.Close();
-                    break;
-                }
+        public NativeWindowImpl(ComponentManager manager, IntPtr hWnd){
+            this.elevatedService = manager.GetComponent<IElevatedService>();
+            this.shellEventListener = manager.GetComponent<IShellEventListener>();
+            this.hWnd = hWnd;
+        }
 
-                case ShellWindowEvent.Minimize: {
-                    MinimizeWindow(wrapper.Handle);
-                    break;
-                }
+        public IntPtr GetHwnd(){
+            return hWnd;
+        }
 
-                case ShellWindowEvent.Redraw: {
-                    wrapper.Text = state.Title;
-                    wrapper.Icon = state.Icon;
-                    break;
-                }
+        public string GetText(){
+            return GetWindowText(hWnd);
+        }
+
+        public Icon GetIcon(){
+            return shellEventListener.GetWindowIcon(hWnd); 
+        }
+
+        public void Close(){
+            if(elevatedService.GetIsRequired()){
+                elevatedService.ExecuteCommand(ElevatedServiceCommand.Close, hWnd);
+            }else{
+                CloseWindow(hWnd);
+            }
+        }
+        
+        public void Activate(){
+            if(elevatedService.GetIsRequired()){
+                elevatedService.ExecuteCommand(ElevatedServiceCommand.Activate, hWnd);
+            }else{
+                ActivateWindow(hWnd);
+            }
+        }
+        
+        public void Minimize(){
+            if(elevatedService.GetIsRequired()){
+                elevatedService.ExecuteCommand(ElevatedServiceCommand.Minimize, hWnd);
+            }else{
+                MinimizeWindow(hWnd);
+            }
+        }
+        
+        public void Restore(){
+            if(elevatedService.GetIsRequired()){
+                elevatedService.ExecuteCommand(ElevatedServiceCommand.Restore, hWnd);
+            }else{
+                RestoreWindow(hWnd);
             }
         }
     }

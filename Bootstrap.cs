@@ -7,8 +7,21 @@ using RedEye.UI.BuiltInWidgets;
 
 namespace RedEye {
     public class Bootstrap {
-        public void StartApplication(){
+        public void StartApplication(string[] args){
             ComponentManager manager = new();
+
+            if(args.Length > 0 && args[0] == "--elevated-service"){
+                manager
+                .AddComponent<IWindowManager>(new WindowManagerComponent())
+                .AddComponent<IElevatedService>(new ElevatedServiceComponent())
+                .InitializeComponents();
+
+                var elevatedService = manager.GetComponent<IElevatedService>();
+                elevatedService.SetIsRequired(false);
+                elevatedService.Listen();
+
+                return;
+            }
 
             manager
             .RegisterComponentType<IShellWindow>(typeof(ShellWindowComponent))
@@ -28,7 +41,12 @@ namespace RedEye {
             .AddComponent<ISpecialFolderWrapper>(new SpecialFolderWrapperComponent())
             .AddComponent<IExplorerIntegration>(new ExplorerIntegrationComponent())
             .AddComponent<ICOMAPI>(new COMAPIComponent())
+            .AddComponent<IElevatedService>(new ElevatedServiceComponent())
             .InitializeComponents();
+
+            var elevatedService = manager.GetComponent<IElevatedService>()
+            elevatedService.SetIsRequired(true);
+            if(!elevatedService.GetIsRunning()) elevatedService.Start();
 
             manager
             .GetComponent<IScriptEngine>()
@@ -52,14 +70,6 @@ namespace RedEye {
 
             var comApi = manager.GetComponent<ICOMAPI>();
             comApi.RegisterInROT();
-
-            // Console.ReadLine();
-            // Console.WriteLine(comApi.SendMessage(
-            //     "MYTEST",
-            //     new System.Collections.Generic.Dictionary<string, string>(){
-            //         {"Meow", "UwU"}
-            //     }
-            // ));
 
             try{
                 manager.GetComponent<ILogger>().LogInformation("Shell started");
