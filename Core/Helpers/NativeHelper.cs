@@ -467,19 +467,5 @@ namespace RedEye.Core {
             SetForegroundWindow(hWnd);
             keybd_event(0xA4, (byte)MapVirtualKey(0xA4, MAPVK_VK_TO_VSC), KEYEVENTF_KEYUP, 0);
         }
-
-        public static void ToggleWindow(IntPtr hWnd){
-            var wp = new WINDOWPLACEMENT();
-            wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
-            GetWindowPlacement(hWnd, ref wp);
-
-            if(){
-                MinimizeWindow(hWnd);
-            }else if(wp.showCmd == 2){
-                RestoreWindow(hWnd);
-            }else{
-                ActivateWindow(hWnd);
-            }
-        }
     }
 }

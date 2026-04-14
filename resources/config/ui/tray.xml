@@ -7,7 +7,7 @@
     color="${theme.font.color}"
     font="${theme.font.main}"
     rowCount="1"
-    columnCount="1"
+    columnCount="2"
     >
 
     <label dock="fill" table.position="0,0" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>

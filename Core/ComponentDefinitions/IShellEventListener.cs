@@ -13,6 +13,7 @@ namespace RedEye.Core {
         public IEnumerable<ShellWindowState> GetWindows();
         public void TriggerEvent(ShellWindowEvent et, IntPtr hWnd);
         public bool HasWindow(IntPtr hWnd);
+        public void ToggleWindow(IntPtr hWnd);
         public Icon GetWindowIcon(IntPtr hWnd);
     }
 

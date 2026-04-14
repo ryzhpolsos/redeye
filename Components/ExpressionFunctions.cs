@@ -124,7 +124,8 @@ namespace RedEye.Components {
             pluginManager.ExportFunction("shellExecute", (args, _) => {
                 try{
                     var fileName = args.ElementAt(0).ToString();
-                    var arguments = args.ElementAt(1).ToString();
+                    var arguments = string.Empty;
+                    if(args.Count() > 1) arguments = args.ElementAt(1).ToString();
 
                     ProcessStartInfo psi = new();
                     psi.FileName = fileName;
@@ -133,13 +134,15 @@ namespace RedEye.Components {
                 }catch(Exception ex){
                     MessageBox.Show(ExceptionHelper.FormatException(ex));
                 }
+
                 return string.Empty;
             });
 
             pluginManager.ExportFunction("shellExecuteHidden", (args, _) => {
                 try{
                     var fileName = args.ElementAt(0).ToString();
-                    var arguments = args.ElementAt(1).ToString();
+                    var arguments = string.Empty;
+                    if(args.Count() > 1) arguments = args.ElementAt(1).ToString();
 
                     ProcessStartInfo psi = new();
                     psi.FileName = fileName;

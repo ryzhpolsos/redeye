@@ -27,6 +27,8 @@ namespace RedEye.Components {
         RECT workArea = new();
         MINIMIZEDMETRICS mm = new();
 
+        int taskbarCreatedMsg = RegisterWindowMessage("TaskbarCreated");
+
         public void SetManager(ComponentManager manager){
             this.manager = manager;
         }
@@ -95,6 +97,20 @@ namespace RedEye.Components {
 
         public bool HasWindow(IntPtr hWnd){
             return activeWindows.ContainsKey(hWnd);
+        }
+
+        public void ToggleWindow(IntPtr hWnd){
+            var wp = new WINDOWPLACEMENT();
+            wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+            GetWindowPlacement(hWnd, ref wp);
+
+            if(activeWindows[hWnd].IsActive){
+                windowManager.GetWindow(hWnd).Minimize();
+            }else if(wp.showCmd == 2){
+                windowManager.GetWindow(hWnd).Restore();
+            }else{
+                windowManager.GetWindow(hWnd).Activate();
+            }
         }
 
         void ProcessEvent(ShellWindowEvent et, IntPtr hWnd){
@@ -194,7 +210,8 @@ namespace RedEye.Components {
                         logger.LogFatal("ShellWindow class registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
 
-                    IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, HWND_MESSAGE, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
+                    // IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, HWND_MESSAGE, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
+                    IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
 
                     if(hWnd == IntPtr.Zero){
                         logger.LogFatal("ShellWindow creation failed, last error: " + Marshal.GetLastWin32Error().ToString());

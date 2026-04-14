@@ -80,11 +80,7 @@ namespace RedEye.Components {
         }
 
         public void Toggle(){
-            if(elevatedService.GetIsRequired()){
-                elevatedService.ExecuteCommand(ElevatedServiceCommand.Toggle, hWnd);
-            }else{
-                ToggleWindow(hWnd);
-            }
+            shellEventListener.ToggleWindow(hWnd);
         }
     }
 }

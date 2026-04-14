@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 using RedEye.Core;
 using static RedEye.Core.NativeHelper;
@@ -20,6 +21,9 @@ namespace RedEye.Components {
         bool enabled = false;
         int timeout = 0;
         int pid = 0;
+
+        int taskbarCreatedMsg = RegisterWindowMessage("TaskbarCreated");
+        bool gotTaskbarCreated = false;
 
         public void SetManager(ComponentManager manager){
             this.manager = manager;
@@ -76,23 +80,58 @@ namespace RedEye.Components {
                     }
                 }
 
+                Thread thread = new(ListenForTaskbarCreated);
+                thread.Start();
+
                 var proc = Process.Start("explorer.exe");
                 proc.WaitForInputIdle();
                 pid = proc.Id;
 
                 await Task.Delay(timeout);
 
-                ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
-                ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
+                if(!gotTaskbarCreated){
+                    ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
+                    ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
+                }
+            });
 
-                // wnd.CloseWindow();
-                
+            Task.Run(async () => {
                 while(true){
                     shellEventListener.ReSetWorkArea();
                     await Task.Delay(250);
                 }
-                // shellEventListener.SetMinimizedMetrics();
             });
+        }
+
+        void ListenForTaskbarCreated(){
+            WNDCLASSEX wc = new();
+            wc.cbSize = Marshal.SizeOf<WNDCLASSEX>();
+            wc.hInstance = GetModuleHandle(IntPtr.Zero);
+            wc.lpszClassName = "RedEye_ExplorerIntegrationListenerWnd";
+            wc.lpfnWndProc = WndProc;
+
+            RegisterClassEx(ref wc);
+
+            IntPtr hWnd = CreateWindowEx(0, wc.lpszClassName, "Meow", 0, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, wc.hInstance, IntPtr.Zero);
+
+            MSG msg = new();
+            while(GetMessage(ref msg, IntPtr.Zero, 0, 0)){
+                DispatchMessage(ref msg);
+            }
+        }
+
+        int WndProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam){
+            if(uMsg == taskbarCreatedMsg){
+                gotTaskbarCreated = true;
+
+                ProcessWindow(FindWindow(trayWndClassName, IntPtr.Zero));
+                ProcessWindow(FindWindow(progManClassName, IntPtr.Zero));
+                DestroyWindow(hWnd);
+
+                return 1;
+            }
+
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
         }
     }
 }

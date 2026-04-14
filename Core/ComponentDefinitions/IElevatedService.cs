@@ -14,7 +14,6 @@ namespace RedEye.Core {
         Close,
         Activate,
         Minimize,
-        Restore,
-        Toggle
+        Restore
     }
 }

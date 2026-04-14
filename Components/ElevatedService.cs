@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
@@ -114,11 +113,6 @@ namespace RedEye.Components {
 
                     case ElevatedServiceCommand.Restore: {
                         RestoreWindow(target);
-                        break;
-                    }
-
-                    case ElevatedServiceCommand.Toggle: {
-                        ToggleWindow(target);
                         break;
                     }
                 }
