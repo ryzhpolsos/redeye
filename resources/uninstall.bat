@@ -27,6 +27,28 @@ reg delete "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlo
 :: Delete scheduled task
 Schtasks /Delete /TN "RedEyeElevatedService" /F
 
+
+:: Find latest .NET Framework version available
+
+if defined FrameworkDir goto :FoundFrameworkDir
+
+for /f "tokens=*" %%i in ('dir /b /o:-n "%WINDIR%\Microsoft.NET\Framework64"') do (
+    set "FrameworkDir=%WINDIR%\Microsoft.NET\Framework64\%%i"
+    goto :FoundFrameworkDir
+)
+
+:FoundFrameworkDir
+
+if not exist "%FrameworkDir%\RegAsm.exe" (
+    echo.ERROR: RegAsm.exe not found in %FrameworkDir%.
+    echo.Please specify path to .NET Framework v4 binaries by setting the FrameworkDir environment variable.
+    set /a ErrorTotal=ErrorTotal+1
+    goto :end
+)
+
+echo.Unregistering COM types...
+"%FrameworkDir%\RegAsm.exe" /u redeye.exe
+
 :end
 if "%_QUIET%"=="" pause> nul
 endlocal

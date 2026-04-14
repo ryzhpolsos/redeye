@@ -14,5 +14,6 @@ namespace RedEye.Core {
         public void Activate();
         public void Minimize();
         public void Restore();
+        public void Toggle();
     }
 }

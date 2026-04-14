@@ -174,12 +174,12 @@ namespace RedEye.Components {
             });
 
             pluginManager.ExportFunction("wapi.toggleWindow", (args, _) => {
-                shellEventListener.ToggleWindow(GetIntPtr(args.ElementAt(0)));
+                windowManager.GetWindow(GetIntPtr(args.ElementAt(0))).Toggle();
                 return string.Empty;
             });
 
             pluginManager.ExportFunction("wapi.closeWindow", (args, _) => {
-                CloseWindow(GetIntPtr(args.ElementAt(0)));
+                windowManager.GetWindow(GetIntPtr(args.ElementAt(0))).Close();
                 return string.Empty;
             });
 

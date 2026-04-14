@@ -89,19 +89,6 @@ namespace RedEye.Components {
             return activeWindows.Values;
         }
 
-        public void ToggleWindow(IntPtr handle){
-            if(!activeWindows.ContainsKey(handle)) throw new KeyNotFoundException();
-            var window = activeWindows[handle];
-
-            if(window.IsActive){
-                windowManager.GetWindow(handle).Minimize();
-            }else if(window.IsMinimized){
-                windowManager.GetWindow(handle).Restore();
-            }else{
-                windowManager.GetWindow(handle).Activate();
-            }
-        }
-
         public void TriggerEvent(ShellWindowEvent et, IntPtr hWnd){
             ProcessEvent(et, hWnd);
         }

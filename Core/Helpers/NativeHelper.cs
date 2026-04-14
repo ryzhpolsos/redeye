@@ -210,6 +210,9 @@ namespace RedEye.Core {
         [DllImport("ole32.dll", CharSet = CharSet.Unicode)]
         public static extern int CreateItemMoniker([MarshalAs(UnmanagedType.LPWStr)] string lpszDelim, [MarshalAs(UnmanagedType.LPWStr)] string lpszItem, out IMoniker ppmk);
 
+        [DllImport("user32.dll", EntryPoint = "CloseWindow")]
+        public static extern int CloseWindowInternal(IntPtr hWnd);
+
 
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
@@ -400,12 +403,14 @@ namespace RedEye.Core {
         public delegate int LowLevelProc(int nCode, int wParam, IntPtr lParam);
 
         public static void MinimizeWindow(IntPtr hWnd){
-            ShowWindow(hWnd, 6);
+            CloseWindowInternal(hWnd);
+            ShowWindow(hWnd, 11);
         }
 
         public static void RestoreWindow(IntPtr hWnd){
             ShowWindow(hWnd, 9);
-            RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 257);
+            ShowWindow(hWnd, 5);
+            // RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 257);
             ForceSetForegroundWindow(hWnd);
         }
 
@@ -461,6 +466,20 @@ namespace RedEye.Core {
             keybd_event(0xA4, (byte)MapVirtualKey(0xA4, MAPVK_VK_TO_VSC), 0, 0);
             SetForegroundWindow(hWnd);
             keybd_event(0xA4, (byte)MapVirtualKey(0xA4, MAPVK_VK_TO_VSC), KEYEVENTF_KEYUP, 0);
+        }
+
+        public static void ToggleWindow(IntPtr hWnd){
+            var wp = new WINDOWPLACEMENT();
+            wp.length = Marshal.SizeOf(typeof(WINDOWPLACEMENT));
+            GetWindowPlacement(hWnd, ref wp);
+
+            if(){
+                MinimizeWindow(hWnd);
+            }else if(wp.showCmd == 2){
+                RestoreWindow(hWnd);
+            }else{
+                ActivateWindow(hWnd);
+            }
         }
     }
 }

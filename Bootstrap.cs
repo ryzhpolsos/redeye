@@ -16,9 +16,9 @@ namespace RedEye {
                 .AddComponent<IElevatedService>(new ElevatedServiceComponent())
                 .InitializeComponents();
 
-                var elevatedService = manager.GetComponent<IElevatedService>();
-                elevatedService.SetIsRequired(false);
-                elevatedService.Listen();
+                var elevatedSvc = manager.GetComponent<IElevatedService>();
+                elevatedSvc.SetIsRequired(false);
+                elevatedSvc.Listen();
 
                 return;
             }
@@ -44,7 +44,7 @@ namespace RedEye {
             .AddComponent<IElevatedService>(new ElevatedServiceComponent())
             .InitializeComponents();
 
-            var elevatedService = manager.GetComponent<IElevatedService>()
+            var elevatedService = manager.GetComponent<IElevatedService>();
             elevatedService.SetIsRequired(true);
             if(!elevatedService.GetIsRunning()) elevatedService.Start();
 

@@ -43,6 +43,27 @@ echo.Creating scheduled task for RedEye Elevated Service...
 Schtasks /Create /TN "RedEyeElevatedService" /TR "\"%CD%\redeye.exe\" --elevated-service" /RL Highest /SC Once /ST 00:00 /SD 01/01/2000 /F
 set /a ErrorTotal=ErrorTotal+%ERRORLEVEL%
 
+:: Find latest .NET Framework version available
+
+if defined FrameworkDir goto :FoundFrameworkDir
+
+for /f "tokens=*" %%i in ('dir /b /o:-n "%WINDIR%\Microsoft.NET\Framework64"') do (
+    set "FrameworkDir=%WINDIR%\Microsoft.NET\Framework64\%%i"
+    goto :FoundFrameworkDir
+)
+
+:FoundFrameworkDir
+
+if not exist "%FrameworkDir%\RegAsm.exe" (
+    echo.ERROR: RegAsm.exe not found in %FrameworkDir%.
+    echo.Please specify path to .NET Framework v4 binaries by setting the FrameworkDir environment variable.
+    set /a ErrorTotal=ErrorTotal+1
+    goto :end
+)
+
+echo.Registering COM types...
+"%FrameworkDir%\RegAsm.exe" redeye.exe
+
 if %ErrorTotal%==0 (
     echo.RedEye is installed successfully. Log back in to see your new shell.
 ) else (

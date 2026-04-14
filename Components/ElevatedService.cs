@@ -64,6 +64,8 @@ namespace RedEye.Components {
                 ShowError("Window creation failed: " + Marshal.GetLastWin32Error().ToString());
             }
 
+            ChangeWindowMessageFilterEx(hWnd, message, MSGFLT_ALLOW, IntPtr.Zero);
+
             MSG msg = new();
             while(GetMessage(ref msg, IntPtr.Zero, 0, 0)){
                 DispatchMessage(ref msg);
@@ -73,6 +75,10 @@ namespace RedEye.Components {
         public void ExecuteCommand(ElevatedServiceCommand cmd, IntPtr hWnd){
             if(this.hWnd == IntPtr.Zero){
                 this.hWnd = FindWindow(className, IntPtr.Zero);
+            }
+
+            if(this.hWnd == IntPtr.Zero){
+                ShowError("Failed to find ElevatedService window");
             }
 
             SendMessage(this.hWnd, message, (int)cmd, hWnd);
@@ -87,6 +93,8 @@ namespace RedEye.Components {
             if(uMsg == message){
                 var command = (ElevatedServiceCommand)wParam;
                 var target = lParam;
+
+                // MessageBox.Show($"Received: doing {command.ToString()} at {lParam}");
 
                 switch(command){
                     case ElevatedServiceCommand.Close: {
@@ -106,6 +114,11 @@ namespace RedEye.Components {
 
                     case ElevatedServiceCommand.Restore: {
                         RestoreWindow(target);
+                        break;
+                    }
+
+                    case ElevatedServiceCommand.Toggle: {
+                        ToggleWindow(target);
                         break;
                     }
                 }
