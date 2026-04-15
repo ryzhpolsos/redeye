@@ -42,7 +42,7 @@ namespace RedEye.UI.BuiltInWidgets {
             }catch(Exception){}
         }
 
-        void ShellEvent(ShellWindowEvent windowEvent, ShellWindowState windowState){
+        bool ShellEvent(ShellWindowEvent windowEvent, ShellWindowState windowState){
             ThreadSafeInvoke(() => {
                 // Console.WriteLine($"{windowEvent} on {windowState.Title}");
 
@@ -89,6 +89,8 @@ namespace RedEye.UI.BuiltInWidgets {
                     logger.LogError($"WindowList [{windowEvent}, {windowState.Title}] Error: {ex.GetType().FullName}: {ex.Message}\n{ex.StackTrace}\n===");
                 }
             });
+
+            return true;
         }
     }
 }

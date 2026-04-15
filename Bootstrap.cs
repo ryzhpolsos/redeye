@@ -68,10 +68,8 @@ namespace RedEye {
             .ExportWidget("externalProcess", typeof(ExternalProcess))
             .ExportWidget("webView", typeof(WebView));
 
-            var comApi = manager.GetComponent<ICOMAPI>();
-            comApi.RegisterInROT();
-
             try{
+                manager.GetComponent<ICOMAPI>().RegisterInROT();
                 manager.GetComponent<ILogger>().LogInformation("Shell started");
                 manager.GetComponent<IPluginManager>().LoadPlugins();
                 manager.GetComponent<IConfig>().LoadConfig();

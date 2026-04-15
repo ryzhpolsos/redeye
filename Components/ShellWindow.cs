@@ -133,12 +133,24 @@ namespace RedEye.Components {
             }
         }
 
+        public IntPtr GetHwnd(){
+            return form.Handle;
+        }
+
         public string GetTitle(){
             return title;
         }
 
         public void SetTitle(string newTitle){
             title = newTitle;
+        }
+
+        public Icon GetIcon(){
+            return form.Icon;
+        }
+
+        public void SetIcon(Icon icon){
+            form.Icon = icon;
         }
 
         public ShellWindowConfig GetConfig(){

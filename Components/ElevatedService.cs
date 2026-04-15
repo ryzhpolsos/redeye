@@ -8,13 +8,21 @@ using static RedEye.Core.NativeHelper;
 
 namespace RedEye.Components {
     public class ElevatedServiceComponent : IElevatedService {
+        [StructLayout(LayoutKind.Sequential)]
+        struct ElevatedServiceMessage {
+            public ElevatedServiceCommand Command;
+            public IntPtr Target;
+            public IntPtr HandleParam;
+            public long LongParam1;
+            public long LongParam2;
+        }
+
         ComponentManager manager = null;
 
         bool isRequired = false;
         IntPtr hWnd = IntPtr.Zero;
 
         readonly string className = "RedEye_ElevatedServiceWnd";
-        readonly int message = RegisterWindowMessage("RedEye_ElevatedServiceMsg");
 
         public void SetManager(ComponentManager manager){
             this.manager = manager;
@@ -24,7 +32,11 @@ namespace RedEye.Components {
         }
 
         public bool GetIsRequired(){
+#if DEBUG
+            return false;
+#else
             return isRequired;
+#endif
         }
 
         public void SetIsRequired(bool isRequired){
@@ -63,7 +75,7 @@ namespace RedEye.Components {
                 ShowError("Window creation failed: " + Marshal.GetLastWin32Error().ToString());
             }
 
-            ChangeWindowMessageFilterEx(hWnd, message, MSGFLT_ALLOW, IntPtr.Zero);
+            ChangeWindowMessageFilterEx(hWnd, WM_COPYDATA, MSGFLT_ALLOW, IntPtr.Zero);
 
             MSG msg = new();
             while(GetMessage(ref msg, IntPtr.Zero, 0, 0)){
@@ -71,7 +83,7 @@ namespace RedEye.Components {
             }
         }
 
-        public void ExecuteCommand(ElevatedServiceCommand cmd, IntPtr hWnd){
+        public void ExecuteCommand(ElevatedServiceCommand cmd, IntPtr hWnd, IntPtr handleParam = default, long longParam1 = 0, long longParam2 = 0){
             if(this.hWnd == IntPtr.Zero){
                 this.hWnd = FindWindow(className, IntPtr.Zero);
             }
@@ -80,7 +92,22 @@ namespace RedEye.Components {
                 ShowError("Failed to find ElevatedService window");
             }
 
-            SendMessage(this.hWnd, message, (int)cmd, hWnd);
+            COPYDATASTRUCT cds = new();
+            cds.dwData = 0;
+            cds.lpData = Marshal.AllocHGlobal(Marshal.SizeOf<ElevatedServiceMessage>());
+            cds.cbData = Marshal.SizeOf<ElevatedServiceMessage>();
+
+            ElevatedServiceMessage msg = new();
+            msg.Command = cmd;
+            msg.Target = hWnd;
+            msg.HandleParam = handleParam;
+            msg.LongParam1 = longParam1;
+            msg.LongParam2 = longParam2;
+            Marshal.StructureToPtr(msg, cds.lpData, false);
+
+            SendMessage(this.hWnd, WM_COPYDATA, this.hWnd, ref cds);
+
+            Marshal.FreeHGlobal(cds.lpData);
         }
 
         void ShowError(string message){
@@ -89,11 +116,12 @@ namespace RedEye.Components {
         }
 
         int WndProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam){
-            if(uMsg == message){
-                var command = (ElevatedServiceCommand)wParam;
-                var target = lParam;
+            if(uMsg == WM_COPYDATA){
+                var cds = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
+                var msg = Marshal.PtrToStructure<ElevatedServiceMessage>(cds.lpData);
 
-                // MessageBox.Show($"Received: doing {command.ToString()} at {lParam}");
+                var command = msg.Command;
+                var target = msg.Target;
 
                 switch(command){
                     case ElevatedServiceCommand.Close: {
@@ -113,6 +141,21 @@ namespace RedEye.Components {
 
                     case ElevatedServiceCommand.Restore: {
                         RestoreWindow(target);
+                        break;
+                    }
+
+                    case ElevatedServiceCommand.Move: {
+                        SetWindowPos(target, IntPtr.Zero, (int)msg.LongParam1, (int)msg.LongParam2, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+                        break;
+                    }
+
+                    case ElevatedServiceCommand.Resize: {
+                        SetWindowPos(target, IntPtr.Zero, 0, 0, (int)msg.LongParam1, (int)msg.LongParam2, SWP_NOMOVE | SWP_NOZORDER);
+                        break;
+                    }
+
+                    case ElevatedServiceCommand.Wrap: {
+                        WrapWindow(target, msg.HandleParam);
                         break;
                     }
                 }

@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
@@ -49,16 +48,19 @@ namespace RedEye.Core {
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int SendMessage(IntPtr hWnd, int wMsg, long wParam, StringBuilder lParam);
+        public static extern int SendMessage(IntPtr hWnd, int uMsg, long wParam, StringBuilder lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int SendMessage(IntPtr hWnd, int wMsg, long wParam, long lParam);
+        public static extern int SendMessage(IntPtr hWnd, int uMsg, long wParam, long lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, int uMsg, int wParam, int lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, IntPtr lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, int uMsg, int wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int uMsg, IntPtr wParam, ref COPYDATASTRUCT lParam);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetAncestor(IntPtr hWnd, int gaFlags);
@@ -158,6 +160,9 @@ namespace RedEye.Core {
 
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hWnd, ref RECT rc);
+        
+        [DllImport("user32.dll")]
+        public static extern bool GetClientRect(IntPtr hWnd, ref RECT rc);
 
         [DllImport("user32.dll")]
         public static extern bool IsTopLevelWindow(IntPtr hWnd);
@@ -168,7 +173,7 @@ namespace RedEye.Core {
         [DllImport("shell32.dll", CharSet=CharSet.Auto)]
         public static extern int ExtractIconEx(string lpszFile, int nIconIndex, IntPtr phiconLarge, IntPtr phiconSmall, int nIcons);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         public static extern int SetParent(IntPtr hWndChild, IntPtr hWndParent);
 
         [DllImport("user32.dll", CharSet=CharSet.Auto)]
@@ -254,6 +259,7 @@ namespace RedEye.Core {
         public const int WM_QUIT = 0x0012;
         public const int WM_GETICON = 0x7F;
         public const int WM_INPUTLANGCHANGE = 81;
+        public const int WM_COPYDATA = 0x004A;
         public const int GCL_HICONSM = -34;
         public const int GCL_HICON = -14;
         public const int ICON_SMALL = 0;
@@ -392,9 +398,15 @@ namespace RedEye.Core {
             public ushort[] szTypeName;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct COPYDATASTRUCT {
+            public long dwData;
+            public int cbData;
+            public IntPtr lpData;
+        }
+
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-
 
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         public delegate int WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
@@ -466,6 +478,13 @@ namespace RedEye.Core {
             keybd_event(0xA4, (byte)MapVirtualKey(0xA4, MAPVK_VK_TO_VSC), 0, 0);
             SetForegroundWindow(hWnd);
             keybd_event(0xA4, (byte)MapVirtualKey(0xA4, MAPVK_VK_TO_VSC), KEYEVENTF_KEYUP, 0);
+        }
+
+        public static void WrapWindow(IntPtr target, IntPtr wrapper){
+            SetWindowLongPtr(target, GWL_STYLE, WS_VISIBLE);
+            SetWindowLongPtr(target, GWL_EXSTYLE, WS_EX_TOOLWINDOW);
+            Console.WriteLine((int)SetParent(target, wrapper));
+            Console.WriteLine("w32 err is " + Marshal.GetLastWin32Error().ToString());
         }
     }
 }

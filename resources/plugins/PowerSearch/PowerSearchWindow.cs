@@ -145,18 +145,24 @@ class PowerSearchWindow : Form {
 
                 default: {
                     if(e.KeyCode == Keys.Up || e.KeyCode == Keys.Down) break;
-
-                    long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-                    if(lastTime + 300 <= time){
-                        lastTime = time;
-
-                        if(tbSearchBox.Text.Length > 0){
-                            ProcessSearch(tbSearchBox.Text);
-                        }else{
-                            ClearSuggests();
-                        }
+                    
+                    if(tbSearchBox.Text.Length > 0){
+                        ProcessSearch(tbSearchBox.Text);
+                    }else{
+                        ClearSuggests();
                     }
+
+                    // long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                    // if(lastTime + 300 <= time){
+                    //     lastTime = time;
+
+                    //     if(tbSearchBox.Text.Length > 0){
+                    //         ProcessSearch(tbSearchBox.Text);
+                    //     }else{
+                    //         ClearSuggests();
+                    //     }
+                    // }
 
                     break;
                 }

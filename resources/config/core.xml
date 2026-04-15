@@ -3,6 +3,10 @@
         <enable>true</enable>
         <timeout>2000</timeout>
     </explorerIntegration>
+    <windowManager>
+        <enable>false</enable>
+        <import from="config/ui/windowBorder.xml"/>
+    </windowManager>
     <ui>
         <transparencyKey>#ff00ff</transparencyKey>
     </ui>

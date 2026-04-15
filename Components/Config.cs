@@ -12,12 +12,13 @@ namespace RedEye.Components {
     public class ConfigComponent : IConfig {
         ComponentManager manager = null;
 
-        ILogger logger = null;
         IExplorerIntegration explorerIntegration = null;
-        IShellWindowManager windowManager = null;
+        IShellWindowManager shellWindowManager = null;
         IHotKeyManager hotKeyManager = null;
+        IWindowManager windowManager = null;
         ILayoutLoader layoutLoader = null;
         IScriptEngine engine = null;
+        ILogger logger = null;
 
         ConfigNode rootNode = null;
         ConfigNode layoutNode = null;
@@ -28,12 +29,13 @@ namespace RedEye.Components {
         }
 
         public void Initialize(){
-            logger = manager.GetComponent<ILogger>();
             explorerIntegration = manager.GetComponent<IExplorerIntegration>();
-            windowManager = manager.GetComponent<IShellWindowManager>();
+            shellWindowManager = manager.GetComponent<IShellWindowManager>();
             hotKeyManager = manager.GetComponent<IHotKeyManager>();
+            windowManager = manager.GetComponent<IWindowManager>();
             layoutLoader = manager.GetComponent<ILayoutLoader>();
             engine = manager.GetComponent<IScriptEngine>();
+            logger = manager.GetComponent<ILogger>();
             
             ConfigNode.ComponentManager = manager;
         }
@@ -51,6 +53,9 @@ namespace RedEye.Components {
             explorerIntegration.SetIsEnabled(ParseHelper.ParseBool(rootNode["config"]["core"]["explorerIntegration"]["enable"].Value));
             explorerIntegration.SetTimeout(ParseHelper.ParseInt(rootNode["config"]["core"]["explorerIntegration"]["timeout"].Value));
             if(explorerIntegration.GetIsEnabled()) explorerIntegration.RunHiddenExplorer();
+
+            windowManager.SetIsEnabled(ParseHelper.ParseBool(rootNode["config"]["core"]["windowManager"]["enable"].Value));
+            if(windowManager.GetIsEnabled()) windowManager.Start();
 
             foreach(var hotkey in rootNode["config"]["hotkeys"].GetNodes("hotkey")){
                 hotKeyManager.RegisterHotKey(hotkey.GetAttribute("keys").Split('+'), () => {

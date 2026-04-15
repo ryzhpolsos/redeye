@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace RedEye.Core {
     public interface IShellEventListener : IComponent {
         public void AddIgnoredHandle(IntPtr handle);
-        public void RegisterEventHandler(Action<ShellWindowEvent, ShellWindowState> handler);
+        public void RegisterEventHandler(Func<ShellWindowEvent, ShellWindowState, bool> handler);
         public void SetWorkArea(int x, int y, int width, int height);
         public void ReSetWorkArea();
         public void SetMinimizedMetrics();

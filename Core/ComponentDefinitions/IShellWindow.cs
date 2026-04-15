@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 
 using RedEye.UI;
 
@@ -49,7 +50,10 @@ namespace RedEye.Core {
         public void HideWindow();
         public void CloseWindow();
         public void ToggleWindow();
+        public IntPtr GetHwnd();
         public string GetTitle();
+        public Icon GetIcon();
+        public void SetIcon(Icon icon); 
         public void SetTitle(string newTitle);
         public ShellWindowConfig GetConfig();
         public void SetConfig(ShellWindowConfig newConfig);

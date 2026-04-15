@@ -20,7 +20,7 @@ namespace RedEye.Components {
         Dictionary<IntPtr, IntPtr> windowWrappers = new();
         Dictionary<IntPtr, ShellWindowState> activeWindows = new();
         List<IntPtr> ignoreHandles = new();
-        List<Action<ShellWindowEvent, ShellWindowState>> eventHandlers = new();
+        List<Func<ShellWindowEvent, ShellWindowState, bool>> eventHandlers = new();
         int shellMsg = 0;
         bool listenerStarted = false;
         Icon defaultIcon = null;
@@ -77,7 +77,7 @@ namespace RedEye.Components {
             defaultIcon = Icon.FromHandle(hIcon);
         }
 
-        public void RegisterEventHandler(Action<ShellWindowEvent, ShellWindowState> handler){
+        public void RegisterEventHandler(Func<ShellWindowEvent, ShellWindowState, bool> handler){
             eventHandlers.Add(handler);
 
             foreach(var wnd in activeWindows.Values){
@@ -185,7 +185,7 @@ namespace RedEye.Components {
             }
 
             foreach(var handler in eventHandlers){
-                handler.Invoke(et, wnd);
+                if(!handler.Invoke(et, wnd)) break;
             }
         }
 
