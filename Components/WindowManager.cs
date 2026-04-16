@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
 
@@ -57,15 +58,17 @@ namespace RedEye.Components {
                             break;
                         }
                     }
-                    if(evt == ShellWindowEvent.Destroy){
-                        GetWindow(wrappers[state.Handle]).Close();
-                    }
 
                     return false;
                 }
 
                 if(evt == ShellWindowEvent.Create){
-                    if(wrappers.ContainsValue(state.Handle)) return true;
+                    if(wrappers.ContainsValue(state.Handle)){
+                        var wnd = GetWindow(wrappers.First(kvp => kvp.Value == state.Handle).Key);
+                        state.Title = wnd.GetText();
+                        state.Icon = wnd.GetIcon();
+                        return true;
+                    }
 
                     RECT wndRect = new();
                     GetWindowRect(state.Handle, ref wndRect);
@@ -83,18 +86,15 @@ namespace RedEye.Components {
                     node.SetVariable("window.title", window.GetText());
                     node.SetVariable("window.icon", resourceManager.AddResource(window.GetIcon()));
 
-                    // foreach(var vr in node.GetVariables()){
-                    //     Console.WriteLine($"{vr} = {node.GetVariable(vr)}");
-                    // }
-
                     var wrapperWindow = layoutLoader.CreateWindowFromNode(node);
+                    node.SetVariable("window.handle", wrapperWindow.GetHwnd().ToString());
                     wrappers.Add(state.Handle, wrapperWindow.GetHwnd());
 
-                    wrapperWindow.SetTitle(window.GetText());
+                    wrapperWindow.SetTitle("W: " + window.GetText());
                     wrapperWindow.SetIcon(window.GetIcon());
                     wrapperWindow.ShowWindow();
 
-                    window.Wrap(wrapperWindow.GetHwnd());
+                    window.Wrap(wrapperWindow.GetWidget("content").GetControl().Handle);
                     window.Move(ParseHelper.ParseInt(node.GetVariable("window.offset.x")), ParseHelper.ParseInt(node.GetVariable("window.offset.y")));
                     window.Resize(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
 

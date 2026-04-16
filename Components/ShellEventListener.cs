@@ -198,7 +198,7 @@ namespace RedEye.Components {
 
             Thread thread = new(()=>{
                 try{
-                    EnumWindows(EnumWindowsHandler, IntPtr.Zero);
+                    // EnumWindows(EnumWindowsHandler, IntPtr.Zero);
 
                     var wndClass = new WNDCLASSEX();
                     wndClass.cbSize = Marshal.SizeOf(typeof(WNDCLASSEX));

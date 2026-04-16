@@ -62,8 +62,10 @@ namespace RedEye.Components {
             }
 
             form.FormClosing += (sender, eventArgs) => {
-                eventArgs.Cancel = true;
-                if(config.AllowClose) HideWindow();
+                if(!config.AllowRealClose){
+                    eventArgs.Cancel = true;
+                    if(config.AllowClose) HideWindow();
+                }
             };
 
             form.MinimizeBox = config.MinimizeButton;
@@ -200,7 +202,6 @@ namespace RedEye.Components {
 
                 @event.GetAddMethod().Invoke(form, new object[]{ delegateWrapper.GetDelegate(@event.EventHandlerType) });
             } 
-
         }
     }
 

@@ -34,6 +34,7 @@ namespace RedEye.Core {
         public bool MinimizeButton = true;
         public bool MaximizeButton = true;
         public bool AllowClose = true;
+        public bool AllowRealClose = false;
         public bool AutoSize = false;
         public string Color = null;
         public string BackgroundColor = null;

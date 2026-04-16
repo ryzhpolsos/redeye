@@ -4,12 +4,14 @@
     width="${window.width}"
     height="calc('${window.height} + 100')"
     border="none"
+    allowRealClose="true"
 >
     <variables>
         <set name="window.offset.x" value="0"/>
         <set name="window.offset.y" value="0"/>
     </variables>
 
-    <panel x="0" y="0" width="${window.width}" height="${window.height}"/>
-    <label x="0" y="${window.height}" width="${window.width}" height="100" text="${window.title}"/>
+    <panel id="content" x="0" y="0" width="${window.width}" height="${window.height}"/>
+    <label x="0" y="${window.height}" width="200" height="100" text="${window.title}"/>
+    <button x="200" y="${window.height}" width="30" height="30" text="_" onClick="wapi.minimizeWindow(${window.handle})"/>
 </window>

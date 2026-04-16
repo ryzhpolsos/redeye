@@ -1,5 +1,5 @@
 {
-    "name": "XAML Host",
+    "name": "XAMLHost",
     "requiredAssemblies": [
         "PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
         "PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",

@@ -483,8 +483,7 @@ namespace RedEye.Core {
         public static void WrapWindow(IntPtr target, IntPtr wrapper){
             SetWindowLongPtr(target, GWL_STYLE, WS_VISIBLE);
             SetWindowLongPtr(target, GWL_EXSTYLE, WS_EX_TOOLWINDOW);
-            Console.WriteLine((int)SetParent(target, wrapper));
-            Console.WriteLine("w32 err is " + Marshal.GetLastWin32Error().ToString());
+            SetParent(target, wrapper);
         }
     }
 }

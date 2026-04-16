@@ -36,6 +36,7 @@ namespace RedEye.Components {
             config.MinimizeButton = ParseHelper.ParseBool(node.GetAttribute("minimizeButton", "true"));
             config.MaximizeButton = ParseHelper.ParseBool(node.GetAttribute("maximizeButton", "true"));
             config.AllowClose = ParseHelper.ParseBool(node.GetAttribute("allowClose", "true"));
+            config.AllowRealClose = ParseHelper.ParseBool(node.GetAttribute("allowRealClose", "false"));
             config.AutoSize = ParseHelper.ParseBool(node.GetAttribute("autoSize"));
             config.Padding = node.GetAttribute("padding");
             config.Color = node.GetAttribute("color");
