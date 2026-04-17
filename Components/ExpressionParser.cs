@@ -74,7 +74,7 @@ namespace RedEye.Components {
                     return exportedFunctions[result.FunctionName].Invoke(result.Arguments, variables).ToString();
                 }
 
-                logger.LogFatal($"No function with name {result.FunctionName} was found");
+                logger.LogError($"No function with name {result.FunctionName} was found");
             }
 
             return result.Value;

@@ -30,12 +30,6 @@ public class XamlHostWidget : BaseShellWidget {
 }
 
 public class XamlHostPlugin : Plugin {
-    public override string Name {
-        get {
-            return "xamlHost";
-        }
-    }
-
     public override void Main(){
         ExportWidget<XamlHostWidget>("xamlHost");
     }

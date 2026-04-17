@@ -4,7 +4,7 @@
     y="${taskbar.margin}"
     width="${taskbar.width}"
     height="${taskbar.height}"
-    type="normal"
+    type="shell"
     border="none"
     allowClose="false"
     backgroundColor="${theme.color.background}">

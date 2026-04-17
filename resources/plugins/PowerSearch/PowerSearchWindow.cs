@@ -12,52 +12,22 @@ using Microsoft.Win32;
 using RedEye.Core;
 
 namespace PowerSearch {
-    enum SuggestionType {
-        Application,
-        Command,
-        InternalCommand,
-        Expression,
-        Url
-    }
-
-    struct Suggestion {
-        public SuggestionType Type;
-        public TableLayoutPanel Control;
-        public Action Invoke;
+    struct SuggestionWrapper {
+        public ISuggestion Suggestion;
+        public Control Control;
     }
 
     class PowerSearchWindow : Form {
-        IExpressionParser expressionParser = null;
-
         TableLayoutPanel tlpMain = new TableLayoutPanel();
         TableLayoutPanel tlpSuggestions = new TableLayoutPanel();
         TextBox tbSearchBox = new TextBox();
 
         IEnumerable<IApplicationListEntry> applicationList = null; 
-        List<string> pathDirs = new List<string>();
-        string[] pathExt = null;
 
-        List<Suggestion> suggestions = new List<Suggestion>();
+        List<SuggestionWrapper> suggestions = new List<SuggestionWrapper>();
         int selectedSuggestion = -1;
 
-        Regex expressionRegex = new Regex(@"^[0-9+\-*/\(\)\s\.]+$", RegexOptions.Compiled);
-        Regex urlRegex = new Regex(@"^\w+:", RegexOptions.Compiled);
-
-        Bitmap cmdIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\shell32.dll,-16767"))).ToBitmap();
-        Bitmap calcIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\calc.exe,0"))).ToBitmap();
-        Bitmap urlIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\inetcpl.cpl,-4460"))).ToBitmap();
-        Bitmap intCmdIcon = Icon.FromHandle(NativeHelper.GetIconFromLocation(Environment.ExpandEnvironmentVariables("%SYSTEMROOT%\\System32\\imageres.dll,-5342"))).ToBitmap();
-
         public PowerSearchWindow(ComponentManager manager, Dictionary<string, string> config){
-            expressionParser = manager.GetComponent<IExpressionParser>();
-            applicationList = manager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
-
-            pathDirs.AddRange(Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Process).Split(';'));
-            pathDirs.AddRange(Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.User).Split(';'));
-            pathDirs.AddRange(Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine).Split(';'));
-            pathDirs = pathDirs.Distinct().ToList();
-            pathExt = Environment.GetEnvironmentVariable("PathExt").Split(';');
-
             HandleCreated += (s, e) => {
                 manager.GetComponent<IShellEventListener>().AddIgnoredHandle(Handle);
             };
@@ -76,6 +46,10 @@ namespace PowerSearch {
 
             FormClosing += (s, e) => {
                 PowerSearchWindowState.Opened = false;
+            };
+            
+            Deactivate += (s, e) => {
+                Close();
             };
             
             DoubleBuffered = true;
@@ -110,8 +84,6 @@ namespace PowerSearch {
             tbSearchBox.ForeColor = ForeColor;
             tbSearchBox.BorderStyle = BorderStyle.None;
 
-            long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
             tbSearchBox.KeyPress += (s, e) => {
                 if(e.KeyChar == (char)Keys.Enter || e.KeyChar == (char)Keys.Escape){
                     e.Handled = true;
@@ -136,7 +108,7 @@ namespace PowerSearch {
                             if(selectedSuggestion < 0) selectedSuggestion = 0;
                             
                             try{
-                                suggestions[selectedSuggestion].Invoke();
+                                suggestions[selectedSuggestion].Suggestion.Invoke();
                             }catch{}
                         }
 
@@ -152,18 +124,6 @@ namespace PowerSearch {
                         }else{
                             ClearSuggestions();
                         }
-
-                        // long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-                        // if(lastTime + 300 <= time){
-                        //     lastTime = time;
-
-                        //     if(tbSearchBox.Text.Length > 0){
-                        //         ProcessSearch(tbSearchBox.Text);
-                        //     }else{
-                        //         ClearSuggestions();
-                        //     }
-                        // }
 
                         break;
                     }
@@ -238,7 +198,7 @@ namespace PowerSearch {
             }
         }
 
-        void AddSuggestion(SuggestionType type, object data){
+        void AddSuggestion(ISuggestion suggestion){
             var tlp = new TableLayoutPanel();
             tlp.RowCount = 1;
             tlp.ColumnCount = 5;
@@ -258,70 +218,14 @@ namespace PowerSearch {
             tlp.SetCellPosition(label, new TableLayoutPanelCellPosition(1, 0));
             tlp.SetColumnSpan(label, 4);
 
-            var suggestion = new Suggestion(){
-                Type = type,
+            pictureBox.Image = suggestion.GetIcon();
+            label.Text = suggestion.GetText();
+
+            suggestions.Add(new SuggestionWrapper(){
+                Suggestion = suggestion,
                 Control = tlp
-            };
+            });
 
-            switch(type){
-                case SuggestionType.Application: {
-                    var ale = (IApplicationListEntry)data;
-                    pictureBox.Image = ale.GetIcon().ToBitmap();
-                    label.Text = "Start application: " + ale.GetName();
-                    suggestion.Invoke = () => { ale.Invoke(); };
-                    break;
-                }
-
-                case SuggestionType.Command: {
-                    var cmd = (string)data;
-                    pictureBox.Image = cmdIcon;
-                    label.Text = "Execute command: " + cmd;
-                    
-                    suggestion.Invoke = () => {
-                        var splitted = cmd.Split(' ');
-                        var psi = new ProcessStartInfo();
-                        psi.FileName = splitted[0];
-                        if(splitted.Length > 1) psi.Arguments = string.Join(" ", splitted.Skip(1));
-                        Process.Start(psi);
-                    };
-                
-                    break;
-                }
-
-                case SuggestionType.Expression: {
-                    var expr = (string)data;
-                    var result = "<error>";
-                    
-                    try{
-                        result = EvalHelper.Eval(expr);
-                    }catch(Exception){}
-
-                    label.Text = expr + " = " + result + " (Enter to copy)"; 
-                    pictureBox.Image = calcIcon;
-                    suggestion.Invoke = () => { Clipboard.SetText(result); };
-
-                    break;
-                }
-
-                case SuggestionType.Url: {
-                    var url = (string)data;
-                    label.Text = "Open URL: " + url;
-                    pictureBox.Image = urlIcon;
-                    suggestion.Invoke = () => { Process.Start(url); };
-                
-                    break;
-                }
-
-                case SuggestionType.InternalCommand: {
-                    var cmd = (string)data;
-                    label.Text = "Execute RedEye command: " + cmd;
-                    pictureBox.Image = intCmdIcon;
-                    suggestion.Invoke = () => { expressionParser.EvaluateExpression(cmd, EmptyVariableStorage.EmptyStringStorage); };
-                    break;
-                }
-            }
-
-            suggestions.Add(suggestion);
             tlpSuggestions.Controls.Add(tlp);
             tlpSuggestions.SetCellPosition(tlp, new TableLayoutPanelCellPosition(0, tlpSuggestions.RowCount++));
 
@@ -331,48 +235,10 @@ namespace PowerSearch {
 
         void ProcessSearch(string content){
             tlpMain.SuspendLayout();
-
             ClearSuggestions();
 
-            var lowerContent = content.ToLower();
-            foreach(var app in applicationList.Where(x => x.GetName().ToLower().StartsWith(lowerContent))){
-                AddSuggestion(SuggestionType.Application, app);
-            }
-
-            var splitted = content.Split(' ');
-            var firstPart = splitted[0];
-
-            if(firstPart.Contains('.')){
-                if(pathDirs.Any(d => File.Exists(Path.Combine(d, firstPart)))){
-                    AddSuggestion(SuggestionType.Command, content);
-                }
-            }else{
-                foreach(var ext in pathExt){
-                    if(pathDirs.Any(d => File.Exists(Path.Combine(d, firstPart + ext)))){
-                        AddSuggestion(SuggestionType.Command, content);
-                    }
-                }
-            }
-
-            if(content.Contains(':')){
-                var first = content.Split(':')[0];
-                var regKey = Registry.ClassesRoot.OpenSubKey(first, false);
-
-                if(regKey != null){
-                    if(regKey.GetValue("URL Protocol") != null){
-                        AddSuggestion(SuggestionType.Url, content);
-                    }
-
-                    regKey.Close();
-                }
-            }
-
-            if(expressionRegex.IsMatch(content)){
-                AddSuggestion(SuggestionType.Expression, content);
-            }
-
-            if(content.StartsWith("~")){
-                AddSuggestion(SuggestionType.InternalCommand, content.Substring(1));
+            foreach(var suggestion in SuggestionManager.GetSuggestions(content)){
+                AddSuggestion(suggestion);
             }
 
             tlpMain.ResumeLayout();

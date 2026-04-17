@@ -9,12 +9,6 @@ namespace PowerSearch {
     }
 
     public class PowerSearchPlugin : Plugin {
-        public override string Name {
-            get {
-                return "powerSearch";
-            }
-        }
-
         Dictionary<string, string> psConfig = new Dictionary<string, string>();
 
         public override void Main(){
@@ -39,6 +33,8 @@ namespace PowerSearch {
 
                 return string.Empty; 
             });
+
+            SuggestionHandlers.Register(ComponentManager);
         }
     }
 }

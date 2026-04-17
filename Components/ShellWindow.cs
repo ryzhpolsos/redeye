@@ -39,6 +39,11 @@ namespace RedEye.Components {
                     break;
                 }
 
+                case ShellWindowType.Shell: {
+                    form = new NoTaskbarForm(listener);
+                    break;
+                }
+
                 case ShellWindowType.Top: {
                     form = new TopForm(listener);
                     break;

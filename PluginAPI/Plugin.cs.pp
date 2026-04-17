@@ -26,15 +26,12 @@ namespace RedEye.PluginAPI {
         protected IWindowManager WindowManager = null;
 
 
-        public virtual string Name {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public string Name { get; protected set; } = string.Empty;
 
-        public void InitPlugin(ComponentManager manager){
+        public void InitPlugin(ComponentManager manager, string name){
             ComponentManager = manager;
             PluginManager = ComponentManager.GetComponent<IPluginManager>();
+            Name = name;
             COMAPI = ComponentManager.GetComponent<ICOMAPI>();
             Config = ComponentManager.GetComponent<IConfig>();
             ElevatedService = ComponentManager.GetComponent<IElevatedService>();

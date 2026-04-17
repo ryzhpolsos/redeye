@@ -6,6 +6,7 @@ using RedEye.UI;
 namespace RedEye.Core {
     public enum ShellWindowType {
         Normal,
+        Shell,
         Top,
         TopMost,
         Background

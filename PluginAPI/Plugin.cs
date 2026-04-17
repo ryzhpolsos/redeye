@@ -10,15 +10,12 @@ namespace RedEye.PluginAPI {
         protected IPluginManager PluginManager = null;
         //$$COMPONENTS_DEF
 
-        public virtual string Name {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public string Name { get; protected set; } = string.Empty;
 
-        public void InitPlugin(ComponentManager manager){
+        public void InitPlugin(ComponentManager manager, string name){
             ComponentManager = manager;
             PluginManager = ComponentManager.GetComponent<IPluginManager>();
+            Name = name;
             //$$COMPONENTS_SET
         }
 
