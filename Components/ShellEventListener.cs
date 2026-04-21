@@ -305,10 +305,11 @@ namespace RedEye.Components {
         int EnumWindowsHandler(IntPtr hWnd, IntPtr lParam){
             if(!IsWindowVisible(hWnd) || !IsWindowTopLevel(hWnd)) return 1;
 
-            // string txt = GetWindowText(hWnd);
-            // if(txt != "WorkerW"){
-            ProcessEvent(ShellWindowEvent.Create, hWnd);
-            // }
+            string txt = GetWindowText(hWnd);
+            string className = GetWindowClass(hWnd);
+            if(txt != "WorkerW" && className != "ApplicationFrameWindow"){
+                ProcessEvent(ShellWindowEvent.Create, hWnd);
+            }
 
             return 1;
         }

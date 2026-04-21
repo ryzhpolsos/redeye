@@ -71,15 +71,8 @@ namespace RedEye.Components {
 
         public void RunHiddenExplorer(){
             Task.Run(async () => {
-                // foreach(var explorer in Process.GetProcessesByName("explorer")){
-                //     try{
-                //         explorer.Kill();
-                //         logger.LogInformation($"Killed Explorer process with PID {explorer.Id}");
-                //     }catch(Exception ex){
-                //         logger.LogWarning($"Failed to kill Explorer process with PID {explorer.Id}: {ex.Message}");
-                //     }
-                // }
-
+                if(Process.GetProcessesByName("explorer").Length != 0) return;
+               
                 Thread thread = new(ListenForTaskbarCreated);
                 thread.Start();
 

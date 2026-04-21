@@ -74,9 +74,6 @@
         <!-- Set up shutdown options window -->
         <import from="config/ui/shutdownOptions.xml"/>
     </layout>
-    <hotkeys>
-        <hotkey keys="Win" action="window.toggle(startMenu)"/>
-        <hotkey keys="Win+R" action="powerSearch.open()"/>
-        <hotkey keys="Win+T" action="shellExecute('cmd.exe')"/>
-     </hotkeys>
+
+    <import from="config/keyBindings.xml"/>
 </config>
