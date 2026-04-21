@@ -12,14 +12,12 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
         <TargetPlatform>x64</TargetPlatform>
-        <!-- <SignAssembly>true</SignAssembly> -->
-        <!-- <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile> -->
         <UseWindowsForms>true</UseWindowsForms>
         <LangVersion>latest</LangVersion>
         <Win32Manifest>redeye.manifest</Win32Manifest>

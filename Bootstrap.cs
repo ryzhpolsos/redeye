@@ -12,12 +12,10 @@ namespace RedEye {
 
             if(args.Length > 0 && args[0] == "--elevated-service"){
                 manager
-                .AddComponent<IWindowManager>(new WindowManagerComponent())
                 .AddComponent<IElevatedService>(new ElevatedServiceComponent())
                 .InitializeComponents();
 
                 var elevatedSvc = manager.GetComponent<IElevatedService>();
-                elevatedSvc.SetIsRequired(false);
                 elevatedSvc.Listen();
 
                 return;

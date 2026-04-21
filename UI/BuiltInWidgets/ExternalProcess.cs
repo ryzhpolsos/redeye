@@ -38,10 +38,10 @@ namespace RedEye.UI.BuiltInWidgets {
                     EnumWindows((hwnd, _) => {
                         if(regex.IsMatch(GetWindowClass(hwnd))){
                             hWnd = hwnd;
-                            return false;
+                            return 0;
                         }
 
-                        return true;
+                        return 1;
                     }, IntPtr.Zero);
                 });
             }
@@ -53,10 +53,10 @@ namespace RedEye.UI.BuiltInWidgets {
                     EnumWindows((hwnd, _) => {
                         if(regex.IsMatch(GetWindowText(hwnd))){
                             hWnd = hwnd;
-                            return false;
+                            return 0;
                         }
 
-                        return true;
+                        return 1;
                     }, IntPtr.Zero);
                 });
             }
@@ -73,10 +73,10 @@ namespace RedEye.UI.BuiltInWidgets {
                     
                     if(processId == process.Id){
                         hWnd = hwnd;
-                        return false;
+                        return 0;
                     }
 
-                    return true;
+                    return 1;
                 }, IntPtr.Zero);
             }
 

@@ -49,6 +49,9 @@ if not exist "%FrameworkDir%\RegAsm.exe" (
 echo.Unregistering COM types...
 "%FrameworkDir%\RegAsm.exe" /u redeye.exe
 
+echo.Unsetting environment variables...
+setx /m REDEYE_DIRECTORY ""
+
 :end
 if "%_QUIET%"=="" pause> nul
 endlocal

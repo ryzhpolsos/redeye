@@ -29,6 +29,7 @@ namespace RedEye.Components {
 
         ComponentManager manager = null;
 
+        List<PluginLoaderInfo> plugins = new();
         Dictionary<string, Type> exportedWidgets = new();
         Dictionary<string, Func<IEnumerable<object>, IVariableStorage<string>, object>> exportedFunctions = new();
 
@@ -40,6 +41,21 @@ namespace RedEye.Components {
             config = manager.GetComponent<IConfig>();
             logger = manager.GetComponent<ILogger>();
             scriptEngine = manager.GetComponent<IScriptEngine>();
+        }
+
+        public PluginInfo GetPlugin(string id){
+            var conf = plugins.First(x => x.Config.id == id).Config;
+
+            return new(){
+                Id = conf.id,
+                Name = conf.name,
+                RequiredAssemblies = conf.requiredAssemblies,
+                Dependencies = conf.dependencies
+            };
+        }
+        
+        public IEnumerable<PluginInfo> GetPlugins(){
+            return plugins.Select(x => x.Config).Cast<PluginInfo>();
         }
 
         public Type GetExportedWidget(string name){
@@ -80,7 +96,6 @@ namespace RedEye.Components {
                 return;
             }
 
-            List<PluginLoaderInfo> plugins = new();
             List<string> loadedPlugins = new();
 
             foreach(var dir in Directory.GetDirectories(pluginsDir)){

@@ -32,7 +32,7 @@ namespace RedEye.Components {
         }
 
         public bool GetIsRequired(){
-#if DEBUG
+#if TRUE//DEBUG
             return false;
 #else
             return isRequired;

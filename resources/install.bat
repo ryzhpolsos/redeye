@@ -70,6 +70,9 @@ if %ErrorTotal%==0 (
     echo.ERROR: installer process failed.
 )
 
+echo.Setting environment variables...
+setx /m REDEYE_DIRECTORY "%CD%"
+
 :end
 if "%_QUIET%"=="" pause> nul
 popd

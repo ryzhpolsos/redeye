@@ -55,11 +55,11 @@ dotnet build -c Release
 ## Installing
 1. Go to "Releases" section and download the last release
 2. Extract the archive in any folder you like
-3. Run the script named `install.bat`
+3. Run the script named `install.bat` as administrator
 4. Log off and log on back to see your new shell.
 
 ## Uninstalling
-Run the script named `uninstall.bat` in the RedEye folder.
+Run the script named `uninstall.bat` as administrator in the RedEye folder.
 
 ## License
-The project is developed and distributed under [The MIT License](https://github.com/ryzhpolsos/redeye/blob/main/LICENSE).
+The project is developed and distributed under [GNU GPLv3 License](https://github.com/ryzhpolsos/redeye/blob/main/LICENSE).

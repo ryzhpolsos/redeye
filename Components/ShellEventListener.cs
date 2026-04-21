@@ -114,6 +114,7 @@ namespace RedEye.Components {
         }
 
         void ProcessEvent(ShellWindowEvent et, IntPtr hWnd){
+            Console.WriteLine($"Processing {et} on {hWnd}");
             ShellWindowState wnd = null;
 
             switch(et){
@@ -187,6 +188,8 @@ namespace RedEye.Components {
             foreach(var handler in eventHandlers){
                 if(!handler.Invoke(et, wnd)) break;
             }
+
+            Console.WriteLine("end processing");
         }
 
         void StartListener(){
@@ -210,8 +213,8 @@ namespace RedEye.Components {
                         logger.LogFatal("ShellWindow class registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
 
-                    // IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, HWND_MESSAGE, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
-                    IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
+                    IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, HWND_MESSAGE, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
+                    // IntPtr hWnd = CreateWindowEx(0, wndClass.lpszClassName, "UwU", 0, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, wndClass.hInstance, IntPtr.Zero);
 
                     if(hWnd == IntPtr.Zero){
                         logger.LogFatal("ShellWindow creation failed, last error: " + Marshal.GetLastWin32Error().ToString());
@@ -299,15 +302,15 @@ namespace RedEye.Components {
             }
         }
 
-        bool EnumWindowsHandler(IntPtr hWnd, IntPtr lParam){
-            if(!IsWindowVisible(hWnd) || !IsWindowTopLevel(hWnd)) return true;
+        int EnumWindowsHandler(IntPtr hWnd, IntPtr lParam){
+            if(!IsWindowVisible(hWnd) || !IsWindowTopLevel(hWnd)) return 1;
 
-            string txt = GetWindowText(hWnd);
-            if(txt.Length != 0 && txt != "WorkerW"){
-                ProcessEvent(ShellWindowEvent.Create, hWnd);
-            }
+            // string txt = GetWindowText(hWnd);
+            // if(txt != "WorkerW"){
+            ProcessEvent(ShellWindowEvent.Create, hWnd);
+            // }
 
-            return true;
+            return 1;
         }
 
         public void SendLayoutChange(int hkl){
@@ -333,21 +336,15 @@ namespace RedEye.Components {
         }
         
         public Icon GetWindowIcon(IntPtr hWnd){
-            IntPtr iconHandle = SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
-            if(iconHandle == IntPtr.Zero) iconHandle = SendMessage(hWnd, WM_GETICON, ICON_SMALL, 0);
-            if(iconHandle == IntPtr.Zero) iconHandle = SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
+            SendMessageTimeout(hWnd, WM_GETICON, ICON_BIG, 0, 0, 200, out IntPtr iconHandle);
+
+            if(iconHandle == IntPtr.Zero) SendMessageTimeout(hWnd, WM_GETICON, ICON_SMALL, 0, 0, 200, out iconHandle);
+            if(iconHandle == IntPtr.Zero) SendMessageTimeout(hWnd, WM_GETICON, ICON_SMALL2, 0, 0, 200, out iconHandle);
             if(iconHandle == IntPtr.Zero) iconHandle = GetClassPtr(hWnd, GCL_HICON);
             if(iconHandle == IntPtr.Zero) iconHandle = GetClassPtr(hWnd, GCL_HICONSM);
 
             if(iconHandle == IntPtr.Zero) return defaultIcon;
             return Icon.FromHandle(iconHandle);
-        }
-
-        string GetWindowText(IntPtr h){
-            int len = SendMessage(h, 0xE, 0L, 0L)+1;
-            StringBuilder buff = new StringBuilder(len);
-            SendMessage(h, 0xD, len, buff);
-            return buff.ToString();
         }
 
         bool IsWindowTopLevel(IntPtr hWnd){

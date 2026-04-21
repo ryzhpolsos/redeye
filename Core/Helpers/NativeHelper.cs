@@ -57,10 +57,22 @@ namespace RedEye.Core {
         public static extern IntPtr SendMessage(IntPtr hWnd, int uMsg, int wParam, int lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int uMsg, int wParam, IntPtr lParam);
-
+        public static extern IntPtr SendMessage(IntPtr hWnd, int uMsg, int wParam, IntPtr lParam);     
+        
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int uMsg, IntPtr wParam, ref COPYDATASTRUCT lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int SendMessageTimeout(IntPtr hWnd, int uMsg, long wParam, StringBuilder lParam, int fuFlags, int uTimeout, out int lpdwResult);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+       public static extern int SendMessageTimeout(IntPtr hWnd, int uMsg, long wParam, long lParam, int fuFlags, int uTimeout, out int lpdwResult);
+       
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int SendMessageTimeout(IntPtr hWnd, int uMsg, int wParam, int lParam, int fuFlags, int uTimeout, out IntPtr lpdwResult);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int SendMessageTimeout(IntPtr hWnd, int uMsg, int wParam, IntPtr lParam, int fuFlags, int uTimeout, out IntPtr lpdwResult);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetAncestor(IntPtr hWnd, int gaFlags);
@@ -72,7 +84,7 @@ namespace RedEye.Core {
         public static extern bool IsWindowVisible(IntPtr hWnd);
 
         [DllImport("user32.dll")]
-        public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+        public static extern int EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
 
         [DllImport("user32.dll", SetLastError=true)]
         public static extern bool RegisterShellHookWindow(IntPtr hWnd);
@@ -406,7 +418,7 @@ namespace RedEye.Core {
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-        public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+        public delegate int EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         public delegate int WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
@@ -462,9 +474,11 @@ namespace RedEye.Core {
         }
 
         public static string GetWindowText(IntPtr h){
-            int len = SendMessage(h, 0xE, 0L, 0L)+1;
+            SendMessageTimeout(h, 0xE, 0L, 0L, 0, 200, out int len);
+            len++;
+
             StringBuilder buff = new StringBuilder(len);
-            SendMessage(h, 0xD, len, buff);
+            SendMessageTimeout(h, 0xD, len, buff, 0, 200, out _);
             return buff.ToString();
         }
 
