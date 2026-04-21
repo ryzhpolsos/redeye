@@ -247,7 +247,7 @@ namespace PowerSearch {
         protected override CreateParams CreateParams {
             get {
                 var @params = base.CreateParams;
-                @params.ExStyle |= NativeHelper.WS_EX_TOOLWINDOW;
+                @params.ExStyle |= (int)NativeHelper.WS_EX_TOOLWINDOW;
                 return @params;
             }
         }

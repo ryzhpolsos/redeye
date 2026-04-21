@@ -32,7 +32,7 @@ namespace RedEye.Components {
         }
 
         public bool GetIsRequired(){
-#if TRUE//DEBUG
+#if DEBUG
             return false;
 #else
             return isRequired;
@@ -56,6 +56,10 @@ namespace RedEye.Components {
             psi.WindowStyle = ProcessWindowStyle.Hidden;
 
             Process.Start(psi).WaitForExit();
+
+            if(!GetIsRunning()){
+                SetIsRequired(false);
+            }
         }
 
         public void Listen(){

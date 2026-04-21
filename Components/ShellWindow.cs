@@ -247,7 +247,7 @@ namespace RedEye.Components {
         protected override CreateParams CreateParams {
             get {
                 var @params = base.CreateParams;
-                @params.ExStyle |= WS_EX_TOOLWINDOW;
+                @params.ExStyle |= (int)WS_EX_TOOLWINDOW;
                 return @params;
             }
         }

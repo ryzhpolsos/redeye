@@ -3,7 +3,7 @@
         <Exec Command="powershell -exec bypass -file &quot;scripts\preparePluginApi.ps1&quot;" />
     </Target>
 
-    <Target Name="CopyResources" AfterTargets="Build">
+    <Target Name="CopyResources" BeforeTargets="CoreCompile">
         <Exec Command="xcopy /e /y &quot;$(ProjectDir)resources\*&quot; &quot;$(TargetDir)&quot;" />
     </Target>
 

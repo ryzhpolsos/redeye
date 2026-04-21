@@ -1,5 +1,5 @@
 <tablePanel
-    x="calc('${taskbar.width} - ${taskbar.tray.width}')"
+    x="calc('${taskbar.width} - ${taskbar.tray.width} - ${theme.paddingMiddle} * 2')"
     y="0"
     width="${taskbar.tray.width}"
     height="${taskbar.height}"
@@ -8,6 +8,7 @@
     font="${theme.font.main}"
     rowCount="1"
     columnCount="2"
+    padding="${theme.paddingMiddle}"
     >
 
     <label dock="fill" table.position="0,0" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>

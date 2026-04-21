@@ -273,6 +273,12 @@ namespace RedEye.Components {
                 comApi.SendMessage(args.ElementAt(0).ToString(), dict);
                 return string.Empty;
             });
+
+            pluginManager.ExportFunction("shell.restart", (args, _) => {
+                Process.Start("cmd.exe", $"/c taskkill /f /pid {Process.GetCurrentProcess().Id} & start \"\" \"{config.GetAppDirectory()}\\redeye.exe\"");
+
+                return string.Empty;     
+            });
         }
 
         IntPtr GetIntPtr(object value){

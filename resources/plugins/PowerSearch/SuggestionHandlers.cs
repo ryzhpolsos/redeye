@@ -35,6 +35,7 @@ namespace PowerSearch {
             SuggestionManager.RegisterHandler(ExpressionHandler);
             SuggestionManager.RegisterHandler(UrlHandler);
             SuggestionManager.RegisterHandler(InternalCommandHandler);
+            SuggestionManager.RegisterHandler(FileOrFolderHandler);
             
             applicationList = ComponentManager.GetComponent<ISpecialFolderWrapper>().GetApplicationList();
 
@@ -94,6 +95,12 @@ namespace PowerSearch {
                 yield return new InternalCommandSuggestion(input.Substring(1), intCmdIcon, ComponentManager.GetComponent<IExpressionParser>());
             }
         }
+
+        static IEnumerable<ISuggestion> FileOrFolderHandler(string input){
+            if(File.Exists(input) || Directory.Exists(input)){
+                yield return new FileOrFolderSuggestion(input);
+            }
+        }
     }
 
     class ApplicationSuggestion : ISuggestion {
@@ -135,7 +142,7 @@ namespace PowerSearch {
 
         public void Invoke(){
             try{
-                Process.Start("cmd.exe", "/c " + command);
+                Process.Start("cmd.exe", "/c start \"\" " + command);
             }catch(Exception){}
         }
     }
@@ -214,6 +221,28 @@ namespace PowerSearch {
 
         public void Invoke(){
             expressionParser.EvaluateExpression(command, EmptyVariableStorage.EmptyStringStorage);
+        }
+    }
+
+    class FileOrFolderSuggestion : ISuggestion {
+        string name;
+
+        public FileOrFolderSuggestion(string name){
+            this.name = name;
+        }
+
+        public string GetText(){
+            return "Open " + (Directory.Exists(name) ? "folder" : "file") + ": " + name;
+        }
+
+        public Image GetIcon(){
+            return Icon.FromHandle(NativeHelper.GetFileInfo(name, NativeHelper.SHGFI_ICON).hIcon).ToBitmap();
+        }
+
+        public void Invoke(){
+            try{
+                Process.Start("cmd.exe", "/c start \"\" \"" + name + "\"");
+            }catch(Exception){}
         }
     }
 }

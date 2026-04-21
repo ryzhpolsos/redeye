@@ -114,7 +114,6 @@ namespace RedEye.Components {
         }
 
         void ProcessEvent(ShellWindowEvent et, IntPtr hWnd){
-            Console.WriteLine($"Processing {et} on {hWnd}");
             ShellWindowState wnd = null;
 
             switch(et){
@@ -188,8 +187,6 @@ namespace RedEye.Components {
             foreach(var handler in eventHandlers){
                 if(!handler.Invoke(et, wnd)) break;
             }
-
-            Console.WriteLine("end processing");
         }
 
         void StartListener(){
@@ -303,7 +300,15 @@ namespace RedEye.Components {
         }
 
         int EnumWindowsHandler(IntPtr hWnd, IntPtr lParam){
-            if(!IsWindowVisible(hWnd) || !IsWindowTopLevel(hWnd)) return 1;
+            // if(explorerIntegration.GetIsEnabled()){
+            //     GetWindowThreadProcessId(hWnd, out int pid);
+
+            //     if(pid == explorerIntegration.GetExplorerPID()){
+            //         return 1;
+            //     }
+            // }
+
+            if(!IsWindowVisible(hWnd) || !IsWindowTopLevel(hWnd) || !IsWindowNonShell(hWnd)) return 1;
 
             string txt = GetWindowText(hWnd);
             string className = GetWindowClass(hWnd);
@@ -349,7 +354,7 @@ namespace RedEye.Components {
         }
 
         bool IsWindowTopLevel(IntPtr hWnd){
-            if(!IsTopLevelWindow(hWnd)) return false;
+            // if(!IsTopLevelWindow(hWnd)) return false;
 
             var className = GetWindowClass(hWnd);
 
@@ -360,7 +365,7 @@ namespace RedEye.Components {
             long style = GetWindowLongPtr(hWnd, GWL_STYLE);
             long exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 
-            return (style & WS_CAPTION) != 0 && (exStyle & WS_EX_OVERLAPPEDWINDOW) != 0;
+            return ((style & WS_POPUP) != 0) || ((style & WS_CAPTION) != 0 && (exStyle & WS_EX_OVERLAPPEDWINDOW) != 0);
         }
 
         bool IsWindowNonShell(IntPtr hWnd){

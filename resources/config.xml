@@ -25,7 +25,7 @@
             <set name="taskbar.height" value="calc('${taskbar.item.size} + ${theme.paddingMiddle} * 2')"/>
 
             <!-- Tray settings -->
-            <set name="taskbar.tray.width" value="250"/>
+            <set name="taskbar.tray.width" value="200"/>
 
             <!-- Work area settings -->
             <set name="workArea.x" value="0"/>
@@ -52,7 +52,7 @@
 
         <!-- PowerSearch settings -->
         <eval command="powerSearch.config(width, 600)"/>
-        <eval command="powerSearch.config(font, ${theme.font.main})"/>
+        <eval command="powerSearch.config(font, 'Consolas,12')"/>
         <eval command="powerSearch.config(fontColor, ${theme.font.color})"/>
         <eval command="powerSearch.config(background, ${theme.color.background})"/>
 

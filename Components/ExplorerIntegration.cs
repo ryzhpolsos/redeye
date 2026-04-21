@@ -91,7 +91,7 @@ namespace RedEye.Components {
             Task.Run(async () => {
                 while(true){
                     shellEventListener.ReSetWorkArea();
-                    await Task.Delay(250);
+                    await Task.Delay(200);
                 }
             });
         }

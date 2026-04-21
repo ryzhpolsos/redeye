@@ -1,0 +1,10 @@
+<hotkeys>
+    <hotkey keys="Win" action="window.toggle(startMenu)"/>
+    <hotkey keys="Win+R" action="powerSearch.open()"/>
+    <hotkey keys="Win+T" action="shellExecute('cmd.exe')"/>
+    <hotkey keys="Win+B" action="shellExecute('http:')"/>
+
+    <hotkey keys="Win+L" action=""/>
+    <!-- Win+L is a system keybind, so RedEye can't really change its action,
+         but this will block Win keybind from activating when Win+L is pressed -->
+</hotkeys>
