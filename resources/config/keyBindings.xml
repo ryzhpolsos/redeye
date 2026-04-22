@@ -1,6 +1,9 @@
 <hotkeys>
+    <!-- System UI hotkeys -->
     <hotkey keys="Win" action="window.toggle(startMenu)"/>
     <hotkey keys="Win+R" action="powerSearch.open()"/>
+
+    <!-- Launcher hotkeys -->
     <hotkey keys="Win+T" action="shellExecute('cmd.exe')"/>
     <hotkey keys="Win+B" action="shellExecute('http:')"/>
 

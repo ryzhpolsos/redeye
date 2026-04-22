@@ -11,6 +11,6 @@
     padding="${theme.paddingMiddle}"
     >
 
-    <label dock="fill" table.position="0,0" align="middleCenter" text="concat(media.getBatteryLevel(), '%')"/>
+    <label dock="fill" table.position="0,0" align="middleCenter" text=""/>
     <label dock="fill" table.position="1,0" align="middleCenter" text="dateTime('HH:mm:ss')"/>
 </tablePanel>

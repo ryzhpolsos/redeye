@@ -186,6 +186,37 @@ namespace RedEye.Components {
                 return string.Empty;
             });
 
+            pluginManager.ExportFunction("wapi.minimizeAllWindows", (_, _) => {
+                foreach(var wnd in shellEventListener.GetWindows()){
+                    windowManager.GetWindow(wnd.Handle).Minimize();
+                }
+                
+                return string.Empty;
+            });
+
+            pluginManager.ExportFunction("wapi.restoreAllWindows", (_, _) => {
+                foreach(var wnd in shellEventListener.GetWindows()){
+                    windowManager.GetWindow(wnd.Handle).Restore();
+                }
+                
+                return string.Empty;
+            });
+
+            var areAllMinimized = false;
+            
+            pluginManager.ExportFunction("wapi.toggleAllWindows", (_, _) => {
+                foreach(var wnd in shellEventListener.GetWindows()){
+                    if(areAllMinimized){
+                        windowManager.GetWindow(wnd.Handle).Restore();
+                    }else{
+                        windowManager.GetWindow(wnd.Handle).Minimize();
+                    }
+                }
+                
+                areAllMinimized = !areAllMinimized;
+                return string.Empty;
+            });
+
             pluginManager.ExportFunction("window.show", (args, _) => {
                 shellWindowManager.GetWindow(args.ElementAt(0).ToString()).ShowWindow();
                 return string.Empty;

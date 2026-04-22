@@ -196,10 +196,10 @@ namespace RedEye.Components {
 
             shellMsg = RegisterWindowMessage("SHELLHOOK");
 
+            EnumWindows(EnumWindowsHandler, IntPtr.Zero);
+
             Thread thread = new(()=>{
                 try{
-                    EnumWindows(EnumWindowsHandler, IntPtr.Zero);
-
                     var wndClass = new WNDCLASSEX();
                     wndClass.cbSize = Marshal.SizeOf(typeof(WNDCLASSEX));
                     wndClass.hInstance = GetModuleHandle(IntPtr.Zero);

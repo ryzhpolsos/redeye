@@ -199,38 +199,40 @@ namespace PowerSearch {
         }
 
         void AddSuggestion(ISuggestion suggestion){
-            var tlp = new TableLayoutPanel();
-            tlp.RowCount = 1;
-            tlp.ColumnCount = 5;
-            tlp.Width = tbSearchBox.Width;
-            tlp.Height = (int)(tbSearchBox.Height * 2);
+            try{
+                var tlp = new TableLayoutPanel();
+                tlp.RowCount = 1;
+                tlp.ColumnCount = 5;
+                tlp.Width = tbSearchBox.Width;
+                tlp.Height = (int)(tbSearchBox.Height * 2);
 
-            var pictureBox = new PictureBox();
-            pictureBox.Dock = DockStyle.Fill;
-            pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
-            tlp.Controls.Add(pictureBox);
-            tlp.SetCellPosition(pictureBox, new TableLayoutPanelCellPosition(0, 0));
+                var pictureBox = new PictureBox();
+                pictureBox.Dock = DockStyle.Fill;
+                pictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+                tlp.Controls.Add(pictureBox);
+                tlp.SetCellPosition(pictureBox, new TableLayoutPanelCellPosition(0, 0));
 
-            var label = new Label();
-            label.Dock = DockStyle.Fill;
-            label.TextAlign = ContentAlignment.MiddleLeft;
-            tlp.Controls.Add(label);
-            tlp.SetCellPosition(label, new TableLayoutPanelCellPosition(1, 0));
-            tlp.SetColumnSpan(label, 4);
+                var label = new Label();
+                label.Dock = DockStyle.Fill;
+                label.TextAlign = ContentAlignment.MiddleLeft;
+                tlp.Controls.Add(label);
+                tlp.SetCellPosition(label, new TableLayoutPanelCellPosition(1, 0));
+                tlp.SetColumnSpan(label, 4);
 
-            pictureBox.Image = suggestion.GetIcon();
-            label.Text = suggestion.GetText();
+                pictureBox.Image = suggestion.GetIcon();
+                label.Text = suggestion.GetText();
 
-            suggestions.Add(new SuggestionWrapper(){
-                Suggestion = suggestion,
-                Control = tlp
-            });
+                suggestions.Add(new SuggestionWrapper(){
+                    Suggestion = suggestion,
+                    Control = tlp
+                });
 
-            tlpSuggestions.Controls.Add(tlp);
-            tlpSuggestions.SetCellPosition(tlp, new TableLayoutPanelCellPosition(0, tlpSuggestions.RowCount++));
+                tlpSuggestions.Controls.Add(tlp);
+                tlpSuggestions.SetCellPosition(tlp, new TableLayoutPanelCellPosition(0, tlpSuggestions.RowCount++));
 
-            tlpSuggestions.HorizontalScroll.Visible = false;
-            tlpSuggestions.VerticalScroll.Visible = false;
+                tlpSuggestions.HorizontalScroll.Visible = false;
+                tlpSuggestions.VerticalScroll.Visible = false;
+            }catch(Exception){}
         }
 
         void ProcessSearch(string content){

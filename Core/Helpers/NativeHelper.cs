@@ -433,7 +433,7 @@ namespace RedEye.Core {
         }
 
         public static void RestoreWindow(IntPtr hWnd){
-            ShowWindow(hWnd, 9);
+            // ShowWindow(hWnd, 9);
             ShowWindow(hWnd, 5);
             // RedrawWindow(hWnd, IntPtr.Zero, IntPtr.Zero, 257);
             ForceSetForegroundWindow(hWnd);
