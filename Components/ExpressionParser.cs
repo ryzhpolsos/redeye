@@ -64,23 +64,21 @@ namespace RedEye.Components {
         } 
 
         public string EvaluateExpression(string expression, IVariableStorage<string> variables = null){
-            var result = ParseExpression(expression, variables);
-
-            if(result.FunctionName is not null){
-                var exportedFunctions = pluginManager.GetExportedFunctions();
-
-
-                if(exportedFunctions.ContainsKey(result.FunctionName)){
-                    return exportedFunctions[result.FunctionName].Invoke(result.Arguments, variables).ToString();
-                }
-
-                logger.LogError($"No function with name {result.FunctionName} was found");
+            // System.Diagnostics.Debugger.Break();
+            // System.Console.WriteLine(expression);
+            if(expression.Length > 0 && expression[0] == '~'){
+                return expression.Substring(1);
             }
 
-            return result.Value;
+            if(!expression.Contains("(")){
+                return ParseVariables(expression, variables);
+            }
+            
+            return new RwmlExpressionParser(pluginManager, variables ?? EmptyVariableStorage.EmptyStringStorage).Evaluate(expression);
         }
 
         public string ParseVariables(string value, IVariableStorage<string> variables){
+            if(!value.Contains("$")) return value;
             return variableRegex.Replace(value, (match) => {
                 return match.Groups.Count > 1 ? variables.GetVariable(match.Groups[1].Value) : string.Empty;
             });

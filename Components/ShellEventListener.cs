@@ -113,7 +113,7 @@ namespace RedEye.Components {
             }
         }
 
-        void ProcessEvent(ShellWindowEvent et, IntPtr hWnd){
+        void ProcessEvent(ShellWindowEvent et, IntPtr hWnd, bool createWOActivate = false){
             ShellWindowState wnd = null;
 
             switch(et){
@@ -166,7 +166,6 @@ namespace RedEye.Components {
                     wnd.Icon = GetWindowIcon(hWnd);
                     wnd.ShowCmd = wp.showCmd;
                     wnd.IsActive = true;
-                    //logger.Log(logger.MessageType.Information, "activate wnddow");
 
                     foreach(var win in activeWindows){
                         if(win.Key != hWnd){
@@ -174,6 +173,18 @@ namespace RedEye.Components {
                             ProcessEvent(ShellWindowEvent.Deactivate, win.Value.Handle);
                         }
                     }
+
+                    if(wnd.IsMinimized){
+                        ProcessEvent(ShellWindowEvent.Deactivate, hWnd);
+                        return;
+                    }
+
+                    break;
+                }
+
+                case ShellWindowEvent.Deactivate: {
+                    wnd = activeWindows[hWnd];
+                    wnd.IsActive = false;
 
                     break;
                 }
@@ -184,8 +195,12 @@ namespace RedEye.Components {
                 }
             }
 
+            // Console.WriteLine($"EVT: {et}; WND: {(wnd.Title.Length >= 20 ? wnd.Title.Substring(0, 20) : wnd.Title.PadLeft(20))}\t\t{ParseHelper.ToJson(wnd)}\n");
+            
             foreach(var handler in eventHandlers){
-                if(!handler.Invoke(et, wnd)) break;
+                if(!handler.Invoke(et, wnd)){
+                    break;
+                }
             }
         }
 
@@ -230,7 +245,7 @@ namespace RedEye.Components {
                         logger.LogFatal("Shell hook registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
 
-                    // SetWorkArea(0, 0, Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+                    // SetWorkArea(0, 0, Screen.Primaну а что, оскорбление студентов и произвольные ограничения доступа на пары, хотя проводить пары является его обязанностьюryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
                     
                     var msg = new MSG();
                     while(GetMessage(ref msg, IntPtr.Zero, 0, 0)){
@@ -313,7 +328,7 @@ namespace RedEye.Components {
             string txt = GetWindowText(hWnd);
             string className = GetWindowClass(hWnd);
             if(txt != "WorkerW" && className != "ApplicationFrameWindow"){
-                ProcessEvent(ShellWindowEvent.Create, hWnd);
+                ProcessEvent(ShellWindowEvent.Create, hWnd, true);
             }
 
             return 1;
