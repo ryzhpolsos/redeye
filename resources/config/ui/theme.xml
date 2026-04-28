@@ -1,4 +1,4 @@
-<variables>
+<variables id="themevars">
     <set name="theme.color.background" value="#13293d"/>
     <set name="theme.color.backgroundChild" value="#2a628f"/>
     <set name="theme.color.backgroundActive" value="#3e92cc"/>

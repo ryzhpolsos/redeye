@@ -41,6 +41,7 @@ namespace RedEye.Components {
 
         public void LogFatal(string message){
             MessageBox.Show($"Fatal Error: {message}", "RedEye", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Console.WriteLine($"Fatal Error: {message}");
 
             Log(LogType.Fatal, message);
         }

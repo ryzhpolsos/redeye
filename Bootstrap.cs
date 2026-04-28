@@ -42,6 +42,8 @@ namespace RedEye {
             .AddComponent<IElevatedService>(new ElevatedServiceComponent())
             .InitializeComponents();
 
+            EvalHelper.Logger = manager.GetComponent<ILogger>();
+
             var elevatedService = manager.GetComponent<IElevatedService>();
             elevatedService.SetIsRequired(true);
             if(!elevatedService.GetIsRunning()) elevatedService.Start();

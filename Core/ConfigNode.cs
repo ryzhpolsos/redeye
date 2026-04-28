@@ -88,6 +88,7 @@ namespace RedEye.Core {
         Dictionary<string, string> attributes = new();
         List<ConfigNode> childNodes = new();
         string fileName = null;
+
         Dictionary<string, ConfigNodeAttributeList> attributeLists = new();
         Dictionary<string, ConfigNodeTemplate> templates = new();
 
@@ -114,7 +115,7 @@ namespace RedEye.Core {
         }
 
         public ConfigNode(){}
-        
+
         public void Init(ComponentManager manager, string name, IDictionary<string, string> attributes = null, string value = null, Dictionary<string, Dictionary<string, string>> childNodeAttributes = null, XmlNode underlyingXmlNode = null, bool isVirtual = false, string fileName = null){
             this.name = name;
             this.manager = manager;
@@ -150,13 +151,26 @@ namespace RedEye.Core {
             parentNode = node;
         }
 
+        public string GetPathName(){
+            if(ParentNode is not null){
+                return ParentNode.GetPathName() + "." + Name;
+            }
+
+            return Name;
+        }
+
+        public string GetPrintableInfo(){
+            return $"{GetPathName()} [{string.Join(", ", attributes.Select(x => $"{x.Key}='{x.Value}'"))}] = '{value}'";
+        }
+
         public void ProcessNodes(bool postProcess = true){
             var childNodesArray = childNodes.ToArray();
 
             for(int i = 0; i < childNodesArray.Length; i++){
                 var removeNode = false;
+                var reprocessNodes = false;
                 var node = childNodesArray[i];
-                // Console.WriteLine($"'{node.Name}'");
+
                 switch(node.Name){
                     case "variables": {
                         foreach(var setNode in node.GetNodes("set")){
@@ -169,8 +183,10 @@ namespace RedEye.Core {
 
                     case "import": {
                         config.LoadFile(node.GetAttribute("from"), this);
+
+                                                
                         removeNode = true;
-                        // ProcessNodes(false);
+                        reprocessNodes = true;
                         break;
                     }
 
@@ -188,7 +204,7 @@ namespace RedEye.Core {
                         }
 
                         removeNode = true;
-                        ProcessNodes(false);
+                        reprocessNodes = true;
                         break;
                     }
 
@@ -260,28 +276,34 @@ namespace RedEye.Core {
 
                     case "template": {
                         var name = node.GetAttribute("name");
-                        var args = node.GetRawAttribute("arguments").Split(';').Select(x => x.Trim());
                         var template = GetTemplate(name);
+                        var args = new string[template.ArgumentNames.Count()];
 
+                        for(int k = 0; k < args.Length; k++){
+                            args[k] = node.GetAttribute(template.ArgumentNames.ElementAt(k));
+                        }
+                        
                         foreach(var cNode in template.Nodes){
                             for(int j = 0; j < template.ArgumentNames.Count(); j++){
-                                Console.WriteLine($"Setting {template.ArgumentNames.ElementAt(j)} to {expressionParser.EvaluateExpression(args.ElementAt(j), cNode)}");
                                 cNode.SetVariable(template.ArgumentNames.ElementAt(j), expressionParser.EvaluateExpression(args.ElementAt(j), cNode));
                             }
 
-                            childNodes.Insert(i, cNode);
+                            childNodes.Insert(i - 1, cNode);
                             cNode.SetParentNode(this);
                         }
 
                         removeNode = true;
-                        // ProcessNodes(false);
 
                         break;
                     }
                 }
 
-                node.ProcessNodes();
                 if(removeNode) node.Remove();
+
+                if(reprocessNodes){
+                    ProcessNodes();
+                    return;
+                }
             }
 
             if(!postProcess) return;
@@ -289,7 +311,7 @@ namespace RedEye.Core {
         }
 
         public void PostProcessNodes(){
-        for(int i = 0; i < childNodes.Count; i++){
+            for(int i = 0; i < childNodes.Count; i++){
                 var node = childNodes[i];
 
                 UtilHelper.IfNotEmpty(node.GetRawAttribute("attrList"), attrList => {
@@ -308,14 +330,16 @@ namespace RedEye.Core {
                         }
 
                         foreach(var attr in list.Attributes){
-                            node.SetAttribute(
-                                expressionParser.EvaluateExpression(attr.Key, node),
-                                expressionParser.EvaluateExpression(attr.Value, node)      
-                            );
+                            var key = expressionParser.EvaluateExpression(attr.Key, node);
+
+                            if(string.IsNullOrEmpty(node.GetAttribute(key))){
+                                node.SetAttribute(key, expressionParser.EvaluateExpression(attr.Value, node));
+                            }
                         }
                     }
                 });
 
+                node.ProcessNodes();
             }
         }
 
