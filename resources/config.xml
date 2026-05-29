@@ -59,9 +59,6 @@
         <import from="config/ui/startMenu.xml"/>
         <import from="config/ui/taskbar.xml"/>
 
-        <!-- Set up configuration utility window -->
-        <import from="config/ui/configUtil.xml"/>
-
         <!-- Set up shutdown options window -->
         <import from="config/ui/shutdownOptions.xml"/>
     </layout>
