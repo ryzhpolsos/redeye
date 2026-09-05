@@ -244,8 +244,6 @@ namespace RedEye.Components {
                     if(!RegisterShellHookWindow(hWnd)){
                         logger.LogFatal("Shell hook registration failed, last error: " + Marshal.GetLastWin32Error().ToString());
                     }
-
-                    // SetWorkArea(0, 0, Screen.Primaну а что, оскорбление студентов и произвольные ограничения доступа на пары, хотя проводить пары является его обязанностьюryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
                     
                     var msg = new MSG();
                     while(GetMessage(ref msg, IntPtr.Zero, 0, 0)){
